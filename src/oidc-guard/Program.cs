@@ -5,6 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace OIDC_Guard
 {
@@ -26,6 +27,7 @@ namespace OIDC_Guard
             })
             .AddCookie(o =>
             {
+                o.Cookie.Domain = builder.Configuration.GetValue<string>("CookieDomain");
             })
             .AddOpenIdConnect(o =>
             {
@@ -41,7 +43,14 @@ namespace OIDC_Guard
             builder.Services.AddSwaggerGen();
             builder.Services.AddHealthChecks();
 
+            builder.Services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
+
             var app = builder.Build();
+
+            app.UseForwardedHeaders();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

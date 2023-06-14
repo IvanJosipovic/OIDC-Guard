@@ -32,6 +32,8 @@ spec:
           env:
           - name: "OpenIdProviderConfigurationUrl"
             value: "{{ .Values.openIdProviderConfigurationUrl }}"
+          - name: "CookieDomain"
+            value: "{{ .Values.cookieDomain }}"
           - name: "ClientId"
             value: "{{ .Values.clientId }}"
           - name: "ClientSecret"
