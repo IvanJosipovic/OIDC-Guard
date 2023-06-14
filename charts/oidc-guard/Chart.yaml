@@ -27,6 +27,7 @@ keywords:
   - ingress
   - nginx
   - jwt
+  - oidc
 home: https://github.com/IvanJosipovic/oidc-guard
 sources:
   - https://github.com/IvanJosipovic/oidc-guard
