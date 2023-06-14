@@ -1,5 +1,3 @@
-LABEL org.opencontainers.image.description OpenID Connect (OIDC) Proxy Server for securing Kubernetes Ingress
-
 ARG BUILDPLATFORM=linux/amd64
 
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:7.0-alpine@sha256:895ef6f8758fd192814bf46a74b2922d00863f4b51f7fa231295a9e38031fda2 AS build
@@ -17,6 +15,7 @@ FROM mcr.microsoft.com/dotnet/runtime-deps:7.0-alpine@sha256:215aa60901170ed0519
 WORKDIR /app
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
+LABEL org.opencontainers.image.description OpenID Connect (OIDC) Proxy Server for securing Kubernetes Ingress
 
 RUN apk update && \
     apk upgrade && \
