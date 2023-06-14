@@ -73,7 +73,7 @@ jobs:
 
     - name: Docker Push
       if: steps.semantic.outputs.new_release_published == 'true'
-      working-directory: src/oidc-guard
+      working-directory: src/OIDC-Guard
       run: |
         echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${GITHUB_ACTOR} --password-stdin
 
@@ -89,7 +89,7 @@ jobs:
       if: steps.semantic.outputs.new_release_published == 'true'
       shell: bash
       run: |
-          cp ./README.md ./charts/oidc-guard/
+          cp ./README.md ./charts/OIDC-Guard/
           sed -i 's/0.0.1/${{ steps.semantic.outputs.new_release_version }}/' ./charts/oidc-guard/Chart.yaml
 
     - name: Run chart-releaser
