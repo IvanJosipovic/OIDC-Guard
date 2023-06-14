@@ -39,6 +39,7 @@ namespace OIDC_Guard
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddHealthChecks();
 
             var app = builder.Build();
 
@@ -55,6 +56,8 @@ namespace OIDC_Guard
             app.UseHttpsRedirection();
 
             app.MapControllers();
+
+            app.MapHealthChecks("/health");
 
             app.Run();
         }
