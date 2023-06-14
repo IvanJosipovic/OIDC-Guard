@@ -45,7 +45,7 @@ namespace OIDC_Guard
 
             builder.Services.Configure<ForwardedHeadersOptions>(options =>
             {
-                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+                options.ForwardedHeaders = ForwardedHeaders.All;
             });
 
             var app = builder.Build();
@@ -62,7 +62,7 @@ namespace OIDC_Guard
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.MapControllers();
 
