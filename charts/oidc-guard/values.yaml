@@ -17,6 +17,12 @@ fullnameOverride: ""
 # OpenID Provider Configuration Url for your Identity Provider
 openIdProviderConfigurationUrl: "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration"
 
+# Client Id
+clientId: ""
+
+# Client Secret
+clientSecret: ""
+
 # Log Level(Trace, Debug, Information, Warning, Error, Critical, and None)
 logLevel: Information
 

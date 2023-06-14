@@ -32,6 +32,10 @@ spec:
           env:
           - name: "OpenIdProviderConfigurationUrl"
             value: "{{ .Values.openIdProviderConfigurationUrl }}"
+          - name: "ClientId"
+            value: "{{ .Values.clientId }}"
+          - name: "ClientSecret"
+            value: "{{ .Values.clientSecret }}"
           - name: "Logging__LogLevel__Default"
             value: "{{ .Values.logLevel }}"
           securityContext:
