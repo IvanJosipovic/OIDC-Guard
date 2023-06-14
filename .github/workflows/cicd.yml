@@ -31,11 +31,11 @@ jobs:
       uses: docker/setup-buildx-action@v2
 
     - name: Docker Buildx
-      working-directory: src/OIDC-Guard
+      working-directory: src/oidc-guard
       run: docker buildx build --platform linux/amd64,linux/arm64 -t oidc-guard .
 
     - name: Docker Build
-      working-directory: src/OIDC-Guard
+      working-directory: src/oidc-guard
       run: docker build -t oidc-guard .
 
     - name: Run Trivy vulnerability scanner
@@ -73,7 +73,7 @@ jobs:
 
     - name: Docker Push
       if: steps.semantic.outputs.new_release_published == 'true'
-      working-directory: src/OIDC-Guard
+      working-directory: src/oidc-guard
       run: |
         echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${GITHUB_ACTOR} --password-stdin
 
@@ -89,7 +89,7 @@ jobs:
       if: steps.semantic.outputs.new_release_published == 'true'
       shell: bash
       run: |
-          cp ./README.md ./charts/OIDC-Guard/
+          cp ./README.md ./charts/oidc-guard/
           sed -i 's/0.0.1/${{ steps.semantic.outputs.new_release_version }}/' ./charts/oidc-guard/Chart.yaml
 
     - name: Run chart-releaser
