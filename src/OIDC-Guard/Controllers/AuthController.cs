@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,17 +17,28 @@ namespace OIDC_Guard.Controllers
         }
 
         [HttpGet("auth")]
-        [Authorize]
+        [AllowAnonymous]
         public async Task<ActionResult> Auth()
         {
+            if (HttpContext.User.Identity?.IsAuthenticated == false)
+            {
+                return Unauthorized();
+            }
+
+            // Validate based on rules
+
             return Ok();
         }
 
         [HttpGet("signin")]
-        [Authorize]
-        public async Task<ActionResult> Signin([FromQuery] string? rd)
+        [AllowAnonymous]
+        public async Task<ActionResult> Signin([FromQuery] string rd)
         {
-            return Ok();
+            return Challenge(new AuthenticationProperties
+            {
+                RedirectUri = rd
+            },
+            OpenIdConnectDefaults.AuthenticationScheme);
         }
     }
 }
