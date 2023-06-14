@@ -28,6 +28,7 @@ namespace OIDC_Guard
             .AddCookie(o =>
             {
                 o.Cookie.Domain = builder.Configuration.GetValue<string>("CookieDomain");
+                o.Cookie.Name = builder.Configuration.GetValue<string>("CookieName");
             })
             .AddOpenIdConnect(o =>
             {
@@ -45,7 +46,7 @@ namespace OIDC_Guard
 
             builder.Services.Configure<ForwardedHeadersOptions>(options =>
             {
-                options.ForwardedHeaders = ForwardedHeaders.All;
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             });
 
             var app = builder.Build();

@@ -17,6 +17,9 @@ fullnameOverride: ""
 # OpenID Provider Configuration Url for your Identity Provider
 openIdProviderConfigurationUrl: "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration"
 
+# Cookie Name
+cookieName: "oidc-guard"
+
 # Cookie Domain
 cookieDomain: "test.com"
 
