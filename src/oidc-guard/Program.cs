@@ -52,6 +52,12 @@ namespace OIDC_Guard
 
             app.UseForwardedHeaders();
 
+            app.Use((context, next) =>
+            {
+                context.Request.Scheme = "https";
+                return next();
+            });
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -61,8 +67,6 @@ namespace OIDC_Guard
 
             app.UseAuthentication();
             app.UseAuthorization();
-
-            //app.UseHttpsRedirection();
 
             app.MapControllers();
 
