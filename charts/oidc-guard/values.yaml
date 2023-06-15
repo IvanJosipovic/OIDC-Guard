@@ -14,23 +14,28 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-# OpenID Provider Configuration Url for your Identity Provider
-openIdProviderConfigurationUrl: "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration"
+settings:
+  # OpenID Provider Configuration Url for your Identity Provider
+  openIdProviderConfigurationUrl: "https://login.microsoftonline.com/{ClientID}/v2.0/.well-known/openid-configuration"
 
-# Cookie Name
-cookieName: "oidc-guard"
+  # Cookie Name
+  cookieName: "oidc-guard"
 
-# Cookie Domain
-cookieDomain: "test.com"
+  # Cookie Domain
+  cookieDomain: "test.com"
 
-# Client Id
-clientId: ""
+  # Client Id
+  clientId: ""
 
-# Client Secret
-clientSecret: ""
+  # Client Secret
+  clientSecret: ""
 
-# Log Level(Trace, Debug, Information, Warning, Error, Critical, and None)
-logLevel: Information
+  # Whether access and refresh tokens should be stored in the cookie,
+  # disable to reduce the size of the authentication cookie.
+  saveTokensInCookie: true
+
+  # Log Level(Trace, Debug, Information, Warning, Error, Critical, and None)
+  logLevel: Information
 
 serviceAccount:
   # Specifies whether a service account should be created
