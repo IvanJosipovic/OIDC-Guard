@@ -12,8 +12,11 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        var settings = builder.Configuration.GetSection("Settings").Get<Settings>()!;
-        builder.Services.AddSingleton(settings);
+        var settings = builder.Configuration.GetSection("Settings").Get<Settings>();
+        if (settings is not null)
+        {
+            builder.Services.AddSingleton(settings);
+        }
 
         builder.Services.AddAuthentication(options =>
         {

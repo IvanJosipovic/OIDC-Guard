@@ -23,9 +23,7 @@ public class AuthTests : IClassFixture<CustomWebApplicationFactory<Program>>
             new object[]
             {
                 "",
-                new List<Claim>
-                {
-                },
+                new List<Claim>(),
                 HttpStatusCode.OK
             },
             new object[]
@@ -77,16 +75,12 @@ public class AuthTests : IClassFixture<CustomWebApplicationFactory<Program>>
                 },
                 HttpStatusCode.OK
             },
-
             new object[]
             {
                 "?tid=11111111-1111-1111-1111-111111111111",
-                new List<Claim>
-                {
-                },
+                new List<Claim>(),
                 HttpStatusCode.Unauthorized
             },
-
             new object[]
             {
                 "?tid=11111111-1111-1111-1111-111111111111",
@@ -96,16 +90,12 @@ public class AuthTests : IClassFixture<CustomWebApplicationFactory<Program>>
                 },
                 HttpStatusCode.Unauthorized
             },
-
             new object[]
             {
                 "?tid=11111111-1111-1111-1111-111111111111&aud=22222222-2222-2222-2222-222222222222&aud=33333333-3333-3333-3333-333333333333",
-                new List<Claim>
-                {
-                },
+                new List<Claim>(),
                 HttpStatusCode.Unauthorized
             },
-
             new object[]
             {
                 "?tid=11111111-1111-1111-1111-111111111111&aud=22222222-2222-2222-2222-222222222222&aud=33333333-3333-3333-3333-333333333333",
@@ -138,7 +128,7 @@ public class AuthTests : IClassFixture<CustomWebApplicationFactory<Program>>
     [Fact]
     public async Task Unauthorized()
     {
-        var response = await _client.GetAsync($"/auth");
+        var response = await _client.GetAsync("/auth");
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 }
