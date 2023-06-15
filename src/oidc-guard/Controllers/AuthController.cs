@@ -19,7 +19,7 @@ public class AuthController : ControllerBase
 
     [HttpGet("auth")]
     [AllowAnonymous]
-    public async Task<ActionResult> Auth()
+    public ActionResult Auth()
     {
         if (HttpContext.User.Identity?.IsAuthenticated == false)
         {
@@ -81,7 +81,7 @@ public class AuthController : ControllerBase
 
     [HttpGet("signin")]
     [AllowAnonymous]
-    public async Task<ActionResult> Signin([FromQuery] string rd)
+    public ActionResult Signin([FromQuery] string rd)
     {
         return Challenge(new AuthenticationProperties
         {

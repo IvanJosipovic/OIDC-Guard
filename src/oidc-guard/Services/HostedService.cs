@@ -11,10 +11,12 @@ public class HostedService : IHostedService
         _logger = logger;
     }
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    public Task StartAsync(CancellationToken cancellationToken)
     {
         var versionAttribute = Assembly.GetEntryAssembly()!.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
         _logger.LogInformation("Version: {version}", versionAttribute);
+
+        return Task.CompletedTask;
     }
 
     public Task StopAsync(CancellationToken cancellationToken)

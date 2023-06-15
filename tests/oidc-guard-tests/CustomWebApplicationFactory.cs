@@ -14,7 +14,7 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
     {
         builder.ConfigureServices(services =>
         {
-            var settings = services.SingleOrDefault(
+            var settings = services.First(
                 d => d.ServiceType ==
                     typeof(Settings));
 
