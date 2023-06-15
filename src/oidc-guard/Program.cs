@@ -18,6 +18,13 @@ public class Program
             builder.Services.AddSingleton(settings);
         }
 
+        builder.Services.Configure<CookiePolicyOptions>(options =>
+        {
+            options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
+            options.OnAppendCookie = cookieContext => cookieContext.CookieOptions.SameSite = SameSiteMode.Unspecified;
+            options.OnDeleteCookie = cookieContext => cookieContext.CookieOptions.SameSite = SameSiteMode.Unspecified;
+        });
+
         builder.Services.AddAuthentication(options =>
         {
             options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -35,7 +42,6 @@ public class Program
             o.MetadataAddress = settings.OpenIdProviderConfigurationUrl;
             o.ResponseType = OpenIdConnectResponseType.Code;
             o.SaveTokens = settings.SaveTokensInCookie;
-            o.CallbackPath = "/signin-oidc";
         });
 
         builder.Services.AddControllers();
@@ -62,6 +68,8 @@ public class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+
+        app.UseCookiePolicy();
 
         app.UseAuthentication();
         app.UseAuthorization();
