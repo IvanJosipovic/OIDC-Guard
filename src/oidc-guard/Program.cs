@@ -35,6 +35,7 @@ public class Program
             o.MetadataAddress = settings.OpenIdProviderConfigurationUrl;
             o.ResponseType = OpenIdConnectResponseType.Code;
             o.SaveTokens = settings.SaveTokensInCookie;
+            o.CallbackPath = "/signin-oidc";
         });
 
         builder.Services.AddControllers();
