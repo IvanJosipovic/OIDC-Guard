@@ -30,7 +30,7 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           env:
-          - name: "OpenIdProviderConfigurationUrl"
+          - name: "Settings__OpenIdProviderConfigurationUrl"
             value: "{{ .Values.settings.openIdProviderConfigurationUrl }}"
           - name: "Settings__CookieDomain"
             value: "{{ .Values.settings.cookieDomain }}"
