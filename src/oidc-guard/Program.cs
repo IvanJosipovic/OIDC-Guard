@@ -2,9 +2,9 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
-using OIDC_Guard.Services;
+using oidc_guard.Services;
 
-namespace OIDC_Guard;
+namespace oidc_guard;
 
 public class Program
 {
@@ -53,7 +53,6 @@ public class Program
             return next();
         });
 
-        // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();

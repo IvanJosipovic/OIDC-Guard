@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <InvariantGlobalization>true</InvariantGlobalization>
-    <RootNamespace>OIDC_Guard</RootNamespace>
+    <RootNamespace>oidc_guard</RootNamespace>
     <UserSecretsId>a70c2d04-572e-41af-8710-66bacf303453</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>.</DockerfileContext>

@@ -38,6 +38,14 @@ jobs:
       working-directory: src/oidc-guard
       run: docker build -t oidc-guard .
 
+    - name: .NET Test
+      run: dotnet test -c Release --collect:"XPlat Code Coverage"
+
+    - name: Coverage
+      uses: codecov/codecov-action@v3
+      with:
+        file: coverage.cobertura.xml
+
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       with:

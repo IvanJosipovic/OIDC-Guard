@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace OIDC_Guard.Services;
+namespace oidc_guard.Services;
 
 public class HostedService : IHostedService
 {

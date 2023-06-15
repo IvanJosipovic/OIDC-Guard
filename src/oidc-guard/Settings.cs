@@ -1,4 +1,4 @@
-﻿namespace OIDC_Guard;
+﻿namespace oidc_guard;
 
 public class Settings
 {
