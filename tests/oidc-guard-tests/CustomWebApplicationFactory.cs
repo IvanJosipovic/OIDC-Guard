@@ -22,15 +22,13 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
                 services.Remove(settings);
             }
 
-            var oidc = services.FirstOrDefault(
-                d => d.ServiceType ==
-                    typeof(OpenIdConnectHandler));
-            services.Remove(oidc);
-
             var settingsObj = new Settings()
             {
                 CookieDomain = "localhost",
-                CookieName = "oidc-guard"
+                CookieName = "oidc-guard",
+                ClientId = "",
+                ClientSecret = "",
+                OpenIdProviderConfigurationUrl = "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration"
             };
 
             services.AddSingleton(settingsObj);
