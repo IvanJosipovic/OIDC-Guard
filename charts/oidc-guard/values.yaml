@@ -32,7 +32,8 @@ settings:
 
   # Whether access and refresh tokens should be stored in the cookie,
   # disable to reduce the size of the authentication cookie.
-  saveTokensInCookie: true
+  # You may have to set 'large-client-header-buffers: 4 16k' in ingress-nginx
+  saveTokensInCookie: false
 
   # Log Level(Trace, Debug, Information, Warning, Error, Critical, and None)
   logLevel: Information
