@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using oidc_guard;
-using System.Data.Common;
 using WebMotions.Fake.Authentication.JwtBearer;
 
 namespace oidc_guard_tests;
@@ -22,6 +21,11 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
             {
                 services.Remove(settings);
             }
+
+            var oidc = services.FirstOrDefault(
+                d => d.ServiceType ==
+                    typeof(OpenIdConnectHandler));
+            services.Remove(oidc);
 
             var settingsObj = new Settings()
             {
