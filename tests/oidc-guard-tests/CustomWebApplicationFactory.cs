@@ -14,11 +14,14 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
     {
         builder.ConfigureServices(services =>
         {
-            var settings = services.First(
+            var settings = services.FirstOrDefault(
                 d => d.ServiceType ==
                     typeof(Settings));
 
-            services.Remove(settings);
+            if (settings is not null)
+            {
+                services.Remove(settings);
+            }
 
             var settingsObj = new Settings()
             {
