@@ -14,7 +14,10 @@ public partial class Program
         var builder = WebApplication.CreateBuilder(args);
 
         var settings = builder.Configuration.GetSection("Settings").Get<Settings>();
-        builder.Services.AddSingleton(settings!);
+        if (settings is not null)
+        {
+            builder.Services.AddSingleton(settings);
+        }
 
         if (builder.Environment.IsProduction())
         {
