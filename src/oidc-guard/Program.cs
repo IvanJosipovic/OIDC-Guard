@@ -27,9 +27,8 @@ public class Program
 
         builder.Services.Configure<CookiePolicyOptions>(options =>
         {
-            options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
-            options.OnAppendCookie = cookieContext => cookieContext.CookieOptions.SameSite = SameSiteMode.Unspecified;
-            options.OnDeleteCookie = cookieContext => cookieContext.CookieOptions.SameSite = SameSiteMode.Unspecified;
+            options.OnAppendCookie = cookieContext => cookieContext.CookieOptions.SameSite = settings.CookieSameSiteMode;
+            options.OnDeleteCookie = cookieContext => cookieContext.CookieOptions.SameSite = settings.CookieSameSiteMode;
         });
 
         builder.Services.AddAuthentication(options =>

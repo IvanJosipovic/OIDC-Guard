@@ -8,4 +8,5 @@ public class Settings
     public string ClientSecret { get; set; } = null!;
     public string OpenIdProviderConfigurationUrl { get; set; } = null!;
     public bool SaveTokensInCookie { get; set; } = true;
+    public SameSiteMode CookieSameSiteMode { get; set; } = SameSiteMode.Unspecified;
 }

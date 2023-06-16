@@ -42,6 +42,8 @@ spec:
             value: "{{ .Values.settings.clientId }}"
           - name: "Settings__ClientSecret"
             value: "{{ .Values.settings.clientSecret }}"
+          - name: "Settings__CookieSameSiteMode"
+            value: "{{ .Values.settings.cookieSameSiteMode }}"
           - name: "Settings__SaveTokensInCookie"
             value: "{{ .Values.settings.saveTokensInCookie }}"
           - name: "Logging__LogLevel__Default"
