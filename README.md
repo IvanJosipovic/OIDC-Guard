@@ -48,7 +48,6 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress
-  namespace: default
   annotations:
     nginx.ingress.kubernetes.io/auth-url: https://oidc-guard.company.com/auth?tid=11111111-1111-1111-1111-111111111111&aud=22222222-2222-2222-2222-222222222222&aud=33333333-3333-3333-3333-333333333333
     nginx.ingress.kubernetes.io/auth-signin: "https://oidc-guard.company.com/signin?rd=https%3A%2F%2F$host$request_uri"
