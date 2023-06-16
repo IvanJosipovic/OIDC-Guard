@@ -54,7 +54,7 @@ public class AuthController : ControllerBase
                         headerName = value;
                     }
 
-                    var claims = HttpContext.User.Claims.Where(x => x.Type == claimName).ToArray();
+                    var claims = HttpContext.User.Claims.Where(x => x.Type == claimName || x.Properties.Any(y => y.Value == claimName)).ToArray();
 
                     if (claims == null || claims.Length == 0)
                     {

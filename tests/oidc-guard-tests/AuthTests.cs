@@ -1,7 +1,5 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using oidc_guard;
 using System.Dynamic;
@@ -133,22 +131,181 @@ public class AuthTests
         };
     }
 
+    public static IEnumerable<object[]> GetArrayTests()
+    {
+        return new List<object[]>
+        {
+            new object[]
+            {
+                "?groups=foo",
+                new List<Claim>
+                {
+                    new Claim("groups", "foo"),
+                    new Claim("groups", "bar"),
+                    new Claim("groups", "baz"),
+                },
+                HttpStatusCode.OK
+            },
+
+            new object[]
+            {
+                "?groups=bar",
+                new List<Claim>
+                {
+                    new Claim("groups", "foo"),
+                    new Claim("groups", "bar"),
+                    new Claim("groups", "baz"),
+                },
+                HttpStatusCode.OK
+            },
+
+            new object[]
+            {
+                "?groups=baz",
+                new List<Claim>
+                {
+                    new Claim("groups", "foo"),
+                    new Claim("groups", "bar"),
+                    new Claim("groups", "baz"),
+                },
+                HttpStatusCode.OK
+            },
+
+            new object[]
+            {
+                "?groups=baz",
+                new List<Claim>
+                {
+                    new Claim("groups", "foo"),
+                    new Claim("groups", "bar"),
+                },
+                HttpStatusCode.Unauthorized
+            },
+        };
+    }
+
+    public static IEnumerable<object[]> GetInjectClaimsTests()
+    {
+        return new List<object[]>
+        {
+            new object[]
+            {
+                "?tid=11111111-1111-1111-1111-111111111111&inject-claim=tid",
+                new List<Claim>
+                {
+                    new Claim("tid", "11111111-1111-1111-1111-111111111111")
+                },
+                HttpStatusCode.OK,
+                new Dictionary<string, string>()
+                {
+                    { "tid", "11111111-1111-1111-1111-111111111111" }
+                }
+            },
+
+            new object[]
+            {
+                "?tid=11111111-1111-1111-1111-111111111111&inject-claim=tid&inject-claim=aud",
+                new List<Claim>
+                {
+                    new Claim("tid", "11111111-1111-1111-1111-111111111111"),
+                    new Claim("aud", "22222222-2222-2222-2222-222222222222"),
+                },
+                HttpStatusCode.OK,
+                new Dictionary<string, string>()
+                {
+                    { "tid", "11111111-1111-1111-1111-111111111111" },
+                    { "aud", "22222222-2222-2222-2222-222222222222" },
+                }
+            },
+
+            new object[]
+            {
+                "?tid=11111111-1111-1111-1111-111111111111&inject-claim=tid,tenant",
+                new List<Claim>
+                {
+                    new Claim("tid", "11111111-1111-1111-1111-111111111111"),
+                    new Claim("aud", "22222222-2222-2222-2222-222222222222"),
+                },
+                HttpStatusCode.OK,
+                new Dictionary<string, string>()
+                {
+                    { "tenant", "11111111-1111-1111-1111-111111111111" }
+                }
+            },
+
+            new object[]
+            {
+                "?tid=11111111-1111-1111-1111-111111111111&inject-claim=tid,tenant&inject-claim=aud,audiance",
+                new List<Claim>
+                {
+                    new Claim("tid", "11111111-1111-1111-1111-111111111111"),
+                    new Claim("aud", "22222222-2222-2222-2222-222222222222"),
+                },
+                HttpStatusCode.OK,
+                new Dictionary<string, string>()
+                {
+                    { "tenant", "11111111-1111-1111-1111-111111111111" },
+                    { "audiance", "22222222-2222-2222-2222-222222222222" },
+                }
+            },
+
+            new object[]
+            {
+                "?tid=11111111-1111-1111-1111-111111111111&inject-claim=group",
+                new List<Claim>
+                {
+                    new Claim("tid", "11111111-1111-1111-1111-111111111111")
+                },
+                HttpStatusCode.OK
+            },
+
+            new object[]
+            {
+                "?tid=11111111-1111-1111-1111-111111111111&inject-claim=group,group",
+                new List<Claim>
+                {
+                    new Claim("tid", "11111111-1111-1111-1111-111111111111"),
+                    new Claim("aud", "22222222-2222-2222-2222-222222222222"),
+                },
+                HttpStatusCode.OK
+            },
+        };
+    }
+
     [Theory]
     [MemberData(nameof(GetTests))]
-    public async Task Auth(string query, List<Claim> claims, HttpStatusCode status)
+    [MemberData(nameof(GetArrayTests))]
+    [MemberData(nameof(GetInjectClaimsTests))]
+    public async Task Auth(string query, List<Claim> claims, HttpStatusCode status, Dictionary<string, string>? expectedHeaders = null)
     {
         dynamic data = new ExpandoObject();
 
-        foreach (var claim in claims)
+        foreach (var claim in claims.GroupBy(x => x.Type))
         {
-            ((IDictionary<string, object>)data)[claim.Type] = claim.Value;
+            if (claim.Count() > 1)
+            {
+                ((IDictionary<string, object>)data)[claim.First().Type] = claim.Select(x => x.Value);
+            }
+            else
+            {
+                ((IDictionary<string, object>)data)[claim.First().Type] = claim.First().Value;
+            }
         }
+
         var _client = GetClient();
 
         _client.SetFakeBearerToken((object)data);
 
         var response = await _client.GetAsync($"/auth{query}");
         response.StatusCode.Should().Be(status);
+
+        if (expectedHeaders != null)
+        {
+            foreach (var expectedHeader in expectedHeaders)
+            {
+                response.Headers.First(x => x.Key == expectedHeader.Key).Value.First().Should().Be(expectedHeader.Value);
+            }
+        }
     }
 
     [Fact]
