@@ -28,6 +28,14 @@ public class SigninTests
     [InlineData("https://subdmain.bad.com", ".test.com", HttpStatusCode.BadRequest)]
     [InlineData("https://subsubdomain.subdmain.bad.com", ".test.com", HttpStatusCode.BadRequest)]
 
+    [InlineData("https://test.com", "test2.com, test.com", HttpStatusCode.Redirect)]
+    [InlineData("https://subdmain.test.com", "test2.com, .test.com", HttpStatusCode.Redirect)]
+    [InlineData("https://subsubdomain.subdmain.test.com", "test2.com, .test.com", HttpStatusCode.Redirect)]
+
+    [InlineData("https://test.com", "test2.com,test.com", HttpStatusCode.Redirect)]
+    [InlineData("https://subdmain.test.com", "test2.com,.test.com", HttpStatusCode.Redirect)]
+    [InlineData("https://subsubdomain.subdmain.test.com", "test2.com,.test.com", HttpStatusCode.Redirect)]
+
     public async Task Signin(string query, string allowedRedirectDomains, HttpStatusCode status)
     {
         var inMemoryConfigSettings = new Dictionary<string, string>()
@@ -38,19 +46,11 @@ public class SigninTests
             { "Settings:AllowedRedirectDomains", allowedRedirectDomains },
         };
 
-        var factory = new MyWebApplicationFactory<Program>(inMemoryConfigSettings)
-            .WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureServices((webHost, services) =>
-                {
-                });
-            });
+        var factory = new MyWebApplicationFactory<Program>(inMemoryConfigSettings);
 
         factory.ClientOptions.AllowAutoRedirect = false;
 
         var response = await factory.CreateClient().GetAsync($"/signin?rd={HttpUtility.UrlEncode(query)}");
-
-        var cont = await response.Content.ReadAsStringAsync();
 
         response.StatusCode.Should().Be(status);
     }
