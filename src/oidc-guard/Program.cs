@@ -7,17 +7,14 @@ using Microsoft.AspNetCore.DataProtection;
 
 namespace oidc_guard;
 
-public class Program
+public partial class Program
 {
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
         var settings = builder.Configuration.GetSection("Settings").Get<Settings>();
-        if (settings is not null)
-        {
-            builder.Services.AddSingleton(settings);
-        }
+        builder.Services.AddSingleton(settings!);
 
         if (builder.Environment.IsProduction())
         {
@@ -51,7 +48,6 @@ public class Program
         });
 
         builder.Services.AddControllers();
-        builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddHealthChecks();
 

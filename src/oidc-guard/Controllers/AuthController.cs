@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
@@ -11,10 +10,12 @@ namespace oidc_guard.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly ILogger<AuthController> _logger;
+    private readonly Settings settings;
 
-    public AuthController(ILogger<AuthController> logger)
+    public AuthController(ILogger<AuthController> logger, Settings settings)
     {
         _logger = logger;
+        this.settings = settings;
     }
 
     [HttpGet("auth")]
@@ -81,8 +82,13 @@ public class AuthController : ControllerBase
 
     [HttpGet("signin")]
     [AllowAnonymous]
-    public ActionResult Signin([FromQuery] string rd)
+    public ActionResult Signin([FromQuery] Uri rd)
     {
-        return Challenge(new AuthenticationProperties { RedirectUri = rd }, OpenIdConnectDefaults.AuthenticationScheme);
+        if (!string.IsNullOrEmpty(settings.AllowedRedirectDomains))
+        {
+
+        }
+
+        return Challenge(new AuthenticationProperties { RedirectUri = rd.ToString() });
     }
 }

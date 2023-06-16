@@ -1,19 +1,25 @@
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using oidc_guard;
 using System.Dynamic;
 using System.Net;
 using System.Security.Claims;
+using WebMotions.Fake.Authentication.JwtBearer;
 
 namespace oidc_guard_tests;
 
-public class AuthTests : IClassFixture<CustomWebApplicationFactory<Program>>
+public class AuthTests : IClassFixture<AuthWebApplicationFactory<Program>>
 {
-    private readonly CustomWebApplicationFactory<Program> _factory;
+    private readonly AuthWebApplicationFactory<Program> _factory;
     private readonly HttpClient _client;
 
-    public AuthTests(CustomWebApplicationFactory<Program> factory)
+    public AuthTests(AuthWebApplicationFactory<Program> factory)
     {
         _factory = factory;
-        _client = factory.CreateClient();
+        _client = factory.CreateClient(new WebApplicationFactoryClientOptions() { AllowAutoRedirect = true });
     }
 
     public static IEnumerable<object[]> GetTests()
@@ -130,5 +136,41 @@ public class AuthTests : IClassFixture<CustomWebApplicationFactory<Program>>
     {
         var response = await _client.GetAsync("/auth");
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+}
+
+public class AuthWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram> where TProgram : class
+{
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
+        builder.ConfigureAppConfiguration(config =>
+        {
+            config.Sources.Clear();
+
+            var inMemoryConfigSettings = new Dictionary<string, string>()
+            {
+                { "Settings:OpenIdProviderConfigurationUrl", "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration" },
+            };
+            config.AddInMemoryCollection(inMemoryConfigSettings!);
+        });
+
+        builder.ConfigureServices((webHost, services) =>
+        {
+            var settings = services.First(d => d.ServiceType == typeof(Settings));
+            services.Remove(settings);
+
+            var settingsCfg = webHost.Configuration.GetSection("Settings").Get<Settings>();
+            services.AddSingleton(settingsCfg!);
+        });
+
+        builder.ConfigureTestServices(services =>
+        {
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = FakeJwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = FakeJwtBearerDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = FakeJwtBearerDefaults.AuthenticationScheme;
+            }).AddFakeJwtBearer();
+        });
     }
 }
