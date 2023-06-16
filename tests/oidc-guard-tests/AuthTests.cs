@@ -11,15 +11,34 @@ using WebMotions.Fake.Authentication.JwtBearer;
 
 namespace oidc_guard_tests;
 
-public class AuthTests : IClassFixture<AuthWebApplicationFactory<Program>>
+public class AuthTests
 {
-    private readonly AuthWebApplicationFactory<Program> _factory;
-    private readonly HttpClient _client;
-
-    public AuthTests(AuthWebApplicationFactory<Program> factory)
+    HttpClient GetClient()
     {
-        _factory = factory;
-        _client = factory.CreateClient(new WebApplicationFactoryClientOptions() { AllowAutoRedirect = true });
+        var inMemoryConfigSettings = new Dictionary<string, string>()
+        {
+            { "Settings:ClientId", "test" },
+            { "Settings:ClientSecret", "secret" },
+            { "Settings:OpenIdProviderConfigurationUrl", "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration" },
+        };
+
+        var factory = new MyWebApplicationFactory<Program>(inMemoryConfigSettings)
+            .WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureServices((webHost, services) =>
+                {
+                    services.AddAuthentication(options =>
+                    {
+                        options.DefaultScheme = FakeJwtBearerDefaults.AuthenticationScheme;
+                        options.DefaultChallengeScheme = FakeJwtBearerDefaults.AuthenticationScheme;
+                        options.DefaultSignInScheme = FakeJwtBearerDefaults.AuthenticationScheme;
+                    }).AddFakeJwtBearer();
+                });
+            });
+
+        factory.ClientOptions.AllowAutoRedirect = false;
+
+        return factory.CreateDefaultClient();
     }
 
     public static IEnumerable<object[]> GetTests()
@@ -124,6 +143,7 @@ public class AuthTests : IClassFixture<AuthWebApplicationFactory<Program>>
         {
             ((IDictionary<string, object>)data)[claim.Type] = claim.Value;
         }
+        var _client = GetClient();
 
         _client.SetFakeBearerToken((object)data);
 
@@ -134,45 +154,9 @@ public class AuthTests : IClassFixture<AuthWebApplicationFactory<Program>>
     [Fact]
     public async Task Unauthorized()
     {
+        var _client = GetClient();
+
         var response = await _client.GetAsync("/auth");
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-    }
-}
-
-public class AuthWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram> where TProgram : class
-{
-    protected override void ConfigureWebHost(IWebHostBuilder builder)
-    {
-        builder.ConfigureAppConfiguration(config =>
-        {
-            config.Sources.Clear();
-
-            var inMemoryConfigSettings = new Dictionary<string, string>()
-            {
-                { "Settings:OpenIdProviderConfigurationUrl", "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration" },
-            };
-            config.AddInMemoryCollection(inMemoryConfigSettings!);
-        });
-
-        builder.ConfigureServices((webHost, services) =>
-        {
-            var settings = services.FirstOrDefault(d => d.ServiceType == typeof(Settings));
-            if (settings is not null)
-            {
-                services.AddSingleton(settings);
-            }
-            var settingsCfg = webHost.Configuration.GetSection("Settings").Get<Settings>();
-            services.AddSingleton(settingsCfg!);
-        });
-
-        builder.ConfigureTestServices(services =>
-        {
-            services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = FakeJwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = FakeJwtBearerDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = FakeJwtBearerDefaults.AuthenticationScheme;
-            }).AddFakeJwtBearer();
-        });
     }
 }

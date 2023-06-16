@@ -13,11 +13,8 @@ public partial class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        var settings = builder.Configuration.GetSection("Settings").Get<Settings>();
-        if (settings is not null)
-        {
-            builder.Services.AddSingleton(settings);
-        }
+        var settings = builder.Configuration.GetSection("Settings").Get<Settings>()!;
+        builder.Services.AddSingleton(settings);
 
         if (builder.Environment.IsProduction())
         {
@@ -39,20 +36,16 @@ public partial class Program
         .AddCookie(o =>
         {
             o.Cookie.Domain = settings?.CookieDomain;
-            o.Cookie.Name = settings.CookieName;
-        });
-
-        if (!string.IsNullOrEmpty(settings?.OpenIdProviderConfigurationUrl))
+            o.Cookie.Name = settings?.CookieName;
+        })
+        .AddOpenIdConnect(o =>
         {
-            auth.AddOpenIdConnect(o =>
-            {
-                o.ClientId = settings?.ClientId;
-                o.ClientSecret = settings?.ClientSecret;
-                o.MetadataAddress = settings?.OpenIdProviderConfigurationUrl;
-                o.ResponseType = OpenIdConnectResponseType.Code;
-                o.SaveTokens = (settings?.SaveTokensInCookie) ?? false;
-            });
-        }
+            o.ClientId = settings?.ClientId;
+            o.ClientSecret = settings?.ClientSecret;
+            o.MetadataAddress = settings?.OpenIdProviderConfigurationUrl;
+            o.ResponseType = OpenIdConnectResponseType.Code;
+            o.SaveTokens = (settings?.SaveTokensInCookie) ?? false;
+        });
 
         builder.Services.AddControllers();
         builder.Services.AddSwaggerGen();

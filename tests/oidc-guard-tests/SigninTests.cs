@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -29,33 +30,18 @@ public class SigninTests
 
     public async Task Signin(string query, string allowedRedirectDomains, HttpStatusCode status)
     {
-        var factory = new WebApplicationFactory<Program>()
+        var inMemoryConfigSettings = new Dictionary<string, string>()
+        {
+            { "Settings:ClientId", "test" },
+            { "Settings:ClientSecret", "secret" },
+            { "Settings:OpenIdProviderConfigurationUrl", "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration" },
+            { "Settings:AllowedRedirectDomains", allowedRedirectDomains },
+        };
+
+        var factory = new MyWebApplicationFactory<Program>(inMemoryConfigSettings)
             .WithWebHostBuilder(builder =>
             {
-                builder.ConfigureAppConfiguration(config =>
-                {
-                    config.Sources.Clear();
-
-                    var inMemoryConfigSettings = new Dictionary<string, string>()
-                    {
-                        { "Settings:OpenIdProviderConfigurationUrl", "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration" },
-                        { "Settings:AllowedRedirectDomains", allowedRedirectDomains },
-                    };
-                    config.AddInMemoryCollection(inMemoryConfigSettings!);
-                });
-
                 builder.ConfigureServices((webHost, services) =>
-                {
-                    var settings = services.FirstOrDefault(d => d.ServiceType == typeof(Settings));
-                    if (settings is not null)
-                    {
-                        services.AddSingleton(settings);
-                    }
-                    var settingsCfg = webHost.Configuration.GetSection("Settings").Get<Settings>();
-                    services.AddSingleton(settingsCfg!);
-                });
-
-                builder.ConfigureTestServices(services =>
                 {
                 });
             });
