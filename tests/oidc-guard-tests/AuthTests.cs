@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using oidc_guard;
 using System.Dynamic;
@@ -196,9 +194,9 @@ public class AuthTests
                     new Claim("tid", "11111111-1111-1111-1111-111111111111")
                 },
                 HttpStatusCode.OK,
-                new Dictionary<string, string>()
+                new List<Claim>
                 {
-                    { "tid", "11111111-1111-1111-1111-111111111111" }
+                    new Claim("tid", "11111111-1111-1111-1111-111111111111")
                 }
             },
 
@@ -211,10 +209,10 @@ public class AuthTests
                     new Claim("aud", "22222222-2222-2222-2222-222222222222"),
                 },
                 HttpStatusCode.OK,
-                new Dictionary<string, string>()
+                new List<Claim>
                 {
-                    { "tid", "11111111-1111-1111-1111-111111111111" },
-                    { "aud", "22222222-2222-2222-2222-222222222222" },
+                    new Claim("tid", "11111111-1111-1111-1111-111111111111"),
+                    new Claim("aud", "22222222-2222-2222-2222-222222222222"),
                 }
             },
 
@@ -227,9 +225,9 @@ public class AuthTests
                     new Claim("aud", "22222222-2222-2222-2222-222222222222"),
                 },
                 HttpStatusCode.OK,
-                new Dictionary<string, string>()
+                new List<Claim>
                 {
-                    { "tenant", "11111111-1111-1111-1111-111111111111" }
+                    new Claim("tenant", "11111111-1111-1111-1111-111111111111")
                 }
             },
 
@@ -242,10 +240,28 @@ public class AuthTests
                     new Claim("aud", "22222222-2222-2222-2222-222222222222"),
                 },
                 HttpStatusCode.OK,
-                new Dictionary<string, string>()
+                new List<Claim>
                 {
-                    { "tenant", "11111111-1111-1111-1111-111111111111" },
-                    { "audiance", "22222222-2222-2222-2222-222222222222" },
+                    new Claim("tenant", "11111111-1111-1111-1111-111111111111"),
+                    new Claim("audiance", "22222222-2222-2222-2222-222222222222"),
+                }
+            },
+
+            new object[]
+            {
+                "?tid=11111111-1111-1111-1111-111111111111&inject-claim=groups",
+                new List<Claim>
+                {
+                    new Claim("tid", "11111111-1111-1111-1111-111111111111"),
+                    new Claim("aud", "22222222-2222-2222-2222-222222222222"),
+                    new Claim("groups", "admin"),
+                    new Claim("groups", "viewer"),
+                },
+                HttpStatusCode.OK,
+                new List<Claim>
+                {
+                    new Claim("groups", "admin"),
+                    new Claim("groups", "viewer"),
                 }
             },
 
@@ -276,7 +292,7 @@ public class AuthTests
     [MemberData(nameof(GetTests))]
     [MemberData(nameof(GetArrayTests))]
     [MemberData(nameof(GetInjectClaimsTests))]
-    public async Task Auth(string query, List<Claim> claims, HttpStatusCode status, Dictionary<string, string>? expectedHeaders = null)
+    public async Task Auth(string query, List<Claim> claims, HttpStatusCode status, List<Claim>? expectedHeaders = null)
     {
         dynamic data = new ExpandoObject();
 
@@ -303,7 +319,8 @@ public class AuthTests
         {
             foreach (var expectedHeader in expectedHeaders)
             {
-                response.Headers.First(x => x.Key == expectedHeader.Key).Value.First().Should().Be(expectedHeader.Value);
+                var found = response.Headers.Where(x => x.Key == expectedHeader.Type).SelectMany(x => x.Value).Any(x => x == expectedHeader.Value);
+                found.Should().BeTrue();
             }
         }
     }

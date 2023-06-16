@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
+using Microsoft.Extensions.Primitives;
 
 namespace oidc_guard.Controllers;
 
@@ -67,7 +67,7 @@ public class AuthController : ControllerBase
                     }
                     else
                     {
-                        Response.Headers.Add(headerName, JsonSerializer.Serialize(claims.Select(x => x.Value)));
+                        Response.Headers.Add(headerName, new StringValues(claims.Select(x => x.Value).ToArray()));
                     }
                 }
             }
