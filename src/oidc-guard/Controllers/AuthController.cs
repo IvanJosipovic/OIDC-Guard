@@ -83,10 +83,6 @@ public class AuthController : ControllerBase
     [AllowAnonymous]
     public ActionResult Signin([FromQuery] string rd)
     {
-        return Challenge(new AuthenticationProperties
-        {
-            RedirectUri = rd
-        },
-        OpenIdConnectDefaults.AuthenticationScheme);
+        return Challenge(new AuthenticationProperties { RedirectUri = rd }, OpenIdConnectDefaults.AuthenticationScheme);
     }
 }
