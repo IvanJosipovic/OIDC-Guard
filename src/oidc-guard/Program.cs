@@ -31,24 +31,28 @@ public partial class Program
             options.OnDeleteCookie = cookieContext => cookieContext.CookieOptions.SameSite = settings.CookieSameSiteMode;
         });
 
-        builder.Services.AddAuthentication(options =>
+        var auth = builder.Services.AddAuthentication(options =>
         {
             options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
         })
         .AddCookie(o =>
         {
-            o.Cookie.Domain = settings.CookieDomain;
+            o.Cookie.Domain = settings?.CookieDomain;
             o.Cookie.Name = settings.CookieName;
-        })
-        .AddOpenIdConnect(o =>
-        {
-            o.ClientId = settings.ClientId;
-            o.ClientSecret = settings.ClientSecret;
-            o.MetadataAddress = settings.OpenIdProviderConfigurationUrl;
-            o.ResponseType = OpenIdConnectResponseType.Code;
-            o.SaveTokens = settings.SaveTokensInCookie;
         });
+
+        if (!string.IsNullOrEmpty(settings?.OpenIdProviderConfigurationUrl))
+        {
+            auth.AddOpenIdConnect(o =>
+            {
+                o.ClientId = settings?.ClientId;
+                o.ClientSecret = settings?.ClientSecret;
+                o.MetadataAddress = settings?.OpenIdProviderConfigurationUrl;
+                o.ResponseType = OpenIdConnectResponseType.Code;
+                o.SaveTokens = (settings?.SaveTokensInCookie) ?? false;
+            });
+        }
 
         builder.Services.AddControllers();
         builder.Services.AddSwaggerGen();

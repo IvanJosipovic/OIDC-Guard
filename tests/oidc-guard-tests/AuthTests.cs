@@ -156,9 +156,11 @@ public class AuthWebApplicationFactory<TProgram> : WebApplicationFactory<TProgra
 
         builder.ConfigureServices((webHost, services) =>
         {
-            var settings = services.First(d => d.ServiceType == typeof(Settings));
-            services.Remove(settings);
-
+            var settings = services.FirstOrDefault(d => d.ServiceType == typeof(Settings));
+            if (settings is not null)
+            {
+                services.AddSingleton(settings);
+            }
             var settingsCfg = webHost.Configuration.GetSection("Settings").Get<Settings>();
             services.AddSingleton(settingsCfg!);
         });
