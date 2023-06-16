@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 using oidc_guard.Services;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace oidc_guard;
 
@@ -16,6 +17,12 @@ public class Program
         if (settings is not null)
         {
             builder.Services.AddSingleton(settings);
+        }
+
+        if (builder.Environment.IsProduction())
+        {
+            builder.Services.AddDataProtection()
+                .PersistKeysToFileSystem(new DirectoryInfo("/data-protection"));
         }
 
         builder.Services.Configure<CookiePolicyOptions>(options =>

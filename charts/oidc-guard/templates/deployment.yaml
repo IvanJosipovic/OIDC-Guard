@@ -30,6 +30,8 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Production
           - name: "Settings__OpenIdProviderConfigurationUrl"
             value: "{{ .Values.settings.openIdProviderConfigurationUrl }}"
           - name: "Settings__CookieDomain"
@@ -68,9 +70,14 @@ spec:
           volumeMounts:
             - mountPath: /tmp
               name: tmp-volume
+            - mountPath: /data-protection
+              name: data-protection
       volumes:
         - name: tmp-volume
           emptyDir: {}
+        - name: data-protection
+          persistentVolumeClaim:
+            claimName: {{ include "oidc-guard.fullname" . }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
