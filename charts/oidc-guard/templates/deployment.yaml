@@ -34,6 +34,8 @@ spec:
             value: Production
           - name: "Settings__OpenIdProviderConfigurationUrl"
             value: "{{ .Values.settings.openIdProviderConfigurationUrl }}"
+          - name: "Settings__AllowedRedirectDomains"
+            value: "{{ .Values.settings.allowedRedirectDomains }}"
           - name: "Settings__CookieDomain"
             value: "{{ .Values.settings.cookieDomain }}"
           - name: "Settings__CookieName"

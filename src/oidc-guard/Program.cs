@@ -7,17 +7,14 @@ using Microsoft.AspNetCore.DataProtection;
 
 namespace oidc_guard;
 
-public class Program
+public partial class Program
 {
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        var settings = builder.Configuration.GetSection("Settings").Get<Settings>();
-        if (settings is not null)
-        {
-            builder.Services.AddSingleton(settings);
-        }
+        var settings = builder.Configuration.GetSection("Settings").Get<Settings>()!;
+        builder.Services.AddSingleton(settings);
 
         if (builder.Environment.IsProduction())
         {
@@ -31,27 +28,26 @@ public class Program
             options.OnDeleteCookie = cookieContext => cookieContext.CookieOptions.SameSite = settings.CookieSameSiteMode;
         });
 
-        builder.Services.AddAuthentication(options =>
+        var auth = builder.Services.AddAuthentication(options =>
         {
             options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
         })
         .AddCookie(o =>
         {
-            o.Cookie.Domain = settings.CookieDomain;
-            o.Cookie.Name = settings.CookieName;
+            o.Cookie.Domain = settings?.CookieDomain;
+            o.Cookie.Name = settings?.CookieName;
         })
         .AddOpenIdConnect(o =>
         {
-            o.ClientId = settings.ClientId;
-            o.ClientSecret = settings.ClientSecret;
-            o.MetadataAddress = settings.OpenIdProviderConfigurationUrl;
+            o.ClientId = settings?.ClientId;
+            o.ClientSecret = settings?.ClientSecret;
+            o.MetadataAddress = settings?.OpenIdProviderConfigurationUrl;
             o.ResponseType = OpenIdConnectResponseType.Code;
-            o.SaveTokens = settings.SaveTokensInCookie;
+            o.SaveTokens = (settings?.SaveTokensInCookie) ?? false;
         });
 
         builder.Services.AddControllers();
-        builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddHealthChecks();
 

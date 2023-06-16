@@ -18,6 +18,11 @@ settings:
   # OpenID Provider Configuration Url for your Identity Provider
   openIdProviderConfigurationUrl: "https://login.microsoftonline.com/{ClientID}/v2.0/.well-known/openid-configuration"
 
+  # Domains which the sign-in process will be allowed to redirect to
+  # Use a dot before the domain to allow subdomains (ie .test.com)
+  # Allows multiple domains with a comma delimiter (test.com,.secure.com)
+  allowedRedirectDomains: ""
+
   # Cookie Name
   cookieName: "oidc-guard"
 

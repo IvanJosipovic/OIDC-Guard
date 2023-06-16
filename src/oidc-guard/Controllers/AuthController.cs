@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
@@ -11,10 +10,12 @@ namespace oidc_guard.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly ILogger<AuthController> _logger;
+    private readonly Settings settings;
 
-    public AuthController(ILogger<AuthController> logger)
+    public AuthController(ILogger<AuthController> logger, Settings settings)
     {
         _logger = logger;
+        this.settings = settings;
     }
 
     [HttpGet("auth")]
@@ -53,7 +54,7 @@ public class AuthController : ControllerBase
                         headerName = value;
                     }
 
-                    var claims = HttpContext.User.Claims.Where(x => x.Type == claimName).ToArray();
+                    var claims = HttpContext.User.Claims.Where(x => x.Type == claimName || x.Properties.Any(y => y.Value == claimName)).ToArray();
 
                     if (claims == null || claims.Length == 0)
                     {
@@ -81,8 +82,32 @@ public class AuthController : ControllerBase
 
     [HttpGet("signin")]
     [AllowAnonymous]
-    public ActionResult Signin([FromQuery] string rd)
+    public ActionResult Signin([FromQuery] Uri rd)
     {
-        return Challenge(new AuthenticationProperties { RedirectUri = rd }, OpenIdConnectDefaults.AuthenticationScheme);
+        if (!string.IsNullOrEmpty(settings.AllowedRedirectDomains) && rd.IsAbsoluteUri)
+        {
+            var allowedDomains = settings.AllowedRedirectDomains.Replace(" ", "").Split(',');
+            var found = false;
+            foreach (var allowedDomain in allowedDomains)
+            {
+                if (allowedDomain[0] == '.' && rd.DnsSafeHost.EndsWith(allowedDomain))
+                {
+                    found = true;
+                    break;
+                }
+                else if (rd.DnsSafeHost == allowedDomain)
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (found == false)
+            {
+                return BadRequest();
+            }
+        }
+
+        return Challenge(new AuthenticationProperties { RedirectUri = rd.ToString() });
     }
 }
