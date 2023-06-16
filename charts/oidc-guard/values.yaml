@@ -24,14 +24,14 @@ settings:
   # Cookie Domain
   cookieDomain: "test.com"
 
+  # Cookie Same Site Mode (Unspecified, None, Lax, Strict)
+  cookieSameSiteMode: "Unspecified"
+
   # Client Id
   clientId: ""
 
   # Client Secret
   clientSecret: ""
-
-  # Cookie Same Site Mode (Unspecified, None, Lax, Strict)
-  cookieSameSiteMode: "Unspecified"
 
   # Whether access and refresh tokens should be stored in the cookie,
   # disable to reduce the size of the authentication cookie.
