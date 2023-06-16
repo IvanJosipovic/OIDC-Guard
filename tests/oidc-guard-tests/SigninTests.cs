@@ -13,6 +13,8 @@ public class SigninTests
 {
     [Theory]
     [InlineData("/test", "", HttpStatusCode.Redirect)]
+    [InlineData("/test", "test.com", HttpStatusCode.Redirect)]
+
     [InlineData("https://test.com", "", HttpStatusCode.Redirect)]
     [InlineData("https://subdmain.test.com", "", HttpStatusCode.Redirect)]
     [InlineData("https://subsubdomain.subdmain.test.com", "", HttpStatusCode.Redirect)]

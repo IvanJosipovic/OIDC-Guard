@@ -84,9 +84,28 @@ public class AuthController : ControllerBase
     [AllowAnonymous]
     public ActionResult Signin([FromQuery] Uri rd)
     {
-        if (!string.IsNullOrEmpty(settings.AllowedRedirectDomains))
+        if (!string.IsNullOrEmpty(settings.AllowedRedirectDomains) && rd.IsAbsoluteUri)
         {
+            var allowedDomains = settings.AllowedRedirectDomains.Replace(" ", "").Split(',');
+            var found = false;
+            foreach (var allowedDomain in allowedDomains)
+            {
+                if (allowedDomain[0] == '.' && rd.DnsSafeHost.EndsWith(allowedDomain))
+                {
+                    found = true;
+                    break;
+                }
+                else if (rd.DnsSafeHost == allowedDomain)
+                {
+                    found = true;
+                    break;
+                }
+            }
 
+            if (found == false)
+            {
+                return BadRequest();
+            }
         }
 
         return Challenge(new AuthenticationProperties { RedirectUri = rd.ToString() });
