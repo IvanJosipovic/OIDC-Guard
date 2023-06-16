@@ -50,7 +50,7 @@ metadata:
   name: ingress
   annotations:
     nginx.ingress.kubernetes.io/auth-url: https://oidc-guard.company.com/auth?tid=11111111-1111-1111-1111-111111111111&aud=22222222-2222-2222-2222-222222222222&aud=33333333-3333-3333-3333-333333333333
-    nginx.ingress.kubernetes.io/auth-signin: "https://oidc-guard.company.com/signin?rd=https%3A%2F%2F$host$request_uri"
+    nginx.ingress.kubernetes.io/auth-signin: "https://oidc-guard.company.com/signin?rd=$scheme://$host$request_uri"
 spec:
 ```
 
@@ -109,7 +109,7 @@ metadata:
   name: app
   annotations:
     nginx.ingress.kubernetes.io/auth-url: https://oidc-guard.company.com/auth?aud=11111111-11111-1111111111&inject-claim=https%3A%2F%2Fexample.com%2Fgroups,groups&inject-claim=scope
-    nginx.ingress.kubernetes.io/auth-signin: "https://oidc-guard.company.com/signin?rd=https%3A%2F%2F$host$request_uri"
+    nginx.ingress.kubernetes.io/auth-signin: "https://oidc-guard.company.com/signin?rd=$scheme://$host$request_uri"
     nginx.ingress.kubernetes.io/configuration-snippet: |
       auth_request_set $groups $upstream_http_groups;
       auth_request_set $scope $upstream_http_scope;
