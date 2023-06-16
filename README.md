@@ -109,7 +109,8 @@ kind: Ingress
 metadata:
   name: app
   annotations:
-    nginx.ingress.kubernetes.io/auth-url: http://ingress-nginx-validate-jwt.ingress-nginx-validate-jwt.svc.cluster.local:8080/auth?aud=11111111-11111-1111111111&inject-claim=https%3A%2F%2Fexample.com%2Fgroups,groups&inject-claim=scope
+    nginx.ingress.kubernetes.io/auth-url: https://oidc-guard.company.com/auth?aud=11111111-11111-1111111111&inject-claim=https%3A%2F%2Fexample.com%2Fgroups,groups&inject-claim=scope
+    nginx.ingress.kubernetes.io/auth-signin: "https://oidc-guard.company.com/signin?rd=https%3A%2F%2F$host$request_uri"
     nginx.ingress.kubernetes.io/configuration-snippet: |
       auth_request_set $groups $upstream_http_groups;
       auth_request_set $scope $upstream_http_scope;
