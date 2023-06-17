@@ -23,9 +23,10 @@ public class AuthController : ControllerBase
     public ActionResult Auth()
     {
         if (settings.SkipAuthPreflight &&
-            HttpContext.Request.Headers["X-Original-Method"].FirstOrDefault() == "OPTIONS" &&
+            HttpContext.Request.Headers[CustomHeaderNames.OriginalMethod].FirstOrDefault() == "OPTIONS" &&
             !StringValues.IsNullOrEmpty(HttpContext.Request.Headers.AccessControlRequestHeaders) &&
-            !StringValues.IsNullOrEmpty(HttpContext.Request.Headers.AccessControlRequestMethod))
+            !StringValues.IsNullOrEmpty(HttpContext.Request.Headers.AccessControlRequestMethod) &&
+            !StringValues.IsNullOrEmpty(HttpContext.Request.Headers.Origin))
         {
             return Ok();
         }

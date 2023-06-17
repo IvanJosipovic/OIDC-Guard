@@ -7,7 +7,6 @@ using System.Security.Claims;
 using WebMotions.Fake.Authentication.JwtBearer;
 
 namespace oidc_guard_tests;
-
 public class AuthTests
 {
     static HttpClient GetClient(bool SkipAuthPreflight = false)
@@ -334,7 +333,8 @@ public class AuthTests
     {
         var _client = GetClient(true);
 
-        _client.DefaultRequestHeaders.TryAddWithoutValidation("x-original-method", "OPTIONS");
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Origin, "localhost");
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, "OPTIONS");
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestHeaders, "origin, x-requested-with");
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestMethod, "DELETE");
 
@@ -347,7 +347,7 @@ public class AuthTests
     {
         var _client = GetClient(false);
 
-        _client.DefaultRequestHeaders.TryAddWithoutValidation("x-original-method", "OPTIONS");
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, "OPTIONS");
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestHeaders, "origin, x-requested-with");
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestMethod, "DELETE");
 
@@ -360,7 +360,8 @@ public class AuthTests
     {
         var _client = GetClient(true);
 
-        _client.DefaultRequestHeaders.TryAddWithoutValidation("x-original-method", "OPTIONS");
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Origin, "localhost");
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, "OPTIONS");
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestHeaders, "origin, x-requested-with");
 
         var response = await _client.GetAsync("/auth");
@@ -372,7 +373,8 @@ public class AuthTests
     {
         var _client = GetClient(true);
 
-        _client.DefaultRequestHeaders.TryAddWithoutValidation("x-original-method", "OPTIONS");
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Origin, "localhost");
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, "OPTIONS");
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestMethod, "DELETE");
 
         var response = await _client.GetAsync("/auth");
