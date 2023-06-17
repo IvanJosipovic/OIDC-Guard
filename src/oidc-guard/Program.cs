@@ -63,7 +63,6 @@ public partial class Program
         });
 
         builder.Services.AddControllers();
-        builder.Services.AddSwaggerGen();
         builder.Services.AddHealthChecks();
 
         builder.Services.Configure<ForwardedHeadersOptions>(options => options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto);
@@ -81,12 +80,6 @@ public partial class Program
             context.Request.Scheme = "https";
             return next();
         });
-
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
 
         app.UseCookiePolicy();
 
