@@ -10,6 +10,6 @@ public class Settings
     public bool SaveTokensInCookie { get; set; } = true;
     public SameSiteMode CookieSameSiteMode { get; set; } = SameSiteMode.Unspecified;
     public string[] AllowedRedirectDomains { get; set; } = null!;
-    public bool SkipAuthPreflight { get; set; } = false;
+    public bool SkipAuthPreflight { get; set; }
     public LogLevel LogLevel { get; set; }
 }
