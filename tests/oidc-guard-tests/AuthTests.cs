@@ -9,7 +9,7 @@ namespace oidc_guard_tests;
 
 public class AuthTests
 {
-    HttpClient GetClient()
+    static HttpClient GetClient()
     {
         var inMemoryConfigSettings = new Dictionary<string, string>()
         {
@@ -298,14 +298,7 @@ public class AuthTests
 
         foreach (var claim in claims.GroupBy(x => x.Type))
         {
-            if (claim.Count() > 1)
-            {
-                ((IDictionary<string, object>)data)[claim.First().Type] = claim.Select(x => x.Value);
-            }
-            else
-            {
-                ((IDictionary<string, object>)data)[claim.First().Type] = claim.First().Value;
-            }
+            ((IDictionary<string, object>)data)[claim.First().Type] = claim.Select(x => x.Value);
         }
 
         var _client = GetClient();
