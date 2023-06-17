@@ -61,7 +61,9 @@ spec:
             - mountPath: /data-protection
               name: data-protection
             - name: appsettings-volume
-              mountPath: /app
+              mountPath: /app/appsettings.Production.json
+              subPath: appsettings.Production.json
+              readOnly: true
       volumes:
         - name: tmp-volume
           emptyDir: {}
