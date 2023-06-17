@@ -9,7 +9,7 @@ using WebMotions.Fake.Authentication.JwtBearer;
 namespace oidc_guard_tests;
 public class AuthTests
 {
-    static HttpClient GetClient(bool SkipAuthPreflight = false)
+    private static HttpClient GetClient(bool SkipAuthPreflight = false)
     {
         var inMemoryConfigSettings = new Dictionary<string, string?>()
         {

@@ -49,6 +49,7 @@ public partial class Program
             o.ClientId = settings?.ClientId;
             o.ClientSecret = settings?.ClientSecret;
             o.MetadataAddress = settings?.OpenIdProviderConfigurationUrl;
+            o.NonceCookie.Name = "oidc-guard";
             o.ResponseType = OpenIdConnectResponseType.Code;
             o.SaveTokens = (settings?.SaveTokensInCookie) ?? false;
         });
