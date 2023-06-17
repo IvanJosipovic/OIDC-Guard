@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Net.Http.Headers;
 using oidc_guard;
 using System.Dynamic;
 using System.Net;
@@ -9,13 +10,14 @@ namespace oidc_guard_tests;
 
 public class AuthTests
 {
-    static HttpClient GetClient()
+    static HttpClient GetClient(bool SkipAuthPreflight = false)
     {
         var inMemoryConfigSettings = new Dictionary<string, string?>()
         {
             { "Settings:ClientId", "test" },
             { "Settings:ClientSecret", "secret" },
             { "Settings:OpenIdProviderConfigurationUrl", "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration" },
+            { "Settings:SkipAuthPreflight", SkipAuthPreflight.ToString() },
         };
 
         var factory = new MyWebApplicationFactory<Program>(inMemoryConfigSettings)
@@ -322,6 +324,56 @@ public class AuthTests
     public async Task Unauthorized()
     {
         var _client = GetClient();
+
+        var response = await _client.GetAsync("/auth");
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task SkipAuthPreflight()
+    {
+        var _client = GetClient(true);
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation("x-original-method", "OPTIONS");
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestHeaders, "origin, x-requested-with");
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestMethod, "DELETE");
+
+        var response = await _client.GetAsync("/auth");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task SkipAuthPreflightDisabled()
+    {
+        var _client = GetClient(false);
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation("x-original-method", "OPTIONS");
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestHeaders, "origin, x-requested-with");
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestMethod, "DELETE");
+
+        var response = await _client.GetAsync("/auth");
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task SkipAuthPreflightMissingMethod()
+    {
+        var _client = GetClient(true);
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation("x-original-method", "OPTIONS");
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestHeaders, "origin, x-requested-with");
+
+        var response = await _client.GetAsync("/auth");
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task SkipAuthPreflightMissingRequestHeaders()
+    {
+        var _client = GetClient(true);
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation("x-original-method", "OPTIONS");
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestMethod, "DELETE");
 
         var response = await _client.GetAsync("/auth");
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);

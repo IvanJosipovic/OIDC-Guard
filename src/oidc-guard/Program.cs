@@ -55,8 +55,8 @@ public partial class Program
 
         builder.Services.AddHttpLogging(logging =>
         {
-            logging.RequestHeaders.Add("x-original-method");
-            logging.RequestHeaders.Add("x-original-url");
+            logging.RequestHeaders.Add("X-Original-Method");
+            logging.RequestHeaders.Add("X-Original-Url");
             logging.RequestHeaders.Add("X-Scheme");
             logging.RequestHeaders.Add("Access-Control-Request-Headers");
             logging.RequestHeaders.Add("Access-Control-Request-Method");

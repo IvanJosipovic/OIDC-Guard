@@ -44,6 +44,10 @@ settings:
   # You may have to set 'large-client-header-buffers: 4 16k' in ingress-nginx
   saveTokensInCookie: false
 
+  # Skip Authentication for CORS Preflight requests
+  # https://developer.mozilla.org/en-US/docs/Glossary/Preflight_request
+  skipAuthPreflight: false
+
   # Log Level(Trace, Debug, Information, Warning, Error, Critical, and None)
   logLevel: Information
 
