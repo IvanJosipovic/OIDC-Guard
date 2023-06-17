@@ -5,6 +5,27 @@ entries:
       artifacthub.io/category: security
       artifacthub.io/license: MIT
     apiVersion: v2
+    appVersion: 1.0.0-alpha.21
+    created: "2023-06-17T05:34:45.973454284Z"
+    description: OpenID Connect (OIDC) Proxy Server for securing Kubernetes Ingress
+    digest: fb11c84db00e438882548c103059848b9fd65b79f4015fb4cdd346232440f601
+    home: https://github.com/IvanJosipovic/oidc-guard
+    keywords:
+    - ingress
+    - nginx
+    - jwt
+    - oidc
+    name: oidc-guard
+    sources:
+    - https://github.com/IvanJosipovic/oidc-guard
+    type: application
+    urls:
+    - https://github.com/IvanJosipovic/OIDC-Guard/releases/download/oidc-guard-1.0.0-alpha.21/oidc-guard-1.0.0-alpha.21.tgz
+    version: 1.0.0-alpha.21
+  - annotations:
+      artifacthub.io/category: security
+      artifacthub.io/license: MIT
+    apiVersion: v2
     appVersion: 1.0.0-alpha.20
     created: "2023-06-17T03:24:51.052700301Z"
     description: OpenID Connect (OIDC) Proxy Server for securing Kubernetes Ingress
@@ -421,4 +442,4 @@ entries:
     urls:
     - https://github.com/IvanJosipovic/OIDC-Guard/releases/download/oidc-guard-1.0.0-alpha.1/oidc-guard-1.0.0-alpha.1.tgz
     version: 1.0.0-alpha.1
-generated: "2023-06-17T03:24:51.052965704Z"
+generated: "2023-06-17T05:34:45.973793886Z"
