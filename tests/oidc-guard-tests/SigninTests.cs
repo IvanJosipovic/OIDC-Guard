@@ -33,6 +33,9 @@ public class SigninTests
     [InlineData("https://subdmain.bad.com", new[] { ".test.com" }, HttpStatusCode.BadRequest)]
     [InlineData("https://subsubdomain.subdmain.bad.com", new[] { ".test.com" }, HttpStatusCode.BadRequest)]
 
+    [InlineData("https://test.com", new[] { "Test.com" }, HttpStatusCode.Redirect)]
+    [InlineData("https://subdmain.test.com", new[] { ".Test.com" }, HttpStatusCode.Redirect)]
+
     public async Task Signin(string query, string[]? allowedRedirectDomains, HttpStatusCode status)
     {
         var inMemoryConfigSettings = new Dictionary<string, string?>()

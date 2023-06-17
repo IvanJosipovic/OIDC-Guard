@@ -98,12 +98,12 @@ public class AuthController : ControllerBase
             var found = false;
             foreach (var allowedDomain in settings.AllowedRedirectDomains)
             {
-                if (allowedDomain[0] == '.' && rd.DnsSafeHost.EndsWith(allowedDomain))
+                if (allowedDomain[0] == '.' && rd.DnsSafeHost.EndsWith(allowedDomain, StringComparison.InvariantCultureIgnoreCase))
                 {
                     found = true;
                     break;
                 }
-                else if (rd.DnsSafeHost == allowedDomain)
+                else if (rd.DnsSafeHost.Equals(allowedDomain, StringComparison.InvariantCultureIgnoreCase))
                 {
                     found = true;
                     break;
