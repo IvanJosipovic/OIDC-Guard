@@ -32,10 +32,6 @@ spec:
           env:
           - name: ASPNETCORE_ENVIRONMENT
             value: Production
-          - name: "Logging__LogLevel__Default"
-            value: "{{ .Values.settings.logLevel }}"
-          - name: "Logging__LogLevel__Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware"
-            value: "{{ .Values.settings.logLevel }}"
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"

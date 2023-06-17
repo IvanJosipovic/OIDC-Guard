@@ -22,6 +22,12 @@ public partial class Program
                 .PersistKeysToFileSystem(new DirectoryInfo("/data-protection"));
         }
 
+        builder.Logging.AddFilter("Default", settings.LogLevel);
+        builder.Logging.AddFilter("Microsoft.AspNetCore", LogLevel.Warning);
+        builder.Logging.AddFilter("Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware", settings.LogLevel);
+        builder.Logging.AddFilter("Microsoft.Extensions.Diagnostics.HealthChecks", LogLevel.Warning);
+        builder.Logging.AddFilter("Microsoft.Hosting.Lifetime", LogLevel.Warning);
+
         builder.Services.Configure<CookiePolicyOptions>(options =>
         {
             options.OnAppendCookie = cookieContext => cookieContext.CookieOptions.SameSite = settings.CookieSameSiteMode;
@@ -56,6 +62,8 @@ public partial class Program
         builder.Services.AddHostedService<HostedService>();
 
         var app = builder.Build();
+
+        app.UseHttpLogging();
 
         app.UseForwardedHeaders();
 
