@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 using oidc_guard.Services;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.HttpLogging;
 
 namespace oidc_guard;
 
@@ -51,6 +52,13 @@ public partial class Program
             o.MetadataAddress = settings?.OpenIdProviderConfigurationUrl;
             o.ResponseType = OpenIdConnectResponseType.Code;
             o.SaveTokens = (settings?.SaveTokensInCookie) ?? false;
+        });
+
+        builder.Services.AddHttpLogging(logging =>
+        {
+            logging.RequestHeaders.Add("x-original-method");
+            logging.RequestHeaders.Add("x-original-url");
+
         });
 
         builder.Services.AddControllers();
