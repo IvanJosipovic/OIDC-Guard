@@ -84,11 +84,10 @@ public class AuthController : ControllerBase
     [AllowAnonymous]
     public ActionResult Signin([FromQuery] Uri rd)
     {
-        if (!string.IsNullOrEmpty(settings.AllowedRedirectDomains) && rd.IsAbsoluteUri)
+        if (settings.AllowedRedirectDomains?.Length > 0 && rd.IsAbsoluteUri)
         {
-            var allowedDomains = settings.AllowedRedirectDomains.Replace(" ", "").Split(',');
             var found = false;
-            foreach (var allowedDomain in allowedDomains)
+            foreach (var allowedDomain in settings.AllowedRedirectDomains)
             {
                 if (allowedDomain[0] == '.' && rd.DnsSafeHost.EndsWith(allowedDomain))
                 {

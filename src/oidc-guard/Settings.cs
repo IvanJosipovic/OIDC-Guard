@@ -9,5 +9,5 @@ public class Settings
     public string OpenIdProviderConfigurationUrl { get; set; } = null!;
     public bool SaveTokensInCookie { get; set; } = true;
     public SameSiteMode CookieSameSiteMode { get; set; } = SameSiteMode.Unspecified;
-    public string AllowedRedirectDomains { get; set; } = null!;
+    public string[] AllowedRedirectDomains { get; set; } = null!;
 }

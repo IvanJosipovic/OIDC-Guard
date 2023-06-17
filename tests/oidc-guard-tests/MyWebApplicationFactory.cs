@@ -7,9 +7,9 @@ namespace oidc_guard_tests;
 
 internal class MyWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPoint> where TEntryPoint : class
 {
-    private readonly Dictionary<string, string> inMemoryConfigSettings = new();
+    private readonly Dictionary<string, string?> inMemoryConfigSettings = new();
 
-    public MyWebApplicationFactory(Dictionary<string, string> inMemoryConfigSettings)
+    public MyWebApplicationFactory(Dictionary<string, string?> inMemoryConfigSettings)
     {
         this.inMemoryConfigSettings = inMemoryConfigSettings;
     }

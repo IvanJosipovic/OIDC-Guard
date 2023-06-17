@@ -20,8 +20,9 @@ settings:
 
   # Domains which the sign-in process will be allowed to redirect to
   # Use a dot before the domain to allow subdomains (ie .test.com)
-  # Allows multiple domains with a comma delimiter (test.com,.secure.com)
-  allowedRedirectDomains: ""
+  allowedRedirectDomains: []
+  # - test.com
+  # - .test.com
 
   # Cookie Name
   cookieName: "oidc-guard"

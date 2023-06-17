@@ -11,7 +11,7 @@ public class AuthTests
 {
     static HttpClient GetClient()
     {
-        var inMemoryConfigSettings = new Dictionary<string, string>()
+        var inMemoryConfigSettings = new Dictionary<string, string?>()
         {
             { "Settings:ClientId", "test" },
             { "Settings:ClientSecret", "secret" },
