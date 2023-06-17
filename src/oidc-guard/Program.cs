@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 using oidc_guard.Services;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.HttpLogging;
 
 namespace oidc_guard;
 
@@ -58,7 +57,9 @@ public partial class Program
         {
             logging.RequestHeaders.Add("x-original-method");
             logging.RequestHeaders.Add("x-original-url");
-
+            logging.RequestHeaders.Add("X-Scheme");
+            logging.RequestHeaders.Add("Access-Control-Request-Headers");
+            logging.RequestHeaders.Add("Access-Control-Request-Method");
         });
 
         builder.Services.AddControllers();
