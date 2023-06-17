@@ -5,7 +5,9 @@ metadata:
   labels:
     {{- include "oidc-guard.labels" . | nindent 4 }}
 spec:
+{{- if .Values.storageClassName }}
   storageClassName: {{ .Values.storageClassName }}
+{{- end }}
   accessModes:
     - {{ .Values.storageAccessMode }}
   resources:
