@@ -32,22 +32,6 @@ spec:
           env:
           - name: ASPNETCORE_ENVIRONMENT
             value: Production
-          - name: "Settings__OpenIdProviderConfigurationUrl"
-            value: "{{ .Values.settings.openIdProviderConfigurationUrl }}"
-          - name: "Settings__AllowedRedirectDomains"
-            value: "{{ .Values.settings.allowedRedirectDomains }}"
-          - name: "Settings__CookieDomain"
-            value: "{{ .Values.settings.cookieDomain }}"
-          - name: "Settings__CookieName"
-            value: "{{ .Values.settings.cookieName }}"
-          - name: "Settings__ClientId"
-            value: "{{ .Values.settings.clientId }}"
-          - name: "Settings__ClientSecret"
-            value: "{{ .Values.settings.clientSecret }}"
-          - name: "Settings__CookieSameSiteMode"
-            value: "{{ .Values.settings.cookieSameSiteMode }}"
-          - name: "Settings__SaveTokensInCookie"
-            value: "{{ .Values.settings.saveTokensInCookie }}"
           - name: "Logging__LogLevel__Default"
             value: "{{ .Values.settings.logLevel }}"
           securityContext:
@@ -76,12 +60,17 @@ spec:
               name: tmp-volume
             - mountPath: /data-protection
               name: data-protection
+            - name: appsettings-volume
+              mountPath: /app
       volumes:
         - name: tmp-volume
           emptyDir: {}
         - name: data-protection
           persistentVolumeClaim:
             claimName: {{ include "oidc-guard.fullname" . }}
+        - name: appsettings-volume
+          secret:
+            secretName: {{ include "oidc-guard.fullname" . }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
