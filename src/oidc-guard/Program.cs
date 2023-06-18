@@ -60,6 +60,7 @@ public partial class Program
             o.MetadataAddress = settings.OpenIdProviderConfigurationUrl;
             o.TokenValidationParameters.ValidateAudience = settings.ValidateAudience;
             o.TokenValidationParameters.ValidateIssuer = settings.ValidateIssuer;
+            o.TokenValidationParameters.ValidIssuers = settings.ValidIssuers;
         })
         .AddPolicyScheme(AuthenticationScheme, AuthenticationScheme, options =>
         {

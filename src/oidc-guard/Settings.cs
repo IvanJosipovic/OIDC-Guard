@@ -13,5 +13,6 @@ public class Settings
     public string? CookieDomain { get; set; }
     public string CookieName { get; set; } = "oidc-guard";
     public string OpenIdProviderConfigurationUrl { get; set; } = null!;
-    public string[] AllowedRedirectDomains { get; set; } = null!;
+    public string[]? AllowedRedirectDomains { get; set; }
+    public string[]? ValidIssuers { get; set; }
 }

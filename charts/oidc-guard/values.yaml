@@ -16,7 +16,7 @@ fullnameOverride: ""
 
 settings:
   # OpenID Provider Configuration Url for your Identity Provider
-  openIdProviderConfigurationUrl: "https://login.microsoftonline.com/{ClientID}/v2.0/.well-known/openid-configuration"
+  openIdProviderConfigurationUrl: "https://login.microsoftonline.com/{TenantId}/v2.0/.well-known/openid-configuration"
 
   # Domains which the sign-in process will be allowed to redirect to
   # Use a dot before the domain to allow subdomains (ie .test.com)
@@ -53,6 +53,11 @@ settings:
   # IdentityProvider represents multiple tenants and signs tokens with the same keys.
   # It is possible that a token issued for the same audience could be from a different tenant.
   validateIssuer: true
+
+  # Set valid issuers replacing the one found in the settings.openIdProviderConfigurationUrl
+  validIssuers: []
+  # - https://login.microsoftonline.com/{TenantId}/v2.0
+  # - https://sts.windows.net/{TenantId}/
 
   # Skip Authentication for CORS Preflight requests
   # https://developer.mozilla.org/en-US/docs/Glossary/Preflight_request
