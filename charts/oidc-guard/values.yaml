@@ -44,6 +44,16 @@ settings:
   # You may have to set 'large-client-header-buffers: 4 16k' in ingress-nginx
   saveTokensInCookie: false
 
+  # Control if the audience will be validated during token validation.
+  # Validation of the audience, mitigates forwarding attacks. For example, a site that receives a token, could not replay it to another side.
+  validateAudience: false
+
+  # Control if the issuer will be validated during token validation.
+  # Validation of the issuer mitigates forwarding attacks that can occur when an
+  # IdentityProvider represents multiple tenants and signs tokens with the same keys.
+  # It is possible that a token issued for the same audience could be from a different tenant.
+  validateIssuer: true
+
   # Skip Authentication for CORS Preflight requests
   # https://developer.mozilla.org/en-US/docs/Glossary/Preflight_request
   skipAuthPreflight: false

@@ -1,12 +1,17 @@
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using oidc_guard;
 using System.Dynamic;
 using System.Net;
+using System.Reflection;
 using System.Security.Claims;
 using WebMotions.Fake.Authentication.JwtBearer;
 
 namespace oidc_guard_tests;
+
 public class AuthTests
 {
     private static HttpClient GetClient(bool SkipAuthPreflight = false)
@@ -24,12 +29,32 @@ public class AuthTests
             {
                 builder.ConfigureServices((webHost, services) =>
                 {
+                    services.Configure<AuthenticationOptions>(o =>
+                    {
+                        o.SchemeMap.Remove(Program.AuthenticationScheme);
+                        o.SchemeMap.Remove(JwtBearerDefaults.AuthenticationScheme);
+
+                        var prop = typeof(AuthenticationOptions).GetField("_schemes", BindingFlags.Instance | BindingFlags.NonPublic);
+
+                        prop.SetValue(o, o.Schemes.Where(x => x.DisplayName != Program.AuthenticationScheme && x.DisplayName != JwtBearerDefaults.AuthenticationScheme).ToList());
+                    });
+
                     services.AddAuthentication(options =>
                     {
-                        options.DefaultScheme = FakeJwtBearerDefaults.AuthenticationScheme;
-                        options.DefaultChallengeScheme = FakeJwtBearerDefaults.AuthenticationScheme;
-                        options.DefaultSignInScheme = FakeJwtBearerDefaults.AuthenticationScheme;
-                    }).AddFakeJwtBearer();
+                        options.DefaultScheme = Program.AuthenticationScheme;
+                    })
+                    .AddFakeJwtBearer()
+                    .AddPolicyScheme(Program.AuthenticationScheme, Program.AuthenticationScheme, options =>
+                    {
+                        options.ForwardDefaultSelector = context =>
+                        {
+                            string? authorization = context.Request.Headers.Authorization;
+
+                            return !string.IsNullOrEmpty(authorization) && authorization.StartsWith("FakeBearer ")
+                                ? FakeJwtBearerDefaults.AuthenticationScheme
+                                : CookieAuthenticationDefaults.AuthenticationScheme;
+                        };
+                    });
                 });
             });
 

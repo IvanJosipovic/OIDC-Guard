@@ -1,17 +1,10 @@
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using oidc_guard;
 using System.Net;
-using System.Text.Json;
 using System.Web;
 
 namespace oidc_guard_tests;
 
-public class SigninTests
+public class AllowedRedirectDomainTests
 {
     [Theory]
     [InlineData("/test", null, HttpStatusCode.Redirect)]
