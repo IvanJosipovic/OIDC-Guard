@@ -20,29 +20,38 @@ This project is an API server which is used along with the [nginx.ingress.kubern
 
 ## Install
 
+### Identity Provider Configuration
+
+- Register an application with the following settings:
+  - Reply Url: https://{hostname}/signin-oidc
+  - Scopes: openid profile
+  - Grant Type: Authorization Code
+- Note down the ClientID and ClientSecret as it will be needed in the Helm Chart
+
+### Configure Helm Values
+
+Download the default [Helm Values](charts/oidc-guard/values.yaml)
+
+```bash
+curl https://raw.githubusercontent.com/IvanJosipovic/OIDC-Guard/alpha/charts/oidc-guard/values.yaml --output values.yaml
+```
+
+Modify the settings to fit your needs
+
+### Install Helm Chart
+
 ```bash
 helm repo add oidc-guard https://ivanjosipovic.github.io/OIDC-Guard
 
 helm repo update
 
-helm install oidc-guard \
-oidc-guard/oidc-guard \
---create-namespace \
---namespace oidc-guard \
---set settings.openIdProviderConfigurationUrl="https://login.microsoftonline.com/{guid}/v2.0/.well-known/openid-configuration" \
---set settings.cookieDomain="test.com" \
---set settings.clientId="my-client-id" \
---set settings.clientSecret="my-secret"
-
+helm install oidc-guard oidc-guard/oidc-guard --create-namespace --namespace oidc-guard -f values.yaml
 ```
 
-## Options
-
-- [Helm Values](charts/oidc-guard/values.yaml)
-
-## Configure Ingress (external instance)
+### Configure Ingress (external instance)
 
 Use this approach if you configure oidc-guard with a dedicated ingress
+
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -50,11 +59,11 @@ metadata:
   name: ingress
   annotations:
     nginx.ingress.kubernetes.io/auth-url: https://oidc-guard.company.com/auth?tid=11111111-1111-1111-1111-111111111111&aud=22222222-2222-2222-2222-222222222222&aud=33333333-3333-3333-3333-333333333333
-    nginx.ingress.kubernetes.io/auth-signin: https://oidc-guard.company.com/signin?rd=$scheme://$host$request_uri
+    nginx.ingress.kubernetes.io/auth-signin: https://oidc-guard.company.com/signin
 spec:
 ```
 
-## Parameters
+### Parameters
 
 The /auth endpoint supports configurable parameters in the format of \{claim\}=\{value\}. In the case the same claim is called more than once, the traffic will have to match only one.
 
@@ -67,7 +76,9 @@ tid=11111111-1111-1111-1111-111111111111
 Along with validating the JWT token, the token must have a claim tid=11111111-1111-1111-1111-111111111111 and one of aud=22222222-2222-2222-2222-222222222222 or aud=33333333-3333-3333-3333-333333333333
 
 ### How to query arrays
+
 The /auth endpoint is able to query arrays. We'll use the following JWT token in the example.
+
 ```json
 {
   "email": "johndoe@example.com",
@@ -80,6 +91,7 @@ Using the following query string we can limit this endpoint to only tokens with 
 groups=admin
 
 ### Inject claims as headers
+
 The /auth endpoint supports a custom parameter called "inject-claim". The value is the name of claim which will be added to the response headers.
 
 For example, using the following query string
@@ -91,6 +103,7 @@ tid=11111111-1111-1111-1111-111111111111
 The /auth response will contain header email=someuser@domain.com
 
 ### Inject claims as headers with custom name
+
 The value should be in the following format, "\{claim name\},\{header name\}".
 
 For example, using the following query string
@@ -102,17 +115,14 @@ tid=11111111-1111-1111-1111-111111111111
 The /auth response will contain header mail=someuser@domain.com
 
 Example Ingress
+
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: app
   annotations:
-    nginx.ingress.kubernetes.io/auth-url: https://oidc-guard.company.com/auth?aud=11111111-11111-1111111111&inject-claim=https%3A%2F%2Fexample.com%2Fgroups,groups&inject-claim=scope
-    nginx.ingress.kubernetes.io/auth-signin: https://oidc-guard.company.com/signin?rd=$scheme://$host$request_uri
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      auth_request_set $groups $upstream_http_groups;
-      auth_request_set $scope $upstream_http_scope;
-      proxy_set_header JWT-Claim-Groups $groups;
-      proxy_set_header JWT-Claim-Scope $scope;
+    nginx.ingress.kubernetes.io/auth-url: https://oidc-guard.company.com/auth?aud=11111111-11111-1111111111&inject-claim=groups,JWT-Claim-Groups&inject-claim=scope,JWT-Claim-Scope
+    nginx.ingress.kubernetes.io/auth-signin: https://oidc-guard.company.com/signin
+    nginx.ingress.kubernetes.io/auth-response-headers: JWT-Claim-Groups, JWT-Claim-Scope
 ```

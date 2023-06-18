@@ -27,8 +27,8 @@ settings:
   # Cookie Name
   cookieName: "oidc-guard"
 
-  # Cookie Domain
-  cookieDomain: ""
+  # Cookie Domain (Defaults to the hostname of this app)
+  cookieDomain: "test.com"
 
   # Cookie Same Site Mode (Unspecified, None, Lax, Strict)
   cookieSameSiteMode: "Unspecified"
