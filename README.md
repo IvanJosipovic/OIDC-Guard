@@ -32,7 +32,7 @@ oidc-guard/oidc-guard \
 --set settings.openIdProviderConfigurationUrl="https://login.microsoftonline.com/{guid}/v2.0/.well-known/openid-configuration" \
 --set settings.cookieDomain="test.com" \
 --set settings.clientId="my-client-id" \
---set settings.clientSecret="my-secret" \
+--set settings.clientSecret="my-secret"
 
 ```
 
