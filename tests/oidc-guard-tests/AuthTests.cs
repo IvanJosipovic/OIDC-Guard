@@ -32,11 +32,10 @@ public class AuthTests
                     services.Configure<AuthenticationOptions>(o =>
                     {
                         o.SchemeMap.Remove(Program.AuthenticationScheme);
-                        o.SchemeMap.Remove(JwtBearerDefaults.AuthenticationScheme);
 
                         var prop = typeof(AuthenticationOptions).GetField("_schemes", BindingFlags.Instance | BindingFlags.NonPublic);
 
-                        prop.SetValue(o, o.Schemes.Where(x => x.DisplayName != Program.AuthenticationScheme && x.DisplayName != JwtBearerDefaults.AuthenticationScheme).ToList());
+                        prop.SetValue(o, o.Schemes.Where(x => x.DisplayName != Program.AuthenticationScheme).ToList());
                     });
 
                     services.AddAuthentication(options =>

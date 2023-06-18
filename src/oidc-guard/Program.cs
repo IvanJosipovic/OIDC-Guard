@@ -76,6 +76,7 @@ public partial class Program
 
         builder.Services.AddHttpLogging(logging =>
         {
+            logging.RequestHeaders.Add("X-Forwarded-Proto");
             logging.RequestHeaders.Add("X-Original-Method");
             logging.RequestHeaders.Add("X-Original-Url");
             logging.RequestHeaders.Add("X-Scheme");
@@ -98,7 +99,16 @@ public partial class Program
 
         app.Use((context, next) =>
         {
-            context.Request.Scheme = "https";
+            if (!string.IsNullOrEmpty(settings.Scheme))
+            {
+                context.Request.Scheme = settings.Scheme;
+            }
+
+            if (!string.IsNullOrEmpty(settings.Host))
+            {
+                context.Request.Host = new HostString(settings.Host);
+            }
+
             return next();
         });
 

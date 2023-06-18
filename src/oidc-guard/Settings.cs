@@ -15,4 +15,6 @@ public class Settings
     public string OpenIdProviderConfigurationUrl { get; set; } = null!;
     public string[]? AllowedRedirectDomains { get; set; }
     public string[]? ValidIssuers { get; set; }
+    public string? Host { get; set; }
+    public string? Scheme { get; set; }
 }

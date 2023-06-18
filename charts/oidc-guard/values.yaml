@@ -28,7 +28,7 @@ settings:
   cookieName: "oidc-guard"
 
   # Cookie Domain
-  cookieDomain: "test.com"
+  cookieDomain: ""
 
   # Cookie Same Site Mode (Unspecified, None, Lax, Strict)
   cookieSameSiteMode: "Unspecified"
@@ -62,6 +62,14 @@ settings:
   # Skip Authentication for CORS Preflight requests
   # https://developer.mozilla.org/en-US/docs/Glossary/Preflight_request
   skipAuthPreflight: false
+
+  # Set host for http redirect used in the sign-in process
+  # When not set will use the apps hostname
+  host: ""
+
+  # Set scheme for http redirect used in the sign-in process
+  # When not set, will accept X-Forwarded-Proto
+  scheme: ""
 
   # Log Level(Trace, Debug, Information, Warning, Error, Critical, and None)
   logLevel: Information
