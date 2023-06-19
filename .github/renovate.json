@@ -1,0 +1,51 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "enabled": true,
+  "timezone": "America/Vancouver",
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "Renovate Dashboard",
+  "semanticCommits": "enabled",
+  "suppressNotifications": ["prIgnoreNotification"],
+  "rebaseWhen": "conflicted",
+  "assignees": ["@ivanjosipovic"],
+  "extends": ["config:base"],
+  "platformAutomerge": true,
+  "ignorePaths": [
+    "**/docs/**",
+    "**/charts/**"
+  ],
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch", "digest"],
+      "matchCurrentVersion": "!/^0/",
+      "automerge": true,
+      "extends": [":semanticCommitTypeAll(fix)"],
+      "matchPaths": [
+        "src/**",
+        "global.json"
+      ]
+    },
+    {
+      "matchUpdateTypes": ["minor", "patch", "digest"],
+      "matchCurrentVersion": "!/^0/",
+      "automerge": true,
+      "matchPaths": [
+        "tests/**",
+        "benchmarks/**"
+      ]
+    },
+    {
+      "groupName": "IdentityModel",
+      "separateMajorMinor": true,
+      "groupSlug": "identitymodel-libs",
+      "packageRules": [
+        {
+          "matchPackagePatterns": [
+            "System.IdentityModel.*",
+            "Microsoft.IdentityModel.*"
+          ]
+        }
+      ]
+    }
+  ]
+}

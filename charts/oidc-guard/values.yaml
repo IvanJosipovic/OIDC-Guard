@@ -1,0 +1,156 @@
+# Default values for oidc-guard.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/ivanjosipovic/oidc-guard/oidc-guard
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+settings:
+  # OpenID Provider Configuration Url for your Identity Provider
+  openIdProviderConfigurationUrl: "https://login.microsoftonline.com/{TenantId}/v2.0/.well-known/openid-configuration"
+
+  # Domains which the sign-in process will be allowed to redirect to
+  # Use a dot before the domain to allow subdomains (ie .test.com)
+  allowedRedirectDomains: []
+  # - test.com
+  # - .test.com
+
+  # Cookie Name
+  cookieName: "oidc-guard"
+
+  # Cookie Domain (Defaults to the hostname of this app)
+  cookieDomain: "test.com"
+
+  # Cookie Same Site Mode (Unspecified, None, Lax, Strict)
+  cookieSameSiteMode: "Unspecified"
+
+  # Client Id
+  clientId: ""
+
+  # Client Secret
+  clientSecret: ""
+
+  # Whether access and refresh tokens should be stored in the cookie,
+  # disable to reduce the size of the authentication cookie.
+  # You may have to set 'large-client-header-buffers: 4 16k' in ingress-nginx
+  saveTokensInCookie: false
+
+  # Control if the audience will be validated during token validation.
+  # Validation of the audience, mitigates forwarding attacks. For example, a site that receives a token, could not replay it to another side.
+  validateAudience: false
+
+  # Control if the issuer will be validated during token validation.
+  # Validation of the issuer mitigates forwarding attacks that can occur when an
+  # IdentityProvider represents multiple tenants and signs tokens with the same keys.
+  # It is possible that a token issued for the same audience could be from a different tenant.
+  validateIssuer: true
+
+  # Set valid issuers replacing the one found in the settings.openIdProviderConfigurationUrl
+  validIssuers: []
+  # - https://login.microsoftonline.com/{TenantId}/v2.0
+  # - https://sts.windows.net/{TenantId}/
+
+  # Skip Authentication for CORS Preflight requests
+  # https://developer.mozilla.org/en-US/docs/Glossary/Preflight_request
+  skipAuthPreflight: false
+
+  # Set host for http redirect used in the sign-in process
+  # When not set will use the apps hostname
+  host: ""
+
+  # Set scheme for http redirect used in the sign-in process
+  # When not set, will accept X-Forwarded-Proto
+  scheme: ""
+
+  # Log Level(Trace, Debug, Information, Warning, Error, Critical, and None)
+  logLevel: Information
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations:
+  prometheus.io/scrape: 'true'
+  prometheus.io/port: '8080'
+  prometheus.io/path: '/metrics'
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 2000
+  allowPrivilegeEscalation: false
+  privileged: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+    - ALL
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# A Volume is required to store auto generated cookie secret
+# Storage Class Name
+storageClassName: ""
+# Storage class, must be ReadWriteMany if you are running multiple instances of this service
+storageAccessMode: ReadWriteMany
+# Storage Size
+storageSize: 10Gi

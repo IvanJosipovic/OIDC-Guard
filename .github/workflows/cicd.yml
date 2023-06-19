@@ -1,0 +1,107 @@
+name: CICD
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+      - 'alpha'
+      - 'beta'
+      - 'dev'
+  pull_request:
+    types: [opened, reopened, synchronize]
+  merge_group:
+
+jobs:
+  build-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        global-json-file: global.json
+
+    - name: .NET Build
+      run: dotnet build -c Release
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Docker Buildx
+      working-directory: src/oidc-guard
+      run: docker buildx build --platform linux/amd64,linux/arm64 -t oidc-guard .
+
+    - name: Docker Build
+      working-directory: src/oidc-guard
+      run: docker build -t oidc-guard .
+
+    - name: .NET Test
+      run: dotnet test -c Release --collect:"XPlat Code Coverage"
+
+    - name: Coverage
+      uses: codecov/codecov-action@v3
+      with:
+        file: coverage.cobertura.xml
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'oidc-guard'
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'CRITICAL,HIGH'
+
+  create-release:
+    if: ${{ github.event_name != 'pull_request' }}
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: build-test
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Configure Git
+      run: |
+        git config user.name "$GITHUB_ACTOR"
+        git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+    - name: Semantic Release
+      uses: cycjimmy/semantic-release-action@v3
+      id: semantic
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Set up Docker Buildx
+      if: steps.semantic.outputs.new_release_published == 'true'
+      uses: docker/setup-buildx-action@v2
+
+    - name: Docker Push
+      if: steps.semantic.outputs.new_release_published == 'true'
+      working-directory: src/oidc-guard
+      run: |
+        echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${GITHUB_ACTOR} --password-stdin
+
+        docker buildx build --push --platform linux/amd64,linux/arm64 -t ghcr.io/${GITHUB_REPOSITORY,,}/oidc-guard:latest -t ghcr.io/${GITHUB_REPOSITORY,,}/oidc-guard:${{ steps.semantic.outputs.new_release_version }} --build-arg VERSION=${{ steps.semantic.outputs.new_release_version }} .
+
+    - name: Install Helm
+      if: steps.semantic.outputs.new_release_published == 'true'
+      uses: azure/setup-helm@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Update Helm Version
+      if: steps.semantic.outputs.new_release_published == 'true'
+      shell: bash
+      run: |
+          cp ./README.md ./charts/oidc-guard/
+          sed -i 's/0.0.1/${{ steps.semantic.outputs.new_release_version }}/' ./charts/oidc-guard/Chart.yaml
+
+    - name: Run chart-releaser
+      if: steps.semantic.outputs.new_release_published == 'true'
+      uses: helm/chart-releaser-action@v1
+      env:
+        CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
