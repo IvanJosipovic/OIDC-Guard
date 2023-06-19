@@ -1,5 +1,5 @@
 # OIDC-Guard
-[![codecov](https://codecov.io/gh/IvanJosipovic/OIDC-Guard/branch/alpha/graph/badge.svg?token=M16OFqam3T)](https://codecov.io/gh/IvanJosipovic/OIDC-Guard)
+[![codecov](https://codecov.io/gh/IvanJosipovic/OIDC-Guard/branch/main/graph/badge.svg?token=M16OFqam3T)](https://codecov.io/gh/IvanJosipovic/OIDC-Guard)
 [![GitHub](https://img.shields.io/github/stars/ivanjosipovic/oidc-guard?style=social)](https://github.com/IvanJosipovic/oidc-guard)
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/oidc-guard)](https://artifacthub.io/packages/helm/oidc-guard/oidc-guard)
 
@@ -34,7 +34,7 @@ This project is an API server which is used along with the [nginx.ingress.kubern
 Download the default [Helm Values](charts/oidc-guard/values.yaml)
 
 ```bash
-curl https://raw.githubusercontent.com/IvanJosipovic/OIDC-Guard/alpha/charts/oidc-guard/values.yaml --output values.yaml
+curl https://raw.githubusercontent.com/IvanJosipovic/OIDC-Guard/main/charts/oidc-guard/values.yaml --output values.yaml
 ```
 
 Modify the settings to fit your needs
@@ -130,7 +130,7 @@ metadata:
 
 ### Design
 
-![alt text](https://raw.githubusercontent.com/IvanJosipovic/oidc-guard/alpha/docs/Workflow-Diagram.png)
+![alt text](https://raw.githubusercontent.com/IvanJosipovic/oidc-guard/main/docs/Workflow-Diagram.png)
 
 ### Metrics
 
