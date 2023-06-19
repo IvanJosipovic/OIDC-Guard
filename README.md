@@ -130,7 +130,7 @@ metadata:
 
 ### Design
 
-![alt text](https://raw.githubusercontent.com/IvanJosipovic/ingress-nginx-validate-jwt/alpha/docs/Workflow-Diagram.png)
+![alt text](https://raw.githubusercontent.com/IvanJosipovic/oidc-guard/alpha/docs/Workflow-Diagram.png)
 
 ### Metrics
 
