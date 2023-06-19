@@ -46,6 +46,7 @@ settings:
 
   # Control if the audience will be validated during token validation.
   # Validation of the audience, mitigates forwarding attacks. For example, a site that receives a token, could not replay it to another side.
+  # This value can be validated at the Ingress level using /auth?aud=00000000-0000-0000-0000-000000000000
   validateAudience: false
 
   # Control if the issuer will be validated during token validation.
