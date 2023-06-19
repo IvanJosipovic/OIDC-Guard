@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using oidc_guard.Services;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Prometheus;
 
 namespace oidc_guard;
 
@@ -118,6 +119,8 @@ public partial class Program
         app.UseAuthorization();
 
         app.MapControllers();
+
+        app.UseMetricServer();
 
         app.MapHealthChecks("/health");
 

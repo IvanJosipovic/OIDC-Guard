@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+using Prometheus;
 
 namespace oidc_guard.Controllers;
 
@@ -11,6 +12,12 @@ public class AuthController : ControllerBase
 {
     private readonly ILogger<AuthController> _logger;
     private readonly Settings settings;
+
+    private static readonly Gauge AuthorizedGauge = Metrics.CreateGauge("oidc_guard_authorized", "Number of Authorized operations ongoing.");
+
+    private static readonly Gauge UnauthorizedGauge = Metrics.CreateGauge("oidc_guard_unauthorized", "Number of Unauthorized operations ongoing.");
+
+    private static readonly Gauge SigninGauge = Metrics.CreateGauge("oidc_guard_signin", "Number of Sign-in operations ongoing.");
 
     public AuthController(ILogger<AuthController> logger, Settings settings)
     {
@@ -28,11 +35,13 @@ public class AuthController : ControllerBase
             !StringValues.IsNullOrEmpty(HttpContext.Request.Headers.AccessControlRequestMethod) &&
             !StringValues.IsNullOrEmpty(HttpContext.Request.Headers.Origin))
         {
+            AuthorizedGauge.Inc();
             return Ok();
         }
 
         if (HttpContext.User.Identity?.IsAuthenticated == false)
         {
+            UnauthorizedGauge.Inc();
             return Unauthorized();
         }
 
@@ -82,10 +91,12 @@ public class AuthController : ControllerBase
             }
             else if (!HttpContext.User.Claims.Any(x => (x.Type == item.Key || x.Properties.Any(y => y.Value == item.Key)) && item.Value.Any(y => y?.Equals(x.Value) == true)))
             {
+                UnauthorizedGauge.Inc();
                 return Unauthorized();
             }
         }
 
+        AuthorizedGauge.Inc();
         return Ok();
     }
 
@@ -115,6 +126,8 @@ public class AuthController : ControllerBase
                 return BadRequest();
             }
         }
+
+        SigninGauge.Inc();
 
         return Challenge(new AuthenticationProperties { RedirectUri = rd.ToString() });
     }

@@ -28,6 +28,7 @@ keywords:
   - nginx
   - jwt
   - oidc
+  - cookie
 home: https://github.com/IvanJosipovic/oidc-guard
 sources:
   - https://github.com/IvanJosipovic/oidc-guard

@@ -1,6 +1,7 @@
 # OIDC-Guard
 [![codecov](https://codecov.io/gh/IvanJosipovic/OIDC-Guard/branch/alpha/graph/badge.svg?token=M16OFqam3T)](https://codecov.io/gh/IvanJosipovic/OIDC-Guard)
 [![GitHub](https://img.shields.io/github/stars/ivanjosipovic/oidc-guard?style=social)](https://github.com/IvanJosipovic/oidc-guard)
+[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/oidc-guard)](https://artifacthub.io/packages/helm/oidc-guard/oidc-guard)
 
 OpenID Connect (OIDC) Proxy Server for securing Kubernetes Ingress
 
@@ -126,3 +127,17 @@ metadata:
     nginx.ingress.kubernetes.io/auth-signin: https://oidc-guard.company.com/signin
     nginx.ingress.kubernetes.io/auth-response-headers: JWT-Claim-Groups, JWT-Claim-Scope
 ```
+
+### Design
+
+![alt text](https://raw.githubusercontent.com/IvanJosipovic/ingress-nginx-validate-jwt/alpha/docs/Workflow-Diagram.png)
+
+### Metrics
+
+Metrics are exposed on :8080/metrics
+
+| Metric Name  | Description |
+|---|---|
+| oidc_guard_authorized | Number of Authorized operations ongoing |
+| oidc_guard_unauthorized | Number of Unauthorized operations ongoing |
+| oidc_guard_signin | Number of Sign-in operations ongoing |
