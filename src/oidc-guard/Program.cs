@@ -55,10 +55,12 @@ public partial class Program
             o.NonceCookie.Name = settings.CookieName;
             o.ResponseType = OpenIdConnectResponseType.Code;
             o.SaveTokens = settings.SaveTokensInCookie;
+            o.TokenValidationParameters.ClockSkew = TimeSpan.FromSeconds(30);
         })
         .AddJwtBearer(o =>
         {
             o.MetadataAddress = settings.OpenIdProviderConfigurationUrl;
+            o.TokenValidationParameters.ClockSkew = TimeSpan.FromSeconds(30);
             o.TokenValidationParameters.ValidateAudience = settings.ValidateAudience;
             o.TokenValidationParameters.ValidateIssuer = settings.ValidateIssuer;
             o.TokenValidationParameters.ValidIssuers = settings.ValidIssuers;
