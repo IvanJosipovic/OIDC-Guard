@@ -39,19 +39,19 @@ settings:
   # Client Secret
   clientSecret: ""
 
-  # Whether access and refresh tokens should be stored in the cookie,
+  # Control if the access and refresh tokens should be stored in the cookie,
   # disable to reduce the size of the authentication cookie.
   # You may have to set 'large-client-header-buffers: 4 16k' in ingress-nginx
   saveTokensInCookie: false
 
   # Control if the audience will be validated during token validation.
-  # Validation of the audience, mitigates forwarding attacks. For example, a site that receives a token, could not replay it to another side.
+  # Validation of the audience, mitigates forwarding attacks. For example, a site that receives a token, could not replay it to another site.
   # This value can be validated at the Ingress level using /auth?aud=00000000-0000-0000-0000-000000000000
   validateAudience: false
 
   # Control if the issuer will be validated during token validation.
   # Validation of the issuer mitigates forwarding attacks that can occur when an
-  # IdentityProvider represents multiple tenants and signs tokens with the same keys.
+  # Identity Provider represents multiple tenants and signs tokens with the same keys.
   # It is possible that a token issued for the same audience could be from a different tenant.
   validateIssuer: true
 
