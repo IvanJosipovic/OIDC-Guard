@@ -1,6 +1,6 @@
 ARG BUILDPLATFORM=linux/amd64
 
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:7.0-alpine@sha256:bc3c3df09de901501f94b2355dc77239d5d12f4236c6f0fad6338fcc4b9e5bde AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:7.0-alpine@sha256:0d6242ac68425047fc0b398718fd32c48fc3c32adf2c05da75a2e2a62a475471 AS build
 WORKDIR /src
 COPY oidc-guard.csproj .
 RUN dotnet restore "oidc-guard.csproj"
