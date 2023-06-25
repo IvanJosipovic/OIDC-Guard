@@ -12,20 +12,20 @@ namespace oidc_guard_tests;
 
 public class AuthTests
 {
-    private static HttpClient GetClient(bool SkipAuthPreflight = false, bool EnableAccessTokenInQueryParameter = false)
+    public static HttpClient GetClient(Action<Settings>? settingsAction = null)
     {
         IdentityModelEventSource.ShowPII = true;
 
-        var inMemoryConfigSettings = new Dictionary<string, string?>()
+        var settings = new Settings()
         {
-            { "Settings:ClientId", "test" },
-            { "Settings:ClientSecret", "secret" },
-            { "Settings:OpenIdProviderConfigurationUrl", "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration" },
-            { "Settings:SkipAuthPreflight", SkipAuthPreflight.ToString() },
-            { "Settings:EnableAccessTokenInQueryParameter", EnableAccessTokenInQueryParameter.ToString() },
+            ClientId = "test",
+            ClientSecret = "secret",
+            OpenIdProviderConfigurationUrl = "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration"
         };
 
-        var factory = new MyWebApplicationFactory<Program>(inMemoryConfigSettings)
+        settingsAction?.Invoke(settings);
+
+        var factory = new MyWebApplicationFactory<Program>(settings)
             .WithWebHostBuilder(builder =>
             {
                 builder.ConfigureServices((webHost, services) =>
@@ -339,7 +339,7 @@ public class AuthTests
     [Fact]
     public async Task SkipAuthPreflight()
     {
-        var _client = GetClient(true);
+        var _client = GetClient(x => { x.SkipAuthPreflight = true; });
 
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Origin, "localhost");
         _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, "OPTIONS");
@@ -353,7 +353,7 @@ public class AuthTests
     [Fact]
     public async Task SkipAuthPreflightDisabled()
     {
-        var _client = GetClient(false);
+        var _client = GetClient(x => { x.SkipAuthPreflight = false; });
 
         _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, "OPTIONS");
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestHeaders, "origin, x-requested-with");
@@ -366,7 +366,7 @@ public class AuthTests
     [Fact]
     public async Task SkipAuthPreflightMissingMethod()
     {
-        var _client = GetClient(true);
+        var _client = GetClient(x => { x.SkipAuthPreflight = true; });
 
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Origin, "localhost");
         _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, "OPTIONS");
@@ -379,7 +379,7 @@ public class AuthTests
     [Fact]
     public async Task SkipAuthPreflightMissingRequestHeaders()
     {
-        var _client = GetClient(true);
+        var _client = GetClient(x => { x.SkipAuthPreflight = true; });
 
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Origin, "localhost");
         _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, "OPTIONS");
@@ -462,7 +462,7 @@ public class AuthTests
     [MemberData(nameof(GetTokenAsQueryParameterTests))]
     public async Task TokenInQueryParamTests(string query, List<Claim> claims, HttpStatusCode status, Dictionary<string, string> requestHeaders, bool addAuthorizationHeader = false)
     {
-        var _client = GetClient(EnableAccessTokenInQueryParameter: true);
+        var _client = GetClient(x => { x.EnableAccessTokenInQueryParameter = true; });
 
         foreach (var header in requestHeaders)
         {
