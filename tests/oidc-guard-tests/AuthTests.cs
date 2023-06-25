@@ -3,10 +3,8 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using oidc_guard;
-using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 
@@ -34,16 +32,17 @@ public class AuthTests
                     services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
                     {
                         options.Configuration = new OpenIdConnectConfiguration();
-                        options.Configuration.SigningKeys.Add(FakeJwtIssuer.SecurityKey);
+                        options.TokenValidationParameters.IssuerSigningKey = FakeJwtIssuer.SecurityKey;
                         options.TokenValidationParameters.ValidIssuer = FakeJwtIssuer.Issuer;
                         options.TokenValidationParameters.ValidAudience = FakeJwtIssuer.Audience;
-                        options.TokenValidationParameters.SignatureValidator = (string token, TokenValidationParameters _) => new JwtSecurityToken(token);
                     });
 
                     services.PostConfigure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
                     {
                         options.Configuration = new OpenIdConnectConfiguration();
-                        options.Configuration.SigningKeys.Add(FakeJwtIssuer.SecurityKey);
+                        options.TokenValidationParameters.IssuerSigningKey = FakeJwtIssuer.SecurityKey;
+                        options.TokenValidationParameters.ValidIssuer = FakeJwtIssuer.Issuer;
+                        options.TokenValidationParameters.ValidAudience = FakeJwtIssuer.Audience;
                     });
                 });
             });
