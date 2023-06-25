@@ -17,4 +17,5 @@ public class Settings
     public string[]? ValidIssuers { get; set; }
     public string? Host { get; set; }
     public string? Scheme { get; set; }
+    public bool EnableAccessTokenInQueryParameter { get; set; }
 }

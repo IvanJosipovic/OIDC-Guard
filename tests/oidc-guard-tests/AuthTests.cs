@@ -1,26 +1,28 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Net.Http.Headers;
 using oidc_guard;
-using System.Dynamic;
 using System.Net;
-using System.Reflection;
 using System.Security.Claims;
-using WebMotions.Fake.Authentication.JwtBearer;
 
 namespace oidc_guard_tests;
 
 public class AuthTests
 {
-    private static HttpClient GetClient(bool SkipAuthPreflight = false)
+    private static HttpClient GetClient(bool SkipAuthPreflight = false, bool EnableAccessTokenInQueryParameter = false)
     {
+        IdentityModelEventSource.ShowPII = true;
+
         var inMemoryConfigSettings = new Dictionary<string, string?>()
         {
             { "Settings:ClientId", "test" },
             { "Settings:ClientSecret", "secret" },
             { "Settings:OpenIdProviderConfigurationUrl", "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration" },
             { "Settings:SkipAuthPreflight", SkipAuthPreflight.ToString() },
+            { "Settings:EnableAccessTokenInQueryParameter", EnableAccessTokenInQueryParameter.ToString() },
         };
 
         var factory = new MyWebApplicationFactory<Program>(inMemoryConfigSettings)
@@ -28,30 +30,20 @@ public class AuthTests
             {
                 builder.ConfigureServices((webHost, services) =>
                 {
-                    services.Configure<AuthenticationOptions>(o =>
+                    services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
                     {
-                        o.SchemeMap.Remove(Program.AuthenticationScheme);
-
-                        var prop = typeof(AuthenticationOptions).GetField("_schemes", BindingFlags.Instance | BindingFlags.NonPublic);
-
-                        prop.SetValue(o, o.Schemes.Where(x => x.DisplayName != Program.AuthenticationScheme).ToList());
+                        options.Configuration = new OpenIdConnectConfiguration();
+                        options.TokenValidationParameters.IssuerSigningKey = FakeJwtIssuer.SecurityKey;
+                        options.TokenValidationParameters.ValidIssuer = FakeJwtIssuer.Issuer;
+                        options.TokenValidationParameters.ValidAudience = FakeJwtIssuer.Audience;
                     });
 
-                    services.AddAuthentication(options =>
+                    services.PostConfigure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
                     {
-                        options.DefaultScheme = Program.AuthenticationScheme;
-                    })
-                    .AddFakeJwtBearer()
-                    .AddPolicyScheme(Program.AuthenticationScheme, Program.AuthenticationScheme, options =>
-                    {
-                        options.ForwardDefaultSelector = context =>
-                        {
-                            string? authorization = context.Request.Headers.Authorization;
-
-                            return !string.IsNullOrEmpty(authorization) && authorization.StartsWith("FakeBearer ")
-                                ? FakeJwtBearerDefaults.AuthenticationScheme
-                                : CookieAuthenticationDefaults.AuthenticationScheme;
-                        };
+                        options.Configuration = new OpenIdConnectConfiguration();
+                        options.TokenValidationParameters.IssuerSigningKey = FakeJwtIssuer.SecurityKey;
+                        options.TokenValidationParameters.ValidIssuer = FakeJwtIssuer.Issuer;
+                        options.TokenValidationParameters.ValidAudience = FakeJwtIssuer.Audience;
                     });
                 });
             });
@@ -318,16 +310,9 @@ public class AuthTests
     [MemberData(nameof(GetInjectClaimsTests))]
     public async Task Auth(string query, List<Claim> claims, HttpStatusCode status, List<Claim>? expectedHeaders = null)
     {
-        dynamic data = new ExpandoObject();
-
-        foreach (var claim in claims.GroupBy(x => x.Type))
-        {
-            ((IDictionary<string, object>)data)[claim.First().Type] = claim.Select(x => x.Value);
-        }
-
         var _client = GetClient();
 
-        _client.SetFakeBearerToken((object)data);
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(claims));
 
         var response = await _client.GetAsync($"/auth{query}");
         response.StatusCode.Should().Be(status);
@@ -402,5 +387,94 @@ public class AuthTests
 
         var response = await _client.GetAsync("/auth");
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    public static IEnumerable<object[]> GetTokenAsQueryParameterTests()
+    {
+        return new List<object[]>
+        {
+            new object[] // Token Only in Query String
+            {
+                "",
+                new List<Claim>(),
+                HttpStatusCode.OK,
+                new Dictionary<string, string>()
+                {
+                    {CustomHeaderNames.OriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken(Enumerable.Empty<Claim>())}" }
+                }
+            },
+            new object[] // Bad Token Only in Query String
+            {
+                "",
+                new List<Claim>(),
+                HttpStatusCode.Unauthorized,
+                new Dictionary<string, string>()
+                {
+                    {CustomHeaderNames.OriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}=BAD" }
+                }
+            },
+            new object[] // Bad Token in Query String and Header, Header is used
+            {
+                "",
+                new List<Claim>(),
+                HttpStatusCode.OK,
+                new Dictionary<string, string>()
+                {
+                    {CustomHeaderNames.OriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}=BAD" }
+                },
+                true
+            },
+            new object[] // Token in Header and Query String with no Token
+            {
+                "",
+                new List<Claim>(),
+                HttpStatusCode.OK,
+                new Dictionary<string, string>()
+                {
+                    {CustomHeaderNames.OriginalUrl, "https://www.example.com" }
+                },
+                true
+            },
+            new object[] // Token in Query String with Claim
+            {
+                "?tid=11111111-1111-1111-1111-111111111111",
+                new List<Claim>(),
+                HttpStatusCode.OK,
+                new Dictionary<string, string>()
+                {
+                    {CustomHeaderNames.OriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken(new List<Claim>{new Claim("tid", "11111111-1111-1111-1111-111111111111")})}" }
+                },
+            },
+            new object[] // Token in Query String with Bad Claim
+            {
+                "?tid=11111111-1111-1111-1111-111111111111",
+                new List<Claim>(),
+                HttpStatusCode.Unauthorized,
+                new Dictionary<string, string>()
+                {
+                    {CustomHeaderNames.OriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken(new List<Claim>{new Claim("tid", "22222222-2222-2222-2222-222222222222")})}" }
+                },
+            },
+        };
+    }
+
+    [Theory]
+    [MemberData(nameof(GetTokenAsQueryParameterTests))]
+    public async Task TokenInQueryParamTests(string query, List<Claim> claims, HttpStatusCode status, Dictionary<string, string> requestHeaders, bool addAuthorizationHeader = false)
+    {
+        var _client = GetClient(EnableAccessTokenInQueryParameter: true);
+
+        foreach (var header in requestHeaders)
+        {
+            _client.DefaultRequestHeaders.Add(header.Key, header.Value);
+        }
+
+        if (addAuthorizationHeader)
+        {
+            _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(claims));
+        }
+
+        var response = await _client.GetAsync($"/auth{query}");
+        response.StatusCode.Should().Be(status);
     }
 }

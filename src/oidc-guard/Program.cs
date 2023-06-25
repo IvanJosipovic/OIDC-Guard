@@ -1,10 +1,12 @@
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.HttpOverrides;
-using oidc_guard.Services;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.Net.Http.Headers;
+using oidc_guard.Services;
 using Prometheus;
 
 namespace oidc_guard;
@@ -110,6 +112,18 @@ public partial class Program
             if (!string.IsNullOrEmpty(settings.Host))
             {
                 context.Request.Host = new HostString(settings.Host);
+            }
+
+            if (settings.EnableAccessTokenInQueryParameter &&
+                context.Request.Path.StartsWithSegments("/auth") &&
+                context.Request.Headers.ContainsKey(CustomHeaderNames.OriginalUrl) &&
+                Uri.TryCreate(context.Request.Headers[CustomHeaderNames.OriginalUrl], UriKind.RelativeOrAbsolute, out var uri))
+            {
+                if (QueryHelpers.ParseQuery(uri.Query).TryGetValue(QueryParameters.AccessToken, out var token) &&
+                    !context.Request.Headers.ContainsKey(HeaderNames.Authorization))
+                {
+                    context.Request.Headers.Authorization = JwtBearerDefaults.AuthenticationScheme + ' ' + token;
+                }
             }
 
             return next();

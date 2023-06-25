@@ -72,6 +72,10 @@ settings:
   # When not set, will accept X-Forwarded-Proto
   scheme: ""
 
+  # Accept token from the access_token Query Parameter
+  # https://datatracker.ietf.org/doc/html/rfc6750#section-2.3
+  enableAccessTokenInQueryParameter: false
+
   # Log Level(Trace, Debug, Information, Warning, Error, Critical, and None)
   logLevel: Information
 
