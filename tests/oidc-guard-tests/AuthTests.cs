@@ -1,13 +1,14 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using oidc_guard;
-using System.Dynamic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
-using System.Reflection;
 using System.Security.Claims;
-using WebMotions.Fake.Authentication.JwtBearer;
 
 namespace oidc_guard_tests;
 
@@ -15,6 +16,8 @@ public class AuthTests
 {
     private static HttpClient GetClient(bool SkipAuthPreflight = false)
     {
+        IdentityModelEventSource.ShowPII = true;
+
         var inMemoryConfigSettings = new Dictionary<string, string?>()
         {
             { "Settings:ClientId", "test" },
@@ -28,30 +31,19 @@ public class AuthTests
             {
                 builder.ConfigureServices((webHost, services) =>
                 {
-                    services.Configure<AuthenticationOptions>(o =>
+                    services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
                     {
-                        o.SchemeMap.Remove(Program.AuthenticationScheme);
-
-                        var prop = typeof(AuthenticationOptions).GetField("_schemes", BindingFlags.Instance | BindingFlags.NonPublic);
-
-                        prop.SetValue(o, o.Schemes.Where(x => x.DisplayName != Program.AuthenticationScheme).ToList());
+                        options.Configuration = new OpenIdConnectConfiguration();
+                        options.Configuration.SigningKeys.Add(FakeJwtIssuer.SecurityKey);
+                        options.TokenValidationParameters.ValidIssuer = FakeJwtIssuer.Issuer;
+                        options.TokenValidationParameters.ValidAudience = FakeJwtIssuer.Audience;
+                        options.TokenValidationParameters.SignatureValidator = (string token, TokenValidationParameters _) => new JwtSecurityToken(token);
                     });
 
-                    services.AddAuthentication(options =>
+                    services.PostConfigure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
                     {
-                        options.DefaultScheme = Program.AuthenticationScheme;
-                    })
-                    .AddFakeJwtBearer()
-                    .AddPolicyScheme(Program.AuthenticationScheme, Program.AuthenticationScheme, options =>
-                    {
-                        options.ForwardDefaultSelector = context =>
-                        {
-                            string? authorization = context.Request.Headers.Authorization;
-
-                            return !string.IsNullOrEmpty(authorization) && authorization.StartsWith("FakeBearer ")
-                                ? FakeJwtBearerDefaults.AuthenticationScheme
-                                : CookieAuthenticationDefaults.AuthenticationScheme;
-                        };
+                        options.Configuration = new OpenIdConnectConfiguration();
+                        options.Configuration.SigningKeys.Add(FakeJwtIssuer.SecurityKey);
                     });
                 });
             });
@@ -318,16 +310,9 @@ public class AuthTests
     [MemberData(nameof(GetInjectClaimsTests))]
     public async Task Auth(string query, List<Claim> claims, HttpStatusCode status, List<Claim>? expectedHeaders = null)
     {
-        dynamic data = new ExpandoObject();
-
-        foreach (var claim in claims.GroupBy(x => x.Type))
-        {
-            ((IDictionary<string, object>)data)[claim.First().Type] = claim.Select(x => x.Value);
-        }
-
         var _client = GetClient();
 
-        _client.SetFakeBearerToken((object)data);
+        _client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", FakeJwtIssuer.GenerateBearerJwtToken(claims));
 
         var response = await _client.GetAsync($"/auth{query}");
         response.StatusCode.Should().Be(status);
