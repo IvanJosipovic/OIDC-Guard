@@ -32,7 +32,7 @@ public class AuthTests
             {
                 builder.ConfigureServices((webHost, services) =>
                 {
-                    services.AddSingleton<RequestServicesContainerMiddleware>();
+                    services.AddSingleton<SigninMiddleware>();
                     services.AddTransient<IStartupFilter, SigninStartupFilter>();
 
                     services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
