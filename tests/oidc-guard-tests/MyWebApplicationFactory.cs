@@ -1,24 +1,28 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
+﻿using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using oidc_guard;
+using System.Text;
+using System.Text.Json;
 
 namespace oidc_guard_tests;
 
 internal class MyWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPoint> where TEntryPoint : class
 {
-    private readonly Dictionary<string, string?> inMemoryConfigSettings = new();
+    private readonly Settings settings;
 
-    public MyWebApplicationFactory(Dictionary<string, string?> inMemoryConfigSettings)
+    public MyWebApplicationFactory(Settings settings)
     {
-        this.inMemoryConfigSettings = inMemoryConfigSettings;
+        this.settings = settings;
     }
 
     protected override IHost CreateHost(IHostBuilder builder)
     {
         builder.ConfigureHostConfiguration(config =>
         {
-            config.AddInMemoryCollection(inMemoryConfigSettings!);
+            var data = new { Settings = settings };
+
+            config.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(data))));
         });
         return base.CreateHost(builder);
     }

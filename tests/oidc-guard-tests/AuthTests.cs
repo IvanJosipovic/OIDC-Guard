@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Net.Http.Headers;
 using oidc_guard;
@@ -12,43 +14,52 @@ namespace oidc_guard_tests;
 
 public class AuthTests
 {
-    private static HttpClient GetClient(bool SkipAuthPreflight = false, bool EnableAccessTokenInQueryParameter = false)
+    public static HttpClient GetClient(Action<Settings>? settingsAction = null, bool allowAutoRedirect = false)
     {
         IdentityModelEventSource.ShowPII = true;
 
-        var inMemoryConfigSettings = new Dictionary<string, string?>()
+        var settings = new Settings()
         {
-            { "Settings:ClientId", "test" },
-            { "Settings:ClientSecret", "secret" },
-            { "Settings:OpenIdProviderConfigurationUrl", "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration" },
-            { "Settings:SkipAuthPreflight", SkipAuthPreflight.ToString() },
-            { "Settings:EnableAccessTokenInQueryParameter", EnableAccessTokenInQueryParameter.ToString() },
+            ClientId = FakeJwtIssuer.Audience,
+            ClientSecret = "secret",
+            OpenIdProviderConfigurationUrl = "https://inmemory.microsoft.com/common/.well-known/openid-configuration"
         };
 
-        var factory = new MyWebApplicationFactory<Program>(inMemoryConfigSettings)
+        settingsAction?.Invoke(settings);
+
+        var factory = new MyWebApplicationFactory<Program>(settings)
             .WithWebHostBuilder(builder =>
             {
                 builder.ConfigureServices((webHost, services) =>
                 {
+                    services.AddSingleton<SigninMiddleware>();
+                    services.AddTransient<IStartupFilter, SigninStartupFilter>();
+
                     services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
                     {
-                        options.Configuration = new OpenIdConnectConfiguration();
-                        options.TokenValidationParameters.IssuerSigningKey = FakeJwtIssuer.SecurityKey;
-                        options.TokenValidationParameters.ValidIssuer = FakeJwtIssuer.Issuer;
-                        options.TokenValidationParameters.ValidAudience = FakeJwtIssuer.Audience;
+                        options.Configuration = null;
+                        options.MetadataAddress = null;
+                        options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+                            settings.OpenIdProviderConfigurationUrl,
+                            new OpenIdConnectConfigurationRetriever(),
+                            new TestServerDocumentRetriever()
+                        );
                     });
 
                     services.PostConfigure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
                     {
-                        options.Configuration = new OpenIdConnectConfiguration();
-                        options.TokenValidationParameters.IssuerSigningKey = FakeJwtIssuer.SecurityKey;
-                        options.TokenValidationParameters.ValidIssuer = FakeJwtIssuer.Issuer;
-                        options.TokenValidationParameters.ValidAudience = FakeJwtIssuer.Audience;
+                        options.Configuration = null;
+                        options.MetadataAddress = null;
+                        options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+                            settings.OpenIdProviderConfigurationUrl,
+                            new OpenIdConnectConfigurationRetriever(),
+                            new TestServerDocumentRetriever()
+                        );
                     });
                 });
             });
 
-        factory.ClientOptions.AllowAutoRedirect = false;
+        factory.ClientOptions.AllowAutoRedirect = allowAutoRedirect;
 
         return factory.CreateDefaultClient();
     }
@@ -339,7 +350,7 @@ public class AuthTests
     [Fact]
     public async Task SkipAuthPreflight()
     {
-        var _client = GetClient(true);
+        var _client = GetClient(x => { x.SkipAuthPreflight = true; });
 
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Origin, "localhost");
         _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, "OPTIONS");
@@ -353,7 +364,7 @@ public class AuthTests
     [Fact]
     public async Task SkipAuthPreflightDisabled()
     {
-        var _client = GetClient(false);
+        var _client = GetClient(x => { x.SkipAuthPreflight = false; });
 
         _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, "OPTIONS");
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestHeaders, "origin, x-requested-with");
@@ -366,7 +377,7 @@ public class AuthTests
     [Fact]
     public async Task SkipAuthPreflightMissingMethod()
     {
-        var _client = GetClient(true);
+        var _client = GetClient(x => { x.SkipAuthPreflight = true; });
 
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Origin, "localhost");
         _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, "OPTIONS");
@@ -379,7 +390,7 @@ public class AuthTests
     [Fact]
     public async Task SkipAuthPreflightMissingRequestHeaders()
     {
-        var _client = GetClient(true);
+        var _client = GetClient(x => { x.SkipAuthPreflight = true; });
 
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Origin, "localhost");
         _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, "OPTIONS");
@@ -462,7 +473,7 @@ public class AuthTests
     [MemberData(nameof(GetTokenAsQueryParameterTests))]
     public async Task TokenInQueryParamTests(string query, List<Claim> claims, HttpStatusCode status, Dictionary<string, string> requestHeaders, bool addAuthorizationHeader = false)
     {
-        var _client = GetClient(EnableAccessTokenInQueryParameter: true);
+        var _client = GetClient(x => { x.EnableAccessTokenInQueryParameter = true; });
 
         foreach (var header in requestHeaders)
         {
@@ -476,5 +487,30 @@ public class AuthTests
 
         var response = await _client.GetAsync($"/auth{query}");
         response.StatusCode.Should().Be(status);
+    }
+
+    [Fact]
+    public async Task Signin()
+    {
+        var _client = GetClient(allowAutoRedirect: true);
+
+        var response = await _client.GetAsync("/signin?rd=/auth");
+        response.StatusCode.Should().Be(HttpStatusCode.Found);
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response.Headers.GetValues("Set-Cookie"));
+
+        var response2 = await _client.GetAsync(response.Headers.Location);
+        response2.StatusCode.Should().Be(HttpStatusCode.Found);
+        response2.Headers.Location.Should().Be("/auth");
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response2.Headers.GetValues("Set-Cookie"));
+
+        var response3 = await _client.GetAsync(response2.Headers.Location);
+        response3.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        _client.DefaultRequestHeaders.Clear();
+
+        var response4 = await _client.GetAsync(response2.Headers.Location);
+        response4.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 }

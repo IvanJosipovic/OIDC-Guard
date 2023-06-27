@@ -31,23 +31,9 @@ public class AllowedRedirectDomainTests
 
     public async Task Signin(string query, string[]? allowedRedirectDomains, HttpStatusCode status)
     {
-        var inMemoryConfigSettings = new Dictionary<string, string?>()
-        {
-            { "Settings:ClientId", "test" },
-            { "Settings:ClientSecret", "secret" },
-            { "Settings:OpenIdProviderConfigurationUrl", "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration" },
-        };
+        var client = AuthTests.GetClient(x => x.AllowedRedirectDomains = allowedRedirectDomains);
 
-        for (var i = 0; i < allowedRedirectDomains?.Length; i++)
-        {
-            inMemoryConfigSettings.Add($"Settings:AllowedRedirectDomains:{i}", allowedRedirectDomains[i]);
-        }
-
-        var factory = new MyWebApplicationFactory<Program>(inMemoryConfigSettings);
-
-        factory.ClientOptions.AllowAutoRedirect = false;
-
-        var response = await factory.CreateClient().GetAsync($"/signin?rd={HttpUtility.UrlEncode(query)}");
+        var response = await client.GetAsync($"/signin?rd={HttpUtility.UrlEncode(query)}");
 
         response.StatusCode.Should().Be(status);
     }
