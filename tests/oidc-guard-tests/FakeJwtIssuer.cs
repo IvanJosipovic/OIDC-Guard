@@ -2,6 +2,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 
 namespace oidc_guard_tests;
 
@@ -14,15 +15,23 @@ public static class FakeJwtIssuer
     public static SecurityKey SecurityKey { get; }
     public static SigningCredentials SigningCredentials { get; }
 
+    public static JsonWebKey JsonWebKey { get; }
+
     private static readonly JwtSecurityTokenHandler s_tokenHandler = new JwtSecurityTokenHandler();
-    private static readonly RandomNumberGenerator s_rng = RandomNumberGenerator.Create();
-    private static readonly byte[] s_key = new byte[32];
 
     static FakeJwtIssuer()
     {
-        s_rng.GetBytes(s_key);
-        SecurityKey = new SymmetricSecurityKey(s_key) { KeyId = Guid.NewGuid().ToString() };
-        SigningCredentials = new SigningCredentials(SecurityKey, SecurityAlgorithms.HmacSha256);
+        RSA rsa = new RSACryptoServiceProvider(2048);
+
+        CertificateRequest certificateRequest = new CertificateRequest("CN=MyCertificate", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+
+        X509Certificate2 certificate = certificateRequest.CreateSelfSigned(DateTimeOffset.Now, DateTimeOffset.Now.AddYears(1));
+
+        SecurityKey = new X509SecurityKey(certificate);
+
+        SigningCredentials = new SigningCredentials(SecurityKey, SecurityAlgorithms.RsaSha256Signature);
+
+        JsonWebKey = JsonWebKeyConverter.ConvertFromSecurityKey(SecurityKey);
     }
 
     public static string GenerateBearerJwtToken(IEnumerable<Claim> claims)

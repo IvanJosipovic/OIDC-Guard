@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Net.Http.Headers;
 using oidc_guard;
@@ -12,7 +13,7 @@ namespace oidc_guard_tests;
 
 public class AuthTests
 {
-    public static HttpClient GetClient(Action<Settings>? settingsAction = null)
+    public static HttpClient GetClient(Action<Settings>? settingsAction = null, bool allowAutoRedirect = false)
     {
         IdentityModelEventSource.ShowPII = true;
 
@@ -20,7 +21,7 @@ public class AuthTests
         {
             ClientId = "test",
             ClientSecret = "secret",
-            OpenIdProviderConfigurationUrl = "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration"
+            OpenIdProviderConfigurationUrl = "https://inmemory.microsoft.com/common/.well-known/openid-configuration"
         };
 
         settingsAction?.Invoke(settings);
@@ -32,23 +33,29 @@ public class AuthTests
                 {
                     services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
                     {
-                        options.Configuration = new OpenIdConnectConfiguration();
-                        options.TokenValidationParameters.IssuerSigningKey = FakeJwtIssuer.SecurityKey;
-                        options.TokenValidationParameters.ValidIssuer = FakeJwtIssuer.Issuer;
-                        options.TokenValidationParameters.ValidAudience = FakeJwtIssuer.Audience;
+                        options.Configuration = null;
+                        options.MetadataAddress = null;
+                        options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+                            settings.OpenIdProviderConfigurationUrl,
+                            new OpenIdConnectConfigurationRetriever(),
+                            new TestServerDocumentRetriever()
+                        );
                     });
 
                     services.PostConfigure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
                     {
-                        options.Configuration = new OpenIdConnectConfiguration();
-                        options.TokenValidationParameters.IssuerSigningKey = FakeJwtIssuer.SecurityKey;
-                        options.TokenValidationParameters.ValidIssuer = FakeJwtIssuer.Issuer;
-                        options.TokenValidationParameters.ValidAudience = FakeJwtIssuer.Audience;
+                        options.Configuration = null;
+                        options.MetadataAddress = null;
+                        options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+                            settings.OpenIdProviderConfigurationUrl,
+                            new OpenIdConnectConfigurationRetriever(),
+                            new TestServerDocumentRetriever()
+                        );
                     });
                 });
             });
 
-        factory.ClientOptions.AllowAutoRedirect = false;
+        factory.ClientOptions.AllowAutoRedirect = allowAutoRedirect;
 
         return factory.CreateDefaultClient();
     }
