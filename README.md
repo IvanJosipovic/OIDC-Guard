@@ -27,7 +27,7 @@ This project is an API server which is used along with the [nginx.ingress.kubern
   - Reply Url: https://{hostname}/signin-oidc
   - Scopes: openid profile
   - Grant Type: Authorization Code
-- Note down the ClientID and ClientSecret as it will be needed in the Helm Chart
+- Note down the ClientID and ClientSecret as they will be needed in the Helm Chart
 
 ### Configure Helm Values
 
