@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Protocols;
@@ -19,7 +20,7 @@ public class AuthTests
 
         var settings = new Settings()
         {
-            ClientId = "test",
+            ClientId = FakeJwtIssuer.Audience,
             ClientSecret = "secret",
             OpenIdProviderConfigurationUrl = "https://inmemory.microsoft.com/common/.well-known/openid-configuration"
         };
@@ -31,6 +32,9 @@ public class AuthTests
             {
                 builder.ConfigureServices((webHost, services) =>
                 {
+                    services.AddSingleton<RequestServicesContainerMiddleware>();
+                    services.AddTransient<IStartupFilter, SigninStartupFilter>();
+
                     services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
                     {
                         options.Configuration = null;
@@ -483,5 +487,30 @@ public class AuthTests
 
         var response = await _client.GetAsync($"/auth{query}");
         response.StatusCode.Should().Be(status);
+    }
+
+    [Fact]
+    public async Task Signin()
+    {
+        var _client = GetClient(allowAutoRedirect: true);
+
+        var response = await _client.GetAsync("/signin?rd=/auth");
+        response.StatusCode.Should().Be(HttpStatusCode.Found);
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response.Headers.GetValues("Set-Cookie"));
+
+        var response2 = await _client.GetAsync(response.Headers.Location);
+        response2.StatusCode.Should().Be(HttpStatusCode.Found);
+        response2.Headers.Location.Should().Be("/auth");
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response2.Headers.GetValues("Set-Cookie"));
+
+        var response3 = await _client.GetAsync(response2.Headers.Location);
+        response3.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        _client.DefaultRequestHeaders.Clear();
+
+        var response4 = await _client.GetAsync(response2.Headers.Location);
+        response4.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 }

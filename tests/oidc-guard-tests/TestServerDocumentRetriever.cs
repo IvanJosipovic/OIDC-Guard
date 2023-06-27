@@ -11,7 +11,7 @@ public class TestServerDocumentRetriever : IDocumentRetriever
             // https://openid.net/specs/openid-connect-discovery-1_0.html
             var data = $$"""
                     {
-                      "authorization_endpoint": "https://inmemory.microsoft.com/common/oauth2/authorize",
+                      "authorization_endpoint": "http://localhost/signin-oidc",
                       "token_endpoint": "https://inmemory.microsoft.com/common/oauth2/token",
                       "token_endpoint_auth_methods_supported": ["client_secret_post", "private_key_jwt", "client_secret_basic"],
                       "jwks_uri": "https://inmemory.microsoft.com/common/discovery/keys",
