@@ -72,7 +72,7 @@ public class AuthController : ControllerBase
                         headerName = value;
                     }
 
-                    var claims = HttpContext.User.Claims.Where(x => x.Type == claimName || x.Properties.Any(y => y.Value == claimName)).ToArray();
+                    var claims = HttpContext.User.Claims.Where(x => x.Type == claimName).ToArray();
 
                     if (claims == null || claims.Length == 0)
                     {
@@ -89,7 +89,7 @@ public class AuthController : ControllerBase
                     }
                 }
             }
-            else if (!HttpContext.User.Claims.Any(x => (x.Type == item.Key || x.Properties.Any(y => y.Value == item.Key)) && item.Value.Any(y => y?.Equals(x.Value) == true)))
+            else if (!HttpContext.User.Claims.Any(x => x.Type == item.Key && item.Value.Contains(x.Value)))
             {
                 UnauthorizedGauge.Inc();
                 return Unauthorized();

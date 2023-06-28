@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Net.Http.Headers;
 using oidc_guard.Services;
 using Prometheus;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace oidc_guard;
 
@@ -38,6 +39,8 @@ public partial class Program
             o.OnAppendCookie = cookieContext => cookieContext.CookieOptions.SameSite = settings.CookieSameSiteMode;
             o.OnDeleteCookie = cookieContext => cookieContext.CookieOptions.SameSite = settings.CookieSameSiteMode;
         });
+
+        JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
         builder.Services.AddAuthentication(o =>
         {
