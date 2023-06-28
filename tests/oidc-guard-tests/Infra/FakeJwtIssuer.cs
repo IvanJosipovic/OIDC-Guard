@@ -4,7 +4,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
-namespace oidc_guard_tests;
+namespace oidc_guard_tests.Infra;
 
 // https://stebet.net/mocking-jwt-tokens-in-asp-net-core-integration-tests/
 public static class FakeJwtIssuer
@@ -23,9 +23,9 @@ public static class FakeJwtIssuer
     {
         RSA rsa = new RSACryptoServiceProvider(2048);
 
-        CertificateRequest certificateRequest = new CertificateRequest("CN=MyCertificate", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+        var certificateRequest = new CertificateRequest("CN=MyCertificate", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
 
-        X509Certificate2 certificate = certificateRequest.CreateSelfSigned(DateTimeOffset.Now, DateTimeOffset.Now.AddYears(1));
+        var certificate = certificateRequest.CreateSelfSigned(DateTimeOffset.Now, DateTimeOffset.Now.AddYears(1));
 
         SecurityKey = new X509SecurityKey(certificate);
 

@@ -5,7 +5,7 @@ using oidc_guard;
 using System.Text;
 using System.Text.Json;
 
-namespace oidc_guard_tests;
+namespace oidc_guard_tests.Infra;
 
 internal class MyWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPoint> where TEntryPoint : class
 {

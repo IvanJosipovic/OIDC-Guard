@@ -1,6 +1,8 @@
-using oidc_guard;
+using FluentAssertions;
+using oidc_guard_tests.Infra;
 using System.Net;
 using System.Web;
+using Xunit;
 
 namespace oidc_guard_tests;
 
@@ -31,7 +33,7 @@ public class AllowedRedirectDomainTests
 
     public async Task Signin(string query, string[]? allowedRedirectDomains, HttpStatusCode status)
     {
-        var client = AuthTests.GetClient(x => x.AllowedRedirectDomains = allowedRedirectDomains);
+        var client = AuthTestsHelpers.GetClient(x => x.AllowedRedirectDomains = allowedRedirectDomains);
 
         var response = await client.GetAsync($"/signin?rd={HttpUtility.UrlEncode(query)}");
 

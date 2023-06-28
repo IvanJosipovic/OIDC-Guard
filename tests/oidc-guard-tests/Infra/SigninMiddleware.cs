@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 
-namespace oidc_guard_tests;
+namespace oidc_guard_tests.Infra;
 
 public class SigninMiddleware : IMiddleware
 {
@@ -25,8 +25,8 @@ public class SigninMiddleware : IMiddleware
             return;
         }
 
-        TimeSpan span = (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc));
-        double unixTime = span.TotalSeconds;
+        var span = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        var unixTime = span.TotalSeconds;
 
         var token = FakeJwtIssuer.GenerateJwtToken(new List<Claim>() { new Claim("nonce", nonce), new Claim("iat", unixTime.ToString()), new Claim("sub", FakeJwtIssuer.Audience) });
 
