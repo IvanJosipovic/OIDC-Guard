@@ -131,4 +131,11 @@ public class AuthController : ControllerBase
 
         return Challenge(new AuthenticationProperties { RedirectUri = rd.ToString() });
     }
+
+    [HttpGet("robots.txt")]
+    [AllowAnonymous]
+    public ActionResult Robots()
+    {
+        return Ok("User-agent: *\r\nDisallow: /");
+    }
 }
