@@ -381,4 +381,14 @@ public class AuthTests
         var response = await _client.GetAsync($"/auth{query}");
         response.StatusCode.Should().Be(status);
     }
+
+    [Fact]
+    public async Task Robots()
+    {
+        var _client = AuthTestsHelpers.GetClient();
+
+        var response = await _client.GetAsync("/robots.txt");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        (await response.Content.ReadAsStringAsync()).Should().Be("User-agent: *\r\nDisallow: /");
+    }
 }
