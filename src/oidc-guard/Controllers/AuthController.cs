@@ -128,9 +128,9 @@ public class AuthController : ControllerBase
         return Challenge(new AuthenticationProperties { RedirectUri = rd.ToString() });
     }
 
-    [HttpGet("user")]
+    [HttpGet("userinfo")]
     [Authorize]
-    public ActionResult User()
+    public ActionResult UserInfo()
     {
         return Ok(HttpContext.User.Claims.Select(x => new { Name = x.Type, x.Value }));
     }
