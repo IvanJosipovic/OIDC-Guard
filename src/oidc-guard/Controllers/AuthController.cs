@@ -8,6 +8,7 @@ namespace oidc_guard.Controllers;
 
 [ApiController]
 [Route("")]
+[Authorize]
 public class AuthController : ControllerBase
 {
     private readonly ILogger<AuthController> _logger;
@@ -27,7 +28,7 @@ public class AuthController : ControllerBase
 
     [HttpGet("auth")]
     [AllowAnonymous]
-    public ActionResult Auth()
+    public IActionResult Auth()
     {
         if (settings.SkipAuthPreflight &&
             HttpContext.Request.Headers[CustomHeaderNames.OriginalMethod].FirstOrDefault() == "OPTIONS" &&
@@ -102,7 +103,7 @@ public class AuthController : ControllerBase
 
     [HttpGet("signin")]
     [AllowAnonymous]
-    public ActionResult Signin([FromQuery] Uri rd)
+    public IActionResult SignIn([FromQuery] Uri rd)
     {
         if (settings.AllowedRedirectDomains?.Length > 0 && rd.IsAbsoluteUri)
         {
@@ -137,14 +138,14 @@ public class AuthController : ControllerBase
 
     [HttpGet("userinfo")]
     [Authorize]
-    public ActionResult UserInfo()
+    public IActionResult UserInfo()
     {
         return Ok(HttpContext.User.Claims.Select(x => new { Name = x.Type, x.Value }));
     }
 
     [HttpGet("robots.txt")]
     [AllowAnonymous]
-    public ActionResult Robots()
+    public IActionResult Robots()
     {
         return Ok("User-agent: *\r\nDisallow: /");
     }

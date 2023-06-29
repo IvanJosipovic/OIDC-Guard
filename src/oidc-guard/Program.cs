@@ -20,7 +20,7 @@ public partial class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        Settings settings = builder.Configuration.GetSection("Settings").Get<Settings>()!;
+        var settings = builder.Configuration.GetSection("Settings").Get<Settings>()!;
         builder.Services.AddSingleton(settings);
 
         if (builder.Environment.IsProduction())
