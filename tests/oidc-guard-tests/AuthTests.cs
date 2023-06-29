@@ -3,7 +3,10 @@ using Microsoft.Net.Http.Headers;
 using oidc_guard;
 using oidc_guard_tests.Infra;
 using System.Net;
+using System.Net.Http.Json;
 using System.Security.Claims;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Xunit;
 
 namespace oidc_guard_tests;
@@ -390,5 +393,25 @@ public class AuthTests
         var response = await _client.GetAsync("/robots.txt");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         (await response.Content.ReadAsStringAsync()).Should().Be("User-agent: *\r\nDisallow: /");
+    }
+
+    [Fact]
+    public async Task UserInfo()
+    {
+        var _client = AuthTestsHelpers.GetClient();
+
+        var claims = new List<Claim>()
+        {
+            new Claim("username", "test")
+        };
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(claims));
+
+        var response = await _client.GetAsync("/userinfo");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var json = await response.Content.ReadFromJsonAsync<JsonDocument>();
+
+        json.RootElement[0].GetProperty("name").GetString().Should().Be("username");
+        json.RootElement[0].GetProperty("value").GetString().Should().Be("test");
     }
 }
