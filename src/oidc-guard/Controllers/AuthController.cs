@@ -132,6 +132,13 @@ public class AuthController : ControllerBase
         return Challenge(new AuthenticationProperties { RedirectUri = rd.ToString() });
     }
 
+    [HttpGet("user")]
+    [Authorize]
+    public ActionResult User()
+    {
+        return Ok(HttpContext.User.Claims.Select(x => new { Name = x.Type, x.Value }));
+    }
+
     [HttpGet("robots.txt")]
     [AllowAnonymous]
     public ActionResult Robots()
