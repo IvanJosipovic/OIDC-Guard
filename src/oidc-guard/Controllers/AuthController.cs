@@ -128,6 +128,13 @@ public class AuthController : ControllerBase
         return Challenge(new AuthenticationProperties { RedirectUri = rd.ToString() });
     }
 
+    [HttpGet("signout")]
+    [Authorize]
+    public IActionResult SignOut([FromQuery] string rd)
+    {
+        return SignOut(new AuthenticationProperties { RedirectUri = rd });
+    }
+
     [HttpGet("userinfo")]
     [Authorize]
     public ActionResult UserInfo()
