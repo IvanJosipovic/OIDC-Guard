@@ -47,53 +47,55 @@ public class AuthController : ControllerBase
         }
 
         // Validate based on rules
-
-        foreach (var item in Request.Query)
+        if (Request.QueryString.HasValue)
         {
-            if (item.Key.Equals("inject-claim", StringComparison.InvariantCultureIgnoreCase))
+            foreach (var item in Request.Query)
             {
-                foreach (var value in item.Value)
+                if (item.Key.Equals("inject-claim", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    if (string.IsNullOrEmpty(value))
+                    foreach (var value in item.Value)
                     {
-                        continue;
-                    }
+                        if (string.IsNullOrEmpty(value))
+                        {
+                            continue;
+                        }
 
-                    string claimName;
-                    string headerName;
+                        string claimName;
+                        string headerName;
 
-                    if (value.Contains(','))
-                    {
-                        claimName = value.Split(',')[0];
-                        headerName = value.Split(',')[1];
-                    }
-                    else
-                    {
-                        claimName = value;
-                        headerName = value;
-                    }
+                        if (value.Contains(','))
+                        {
+                            claimName = value.Split(',')[0];
+                            headerName = value.Split(',')[1];
+                        }
+                        else
+                        {
+                            claimName = value;
+                            headerName = value;
+                        }
 
-                    var claims = HttpContext.User.Claims.Where(x => x.Type == claimName).ToArray();
+                        var claims = HttpContext.User.Claims.Where(x => x.Type == claimName).ToArray();
 
-                    if (claims == null || claims.Length == 0)
-                    {
-                        continue;
-                    }
+                        if (claims == null || claims.Length == 0)
+                        {
+                            continue;
+                        }
 
-                    if (claims.Length == 1)
-                    {
-                        Response.Headers.Add(headerName, claims[0].Value);
-                    }
-                    else
-                    {
-                        Response.Headers.Add(headerName, new StringValues(claims.Select(x => x.Value).ToArray()));
+                        if (claims.Length == 1)
+                        {
+                            Response.Headers.Add(headerName, claims[0].Value);
+                        }
+                        else
+                        {
+                            Response.Headers.Add(headerName, new StringValues(claims.Select(x => x.Value).ToArray()));
+                        }
                     }
                 }
-            }
-            else if (!HttpContext.User.Claims.Any(x => x.Type == item.Key && item.Value.Contains(x.Value)))
-            {
-                UnauthorizedGauge.Inc();
-                return Unauthorized();
+                else if (!HttpContext.User.Claims.Any(x => x.Type == item.Key && item.Value.Contains(x.Value)))
+                {
+                    UnauthorizedGauge.Inc();
+                    return Unauthorized();
+                }
             }
         }
 
