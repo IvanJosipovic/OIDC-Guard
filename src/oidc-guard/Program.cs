@@ -56,6 +56,7 @@ public partial class Program
         {
             o.ClientId = settings.ClientId;
             o.ClientSecret = settings.ClientSecret;
+            o.CorrelationCookie.Name = settings.CookieName;
             o.MetadataAddress = settings.OpenIdProviderConfigurationUrl;
             o.NonceCookie.Name = settings.CookieName;
             o.ResponseType = OpenIdConnectResponseType.Code;
