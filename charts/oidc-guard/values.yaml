@@ -39,6 +39,11 @@ settings:
   # Client Secret
   clientSecret: ""
 
+  # Scopes to request
+  scopes:
+  - openid
+  - profile
+
   # Control if the access and refresh tokens should be stored in the cookie,
   # disable to reduce the size of the authentication cookie.
   # You may have to set 'large-client-header-buffers: 4 16k' in ingress-nginx

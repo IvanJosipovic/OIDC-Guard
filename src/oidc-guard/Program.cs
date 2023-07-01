@@ -62,6 +62,11 @@ public partial class Program
             o.ResponseType = OpenIdConnectResponseType.Code;
             o.SaveTokens = settings.SaveTokensInCookie;
             o.TokenValidationParameters.ClockSkew = TimeSpan.FromSeconds(30);
+            o.Scope.Clear();
+            foreach (var scope in settings.Scopes)
+            {
+                o.Scope.Add(scope);
+            }
         })
         .AddJwtBearer(o =>
         {

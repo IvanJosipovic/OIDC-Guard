@@ -16,6 +16,7 @@ public class Settings
     public string? CookieDomain { get; set; }
     public string? Host { get; set; }
     public string? Scheme { get; set; }
+    public string[] Scopes { get; set; }
     public string[]? AllowedRedirectDomains { get; set; }
     public string[]? ValidIssuers { get; set; }
 }
