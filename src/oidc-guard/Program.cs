@@ -76,6 +76,7 @@ public partial class Program
             o.MetadataAddress = settings.OpenIdProviderConfigurationUrl;
             o.TokenValidationParameters.ClockSkew = TimeSpan.FromSeconds(30);
             o.TokenValidationParameters.ValidateAudience = settings.ValidateAudience;
+            o.TokenValidationParameters.ValidAudiences = settings.ValidAudiences;
             o.TokenValidationParameters.ValidateIssuer = settings.ValidateIssuer;
             o.TokenValidationParameters.ValidIssuers = settings.ValidIssuers;
         })

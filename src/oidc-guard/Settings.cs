@@ -18,5 +18,6 @@ public class Settings
     public string? Scheme { get; set; }
     public string[] Scopes { get; set; }
     public string[]? AllowedRedirectDomains { get; set; }
+    public string[]? ValidAudiences { get; set; }
     public string[]? ValidIssuers { get; set; }
 }
