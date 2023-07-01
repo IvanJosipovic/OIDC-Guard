@@ -2,6 +2,7 @@
 
 public class Settings
 {
+    public bool EnableAccessTokenInQueryParameter { get; set; }
     public bool SaveTokensInCookie { get; set; }
     public bool SkipAuthPreflight { get; set; }
     public bool ValidateAudience { get; set; }
@@ -10,12 +11,11 @@ public class Settings
     public SameSiteMode CookieSameSiteMode { get; set; }
     public string ClientId { get; set; } = null!;
     public string ClientSecret { get; set; } = null!;
-    public string? CookieDomain { get; set; }
     public string CookieName { get; set; } = "oidc-guard";
     public string OpenIdProviderConfigurationUrl { get; set; } = null!;
-    public string[]? AllowedRedirectDomains { get; set; }
-    public string[]? ValidIssuers { get; set; }
+    public string? CookieDomain { get; set; }
     public string? Host { get; set; }
     public string? Scheme { get; set; }
-    public bool EnableAccessTokenInQueryParameter { get; set; }
+    public string[]? AllowedRedirectDomains { get; set; }
+    public string[]? ValidIssuers { get; set; }
 }
