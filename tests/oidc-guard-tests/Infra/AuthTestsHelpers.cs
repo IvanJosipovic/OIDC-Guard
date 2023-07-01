@@ -19,7 +19,8 @@ internal static class AuthTestsHelpers
         {
             ClientId = FakeJwtIssuer.Audience,
             ClientSecret = "secret",
-            OpenIdProviderConfigurationUrl = "https://inmemory.microsoft.com/common/.well-known/openid-configuration"
+            OpenIdProviderConfigurationUrl = "https://inmemory.microsoft.com/common/.well-known/openid-configuration",
+            Scopes = new[] {"openid", "profile"}
         };
 
         settingsAction?.Invoke(settings);
