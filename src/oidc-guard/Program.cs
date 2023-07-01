@@ -105,7 +105,7 @@ public partial class Program
         builder.Services.AddControllers();
         builder.Services.AddHealthChecks();
 
-        builder.Services.Configure<ForwardedHeadersOptions>(options => options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto);
+        builder.Services.Configure<ForwardedHeadersOptions>(options => options.ForwardedHeaders = ForwardedHeaders.All);
 
         builder.Services.AddHostedService<HostedService>();
 
