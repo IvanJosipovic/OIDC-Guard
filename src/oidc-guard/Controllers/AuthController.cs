@@ -94,7 +94,7 @@ public class AuthController : ControllerBase
                 else if (!HttpContext.User.Claims.Any(x => x.Type == item.Key && item.Value.Contains(x.Value)))
                 {
                     UnauthorizedGauge.Inc();
-                    return Unauthorized();
+                    return Unauthorized($"Claim {item.Key} does not match!");
                 }
             }
         }
