@@ -1,67 +1,25 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Logging;
-using Microsoft.IdentityModel.Protocols;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using FluentAssertions;
 using Microsoft.Net.Http.Headers;
 using oidc_guard;
+using oidc_guard_tests.Infra;
 using System.Net;
+using System.Net.Http.Json;
 using System.Security.Claims;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using Xunit;
 
 namespace oidc_guard_tests;
 
 public class AuthTests
 {
-    public static HttpClient GetClient(Action<Settings>? settingsAction = null, bool allowAutoRedirect = false)
+    [Fact]
+    public async Task Unauthorized()
     {
-        IdentityModelEventSource.ShowPII = true;
+        var _client = AuthTestsHelpers.GetClient();
 
-        var settings = new Settings()
-        {
-            ClientId = FakeJwtIssuer.Audience,
-            ClientSecret = "secret",
-            OpenIdProviderConfigurationUrl = "https://inmemory.microsoft.com/common/.well-known/openid-configuration"
-        };
-
-        settingsAction?.Invoke(settings);
-
-        var factory = new MyWebApplicationFactory<Program>(settings)
-            .WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureServices((webHost, services) =>
-                {
-                    services.AddSingleton<SigninMiddleware>();
-                    services.AddTransient<IStartupFilter, SigninStartupFilter>();
-
-                    services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
-                    {
-                        options.Configuration = null;
-                        options.MetadataAddress = null;
-                        options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                            settings.OpenIdProviderConfigurationUrl,
-                            new OpenIdConnectConfigurationRetriever(),
-                            new TestServerDocumentRetriever()
-                        );
-                    });
-
-                    services.PostConfigure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
-                    {
-                        options.Configuration = null;
-                        options.MetadataAddress = null;
-                        options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                            settings.OpenIdProviderConfigurationUrl,
-                            new OpenIdConnectConfigurationRetriever(),
-                            new TestServerDocumentRetriever()
-                        );
-                    });
-                });
-            });
-
-        factory.ClientOptions.AllowAutoRedirect = allowAutoRedirect;
-
-        return factory.CreateDefaultClient();
+        var response = await _client.GetAsync("/auth");
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     public static IEnumerable<object[]> GetTests()
@@ -321,7 +279,7 @@ public class AuthTests
     [MemberData(nameof(GetInjectClaimsTests))]
     public async Task Auth(string query, List<Claim> claims, HttpStatusCode status, List<Claim>? expectedHeaders = null)
     {
-        var _client = GetClient();
+        var _client = AuthTestsHelpers.GetClient();
 
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(claims));
 
@@ -336,68 +294,6 @@ public class AuthTests
                 found.Should().BeTrue();
             }
         }
-    }
-
-    [Fact]
-    public async Task Unauthorized()
-    {
-        var _client = GetClient();
-
-        var response = await _client.GetAsync("/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-    }
-
-    [Fact]
-    public async Task SkipAuthPreflight()
-    {
-        var _client = GetClient(x => { x.SkipAuthPreflight = true; });
-
-        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Origin, "localhost");
-        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, "OPTIONS");
-        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestHeaders, "origin, x-requested-with");
-        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestMethod, "DELETE");
-
-        var response = await _client.GetAsync("/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-    }
-
-    [Fact]
-    public async Task SkipAuthPreflightDisabled()
-    {
-        var _client = GetClient(x => { x.SkipAuthPreflight = false; });
-
-        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, "OPTIONS");
-        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestHeaders, "origin, x-requested-with");
-        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestMethod, "DELETE");
-
-        var response = await _client.GetAsync("/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-    }
-
-    [Fact]
-    public async Task SkipAuthPreflightMissingMethod()
-    {
-        var _client = GetClient(x => { x.SkipAuthPreflight = true; });
-
-        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Origin, "localhost");
-        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, "OPTIONS");
-        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestHeaders, "origin, x-requested-with");
-
-        var response = await _client.GetAsync("/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-    }
-
-    [Fact]
-    public async Task SkipAuthPreflightMissingRequestHeaders()
-    {
-        var _client = GetClient(x => { x.SkipAuthPreflight = true; });
-
-        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Origin, "localhost");
-        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, "OPTIONS");
-        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestMethod, "DELETE");
-
-        var response = await _client.GetAsync("/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     public static IEnumerable<object[]> GetTokenAsQueryParameterTests()
@@ -473,7 +369,7 @@ public class AuthTests
     [MemberData(nameof(GetTokenAsQueryParameterTests))]
     public async Task TokenInQueryParamTests(string query, List<Claim> claims, HttpStatusCode status, Dictionary<string, string> requestHeaders, bool addAuthorizationHeader = false)
     {
-        var _client = GetClient(x => { x.EnableAccessTokenInQueryParameter = true; });
+        var _client = AuthTestsHelpers.GetClient(x => { x.EnableAccessTokenInQueryParameter = true; });
 
         foreach (var header in requestHeaders)
         {
@@ -490,27 +386,32 @@ public class AuthTests
     }
 
     [Fact]
-    public async Task Signin()
+    public async Task Robots()
     {
-        var _client = GetClient(allowAutoRedirect: true);
+        var _client = AuthTestsHelpers.GetClient();
 
-        var response = await _client.GetAsync("/signin?rd=/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.Found);
+        var response = await _client.GetAsync("/robots.txt");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        (await response.Content.ReadAsStringAsync()).Should().Be("User-agent: *\r\nDisallow: /");
+    }
 
-        _client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response.Headers.GetValues("Set-Cookie"));
+    [Fact]
+    public async Task UserInfo()
+    {
+        var _client = AuthTestsHelpers.GetClient();
 
-        var response2 = await _client.GetAsync(response.Headers.Location);
-        response2.StatusCode.Should().Be(HttpStatusCode.Found);
-        response2.Headers.Location.Should().Be("/auth");
+        var claims = new List<Claim>()
+        {
+            new Claim("username", "test")
+        };
 
-        _client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response2.Headers.GetValues("Set-Cookie"));
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(claims));
 
-        var response3 = await _client.GetAsync(response2.Headers.Location);
-        response3.StatusCode.Should().Be(HttpStatusCode.OK);
+        var response = await _client.GetAsync("/userinfo");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var json = await response.Content.ReadFromJsonAsync<JsonDocument>();
 
-        _client.DefaultRequestHeaders.Clear();
-
-        var response4 = await _client.GetAsync(response2.Headers.Location);
-        response4.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        json.RootElement[0].GetProperty("name").GetString().Should().Be("username");
+        json.RootElement[0].GetProperty("value").GetString().Should().Be("test");
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 
-namespace oidc_guard_tests;
+namespace oidc_guard_tests.Infra;
 
 public class SigninStartupFilter : IStartupFilter
 {

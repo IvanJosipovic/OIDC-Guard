@@ -1,6 +1,6 @@
 ﻿using Microsoft.IdentityModel.Protocols;
 
-namespace oidc_guard_tests;
+namespace oidc_guard_tests.Infra;
 
 public class TestServerDocumentRetriever : IDocumentRetriever
 {

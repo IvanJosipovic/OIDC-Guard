@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -8,6 +9,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Net.Http.Headers;
 using oidc_guard.Services;
 using Prometheus;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace oidc_guard;
 
@@ -19,7 +21,7 @@ public partial class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        Settings settings = builder.Configuration.GetSection("Settings").Get<Settings>()!;
+        var settings = builder.Configuration.GetSection("Settings").Get<Settings>()!;
         builder.Services.AddSingleton(settings);
 
         if (builder.Environment.IsProduction())
@@ -39,6 +41,8 @@ public partial class Program
             o.OnDeleteCookie = cookieContext => cookieContext.CookieOptions.SameSite = settings.CookieSameSiteMode;
         });
 
+        JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
         builder.Services.AddAuthentication(o =>
         {
             o.DefaultScheme = AuthenticationScheme;
@@ -53,17 +57,26 @@ public partial class Program
         {
             o.ClientId = settings.ClientId;
             o.ClientSecret = settings.ClientSecret;
+            o.CorrelationCookie.Name = settings.CookieName;
             o.MetadataAddress = settings.OpenIdProviderConfigurationUrl;
             o.NonceCookie.Name = settings.CookieName;
             o.ResponseType = OpenIdConnectResponseType.Code;
             o.SaveTokens = settings.SaveTokensInCookie;
             o.TokenValidationParameters.ClockSkew = TimeSpan.FromSeconds(30);
+            o.Scope.Clear();
+            foreach (var scope in settings.Scopes)
+            {
+                o.Scope.Add(scope);
+            }
+            o.ClaimActions.Clear();
+            o.ClaimActions.MapAllExcept("nonce", /*"aud",*/ "azp", "acr", "iss", "iat", "nbf", "exp", "at_hash", "c_hash", "ipaddr", "platf", "ver");
         })
         .AddJwtBearer(o =>
         {
             o.MetadataAddress = settings.OpenIdProviderConfigurationUrl;
             o.TokenValidationParameters.ClockSkew = TimeSpan.FromSeconds(30);
             o.TokenValidationParameters.ValidateAudience = settings.ValidateAudience;
+            o.TokenValidationParameters.ValidAudiences = settings.ValidAudiences;
             o.TokenValidationParameters.ValidateIssuer = settings.ValidateIssuer;
             o.TokenValidationParameters.ValidIssuers = settings.ValidIssuers;
         })
