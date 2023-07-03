@@ -21,6 +21,8 @@ public class AuthController : ControllerBase
 
     private static readonly Gauge SigninGauge = Metrics.CreateGauge("oidc_guard_signin", "Number of Sign-in operations ongoing.");
 
+    private static readonly Gauge SignoutGauge = Metrics.CreateGauge("oidc_guard_signout", "Number of Sign-out operations ongoing.");
+
     public AuthController(ILogger<AuthController> logger, Settings settings)
     {
         _logger = logger;
@@ -176,23 +178,9 @@ public class AuthController : ControllerBase
     [AllowAnonymous]
     public IActionResult SignIn([FromQuery] Uri rd)
     {
-        if (settings.AllowedRedirectDomains?.Length > 0 && rd.IsAbsoluteUri)
+        if (!ValidateRedirect(rd))
         {
-            var found = false;
-            foreach (var allowedDomain in settings.AllowedRedirectDomains)
-            {
-                if ((allowedDomain[0] == '.' && rd.DnsSafeHost.EndsWith(allowedDomain, StringComparison.InvariantCultureIgnoreCase)) ||
-                    rd.DnsSafeHost.Equals(allowedDomain, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    found = true;
-                    break;
-                }
-            }
-
-            if (found == false)
-            {
-                return BadRequest();
-            }
+            return BadRequest();
         }
 
         SigninGauge.Inc();
@@ -202,9 +190,16 @@ public class AuthController : ControllerBase
 
     [HttpGet("signout")]
     [Authorize]
-    public IActionResult SignOut([FromQuery] string rd)
+    public IActionResult SignOut([FromQuery] Uri rd)
     {
-        return SignOut(new AuthenticationProperties { RedirectUri = rd });
+        if (!ValidateRedirect(rd))
+        {
+            return BadRequest();
+        }
+
+        SignoutGauge.Inc();
+
+        return SignOut(new AuthenticationProperties { RedirectUri = rd.ToString() });
     }
 
     [HttpGet("userinfo")]
@@ -219,5 +214,24 @@ public class AuthController : ControllerBase
     public IActionResult Robots()
     {
         return Ok("User-agent: *\r\nDisallow: /");
+    }
+
+    private bool ValidateRedirect(Uri rd)
+    {
+        if (settings.AllowedRedirectDomains?.Length > 0 && rd.IsAbsoluteUri)
+        {
+            foreach (var allowedDomain in settings.AllowedRedirectDomains)
+            {
+                if ((allowedDomain[0] == '.' && rd.DnsSafeHost.EndsWith(allowedDomain, StringComparison.InvariantCultureIgnoreCase)) ||
+                    rd.DnsSafeHost.Equals(allowedDomain, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        return true;
     }
 }
