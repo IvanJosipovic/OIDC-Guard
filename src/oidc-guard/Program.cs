@@ -94,12 +94,14 @@ public partial class Program
 
         builder.Services.AddHttpLogging(logging =>
         {
+            logging.RequestHeaders.Add("Access-Control-Request-Headers");
+            logging.RequestHeaders.Add("Access-Control-Request-Method");
+            logging.RequestHeaders.Add("X-Forwarded-Host");
             logging.RequestHeaders.Add("X-Forwarded-Proto");
+            logging.RequestHeaders.Add("X-Forwarded-Scheme");
             logging.RequestHeaders.Add("X-Original-Method");
             logging.RequestHeaders.Add("X-Original-Url");
             logging.RequestHeaders.Add("X-Scheme");
-            logging.RequestHeaders.Add("Access-Control-Request-Headers");
-            logging.RequestHeaders.Add("Access-Control-Request-Method");
         });
 
         builder.Services.AddControllers();
