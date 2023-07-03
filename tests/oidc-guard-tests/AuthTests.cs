@@ -414,4 +414,27 @@ public class AuthTests
         json.RootElement[0].GetProperty("name").GetString().Should().Be("username");
         json.RootElement[0].GetProperty("value").GetString().Should().Be("test");
     }
+
+    [Theory]
+    [InlineData("?skip-auth=GET,test", "https://test.com", "GET", HttpStatusCode.OK)]
+    [InlineData("?skip-auth=GET,test", "https://test.com", "POST", HttpStatusCode.Unauthorized)]
+    [InlineData("?skip-auth=GET,test", "https://bob.com", "GET", HttpStatusCode.Unauthorized)]
+    [InlineData("?skip-auth=test", "https://test.com", "GET", HttpStatusCode.OK)]
+    [InlineData("?skip-auth=test", "https://bob.com", "GET", HttpStatusCode.Unauthorized)]
+
+    [InlineData("?skip-auth-ne=GET,test", "https://bob.com", "POST", HttpStatusCode.OK)]
+    [InlineData("?skip-auth-ne=GET,test", "https://test.com", "GET", HttpStatusCode.Unauthorized)]
+    [InlineData("?skip-auth-ne=test", "https://bob.com", "GET", HttpStatusCode.OK)]
+    [InlineData("?skip-auth-ne=test", "https://test.com", "GET", HttpStatusCode.Unauthorized)]
+
+    public async Task SkipAuth(string query, string Url, string httpMethod, HttpStatusCode status)
+    {
+        var _client = AuthTestsHelpers.GetClient();
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalUrl, Url);
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, httpMethod);
+
+        var response = await _client.GetAsync($"/auth{query}");
+        response.StatusCode.Should().Be(status);
+    }
 }

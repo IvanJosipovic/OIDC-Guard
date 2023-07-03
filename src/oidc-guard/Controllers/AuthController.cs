@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using Prometheus;
+using System.Text.RegularExpressions;
 
 namespace oidc_guard.Controllers;
 
@@ -40,6 +41,68 @@ public class AuthController : ControllerBase
             return Ok();
         }
 
+        if (Request.QueryString.HasValue && (Request.Query.ContainsKey("skip-auth") || Request.Query.ContainsKey("skip-auth-ne")))
+        {
+            var skipEquals = Request.Query["skip-auth"];
+            var skipNotEquals = Request.Query["skip-auth-ne"];
+            var originalUrl = HttpContext.Request.Headers[CustomHeaderNames.OriginalUrl].FirstOrDefault();
+            var originalMethod = HttpContext.Request.Headers[CustomHeaderNames.OriginalMethod].FirstOrDefault();
+
+            if (skipEquals.Count > 0)
+            {
+                foreach (var item in skipEquals)
+                {
+                    var commaIndex = item.IndexOf(',');
+                    if (commaIndex != -1)
+                    {
+                        var method = item[..commaIndex];
+                        var regex = item[(commaIndex + 1)..];
+
+                        if (method == originalMethod && Regex.IsMatch(originalUrl, regex))
+                        {
+                            AuthorizedGauge.Inc();
+                            return Ok();
+                        }
+                    }
+                    else
+                    {
+                        if (Regex.IsMatch(originalUrl, item))
+                        {
+                            AuthorizedGauge.Inc();
+                            return Ok();
+                        }
+                    }
+                }
+            }
+
+            if (skipNotEquals.Count > 0)
+            {
+                foreach (var item in skipNotEquals)
+                {
+                    var commaIndex = item.IndexOf(',');
+                    if (commaIndex != -1)
+                    {
+                        var method = item[..commaIndex];
+                        var regex = item[(commaIndex + 1)..];
+
+                        if (method != originalMethod && !Regex.IsMatch(originalUrl, regex))
+                        {
+                            AuthorizedGauge.Inc();
+                            return Ok();
+                        }
+                    }
+                    else
+                    {
+                        if (!Regex.IsMatch(originalUrl, item))
+                        {
+                            AuthorizedGauge.Inc();
+                            return Ok();
+                        }
+                    }
+                }
+            }
+        }
+
         if (HttpContext.User.Identity?.IsAuthenticated == false)
         {
             UnauthorizedGauge.Inc();
@@ -51,7 +114,13 @@ public class AuthController : ControllerBase
         {
             foreach (var item in Request.Query)
             {
-                if (item.Key.Equals("inject-claim", StringComparison.InvariantCultureIgnoreCase))
+                if (item.Key.Equals("skip-auth", StringComparison.InvariantCultureIgnoreCase))
+                {
+                }
+                else if (item.Key.Equals("skip-auth-ne", StringComparison.InvariantCultureIgnoreCase))
+                {
+                }
+                else if (item.Key.Equals("inject-claim", StringComparison.InvariantCultureIgnoreCase))
                 {
                     foreach (var value in item.Value)
                     {
