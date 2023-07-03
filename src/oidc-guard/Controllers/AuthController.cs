@@ -211,7 +211,7 @@ public class AuthController : ControllerBase
     [Authorize]
     public IActionResult UserInfo()
     {
-        return Ok(HttpContext.User.Claims.Select(x => new { Name = x.Type, x.Value }));
+        return Ok(HttpContext.User.Claims.ToDictionary(x => x.Type, x => x.Value));
     }
 
     [HttpGet("robots.txt")]

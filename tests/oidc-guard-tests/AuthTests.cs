@@ -411,8 +411,7 @@ public class AuthTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var json = await response.Content.ReadFromJsonAsync<JsonDocument>();
 
-        json.RootElement[0].GetProperty("name").GetString().Should().Be("username");
-        json.RootElement[0].GetProperty("value").GetString().Should().Be("test");
+        json.RootElement.GetProperty("username").GetString().Should().Be("test");
     }
 
     [Theory]
