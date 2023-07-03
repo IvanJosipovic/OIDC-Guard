@@ -21,4 +21,4 @@ This project is an API server which is used along with the [nginx.ingress.kubern
 
 ## Documentation
 
-[Wiki]([wiki](https://github.com/IvanJosipovic/OIDC-Guard/wiki))
+[Go to Wiki](https://github.com/IvanJosipovic/OIDC-Guard/wiki)
