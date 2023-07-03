@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using oidc_guard_tests.Infra;
 using System.Net;
-using System.Security.Claims;
 using System.Web;
 using Xunit;
 
