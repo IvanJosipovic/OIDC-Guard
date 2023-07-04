@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using Prometheus;
+using System.Text.RegularExpressions;
 
 namespace oidc_guard.Controllers;
 
@@ -19,6 +20,8 @@ public class AuthController : ControllerBase
     private static readonly Gauge UnauthorizedGauge = Metrics.CreateGauge("oidc_guard_unauthorized", "Number of Unauthorized operations ongoing.");
 
     private static readonly Gauge SigninGauge = Metrics.CreateGauge("oidc_guard_signin", "Number of Sign-in operations ongoing.");
+
+    private static readonly Gauge SignoutGauge = Metrics.CreateGauge("oidc_guard_signout", "Number of Sign-out operations ongoing.");
 
     public AuthController(ILogger<AuthController> logger, Settings settings)
     {
@@ -40,6 +43,68 @@ public class AuthController : ControllerBase
             return Ok();
         }
 
+        if (Request.QueryString.HasValue && (Request.Query.ContainsKey("skip-auth") || Request.Query.ContainsKey("skip-auth-ne")))
+        {
+            var skipEquals = Request.Query["skip-auth"];
+            var skipNotEquals = Request.Query["skip-auth-ne"];
+            var originalUrl = HttpContext.Request.Headers[CustomHeaderNames.OriginalUrl].FirstOrDefault();
+            var originalMethod = HttpContext.Request.Headers[CustomHeaderNames.OriginalMethod].FirstOrDefault();
+
+            if (skipEquals.Count > 0)
+            {
+                foreach (var item in skipEquals)
+                {
+                    var commaIndex = item.IndexOf(',');
+                    if (commaIndex != -1)
+                    {
+                        var method = item[..commaIndex];
+                        var regex = item[(commaIndex + 1)..];
+
+                        if (method == originalMethod && Regex.IsMatch(originalUrl, regex))
+                        {
+                            AuthorizedGauge.Inc();
+                            return Ok();
+                        }
+                    }
+                    else
+                    {
+                        if (Regex.IsMatch(originalUrl, item))
+                        {
+                            AuthorizedGauge.Inc();
+                            return Ok();
+                        }
+                    }
+                }
+            }
+
+            if (skipNotEquals.Count > 0)
+            {
+                foreach (var item in skipNotEquals)
+                {
+                    var commaIndex = item.IndexOf(',');
+                    if (commaIndex != -1)
+                    {
+                        var method = item[..commaIndex];
+                        var regex = item[(commaIndex + 1)..];
+
+                        if (method != originalMethod && !Regex.IsMatch(originalUrl, regex))
+                        {
+                            AuthorizedGauge.Inc();
+                            return Ok();
+                        }
+                    }
+                    else
+                    {
+                        if (!Regex.IsMatch(originalUrl, item))
+                        {
+                            AuthorizedGauge.Inc();
+                            return Ok();
+                        }
+                    }
+                }
+            }
+        }
+
         if (HttpContext.User.Identity?.IsAuthenticated == false)
         {
             UnauthorizedGauge.Inc();
@@ -51,7 +116,13 @@ public class AuthController : ControllerBase
         {
             foreach (var item in Request.Query)
             {
-                if (item.Key.Equals("inject-claim", StringComparison.InvariantCultureIgnoreCase))
+                if (item.Key.Equals("skip-auth", StringComparison.InvariantCultureIgnoreCase))
+                {
+                }
+                else if (item.Key.Equals("skip-auth-ne", StringComparison.InvariantCultureIgnoreCase))
+                {
+                }
+                else if (item.Key.Equals("inject-claim", StringComparison.InvariantCultureIgnoreCase))
                 {
                     foreach (var value in item.Value)
                     {
@@ -107,23 +178,9 @@ public class AuthController : ControllerBase
     [AllowAnonymous]
     public IActionResult SignIn([FromQuery] Uri rd)
     {
-        if (settings.AllowedRedirectDomains?.Length > 0 && rd.IsAbsoluteUri)
+        if (!ValidateRedirect(rd))
         {
-            var found = false;
-            foreach (var allowedDomain in settings.AllowedRedirectDomains)
-            {
-                if ((allowedDomain[0] == '.' && rd.DnsSafeHost.EndsWith(allowedDomain, StringComparison.InvariantCultureIgnoreCase)) ||
-                    rd.DnsSafeHost.Equals(allowedDomain, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    found = true;
-                    break;
-                }
-            }
-
-            if (found == false)
-            {
-                return BadRequest();
-            }
+            return BadRequest();
         }
 
         SigninGauge.Inc();
@@ -133,16 +190,23 @@ public class AuthController : ControllerBase
 
     [HttpGet("signout")]
     [Authorize]
-    public IActionResult SignOut([FromQuery] string rd)
+    public IActionResult SignOut([FromQuery] Uri rd)
     {
-        return SignOut(new AuthenticationProperties { RedirectUri = rd });
+        if (!ValidateRedirect(rd))
+        {
+            return BadRequest();
+        }
+
+        SignoutGauge.Inc();
+
+        return SignOut(new AuthenticationProperties { RedirectUri = rd.ToString() });
     }
 
     [HttpGet("userinfo")]
     [Authorize]
     public IActionResult UserInfo()
     {
-        return Ok(HttpContext.User.Claims.Select(x => new { Name = x.Type, x.Value }));
+        return Ok(HttpContext.User.Claims.ToDictionary(x => x.Type, x => x.Value));
     }
 
     [HttpGet("robots.txt")]
@@ -150,5 +214,24 @@ public class AuthController : ControllerBase
     public IActionResult Robots()
     {
         return Ok("User-agent: *\r\nDisallow: /");
+    }
+
+    private bool ValidateRedirect(Uri rd)
+    {
+        if (settings.AllowedRedirectDomains?.Length > 0 && rd.IsAbsoluteUri)
+        {
+            foreach (var allowedDomain in settings.AllowedRedirectDomains)
+            {
+                if ((allowedDomain[0] == '.' && rd.DnsSafeHost.EndsWith(allowedDomain, StringComparison.InvariantCultureIgnoreCase)) ||
+                    rd.DnsSafeHost.Equals(allowedDomain, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        return true;
     }
 }

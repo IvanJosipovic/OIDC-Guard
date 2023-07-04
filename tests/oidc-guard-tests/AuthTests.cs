@@ -1,7 +1,9 @@
 using FluentAssertions;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
 using oidc_guard;
 using oidc_guard_tests.Infra;
+using System;
 using System.Net;
 using System.Net.Http.Json;
 using System.Security.Claims;
@@ -411,7 +413,43 @@ public class AuthTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var json = await response.Content.ReadFromJsonAsync<JsonDocument>();
 
-        json.RootElement[0].GetProperty("name").GetString().Should().Be("username");
-        json.RootElement[0].GetProperty("value").GetString().Should().Be("test");
+        json.RootElement.GetProperty("username").GetString().Should().Be("test");
+    }
+
+    [Theory]
+    [InlineData("?skip-auth=GET,test", "https://test.com", "GET", HttpStatusCode.OK)]
+    [InlineData("?skip-auth=GET,test", "https://test.com", "POST", HttpStatusCode.Unauthorized)]
+    [InlineData("?skip-auth=GET,test", "https://bob.com", "GET", HttpStatusCode.Unauthorized)]
+    [InlineData("?skip-auth=test", "https://test.com", "GET", HttpStatusCode.OK)]
+    [InlineData("?skip-auth=test", "https://bob.com", "GET", HttpStatusCode.Unauthorized)]
+
+    [InlineData("?skip-auth-ne=GET,test", "https://bob.com", "POST", HttpStatusCode.OK)]
+    [InlineData("?skip-auth-ne=GET,test", "https://test.com", "GET", HttpStatusCode.Unauthorized)]
+    [InlineData("?skip-auth-ne=test", "https://bob.com", "GET", HttpStatusCode.OK)]
+    [InlineData("?skip-auth-ne=test", "https://test.com", "GET", HttpStatusCode.Unauthorized)]
+
+    public async Task SkipAuth(string query, string Url, string httpMethod, HttpStatusCode status)
+    {
+        var _client = AuthTestsHelpers.GetClient();
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalUrl, Url);
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, httpMethod);
+
+        var response = await _client.GetAsync($"/auth{query}");
+        response.StatusCode.Should().Be(status);
+    }
+
+    [Fact]
+    public async Task SetHost()
+    {
+        var _client = AuthTestsHelpers.GetClient(x => { x.Host = "fakedomain.com"; x.Scheme = "https"; });
+
+        var response = await _client.GetAsync("/signin?rd=/health");
+        response.StatusCode.Should().Be(HttpStatusCode.Found);
+
+        var query = QueryHelpers.ParseQuery(response.Headers.Location.Query);
+        var replyUri = new Uri(query["redirect_uri"]);
+        replyUri.Host.Should().Be("fakedomain.com");
+        replyUri.Scheme.Should().Be("https");
     }
 }

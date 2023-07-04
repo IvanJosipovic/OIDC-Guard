@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using oidc_guard_tests.Infra;
 using System.Net;
+using System.Web;
 using Xunit;
 
 namespace oidc_guard_tests
@@ -58,6 +59,124 @@ namespace oidc_guard_tests
 
             var response5 = await _client.GetAsync(response4.Headers.Location);
             response5.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        public static IEnumerable<object[]> GetAllowedRedirectDomains()
+        {
+            return new List<object[]>
+            {
+                new object[]
+                {
+                    "/test", null, HttpStatusCode.Redirect
+                },
+                new object[]
+                {
+                    "/test", new[] { "test.com" }, HttpStatusCode.Redirect
+                },
+
+                new object[]
+                {
+                    "https://test.com", null, HttpStatusCode.Redirect
+                },
+                new object[]
+                {
+                    "https://subdmain.test.com", null, HttpStatusCode.Redirect
+                },
+                new object[]
+                {
+                    "https://subsubdomain.subdmain.test.com", null, HttpStatusCode.Redirect
+                },
+
+                new object[]
+                {
+                    "https://test.com", new[] { "test.com" }, HttpStatusCode.Redirect
+                },
+                new object[]
+                {
+                    "https://subdmain.test.com", new[] { ".test.com" }, HttpStatusCode.Redirect
+                },
+                new object[]
+                {
+                    "https://subsubdomain.subdmain.test.com", new[] { ".test.com" }, HttpStatusCode.Redirect
+                },
+
+                new object[]
+                {
+                    "https://test.com", new[] { "test2.com", "test.com" }, HttpStatusCode.Redirect
+                },
+                new object[]
+                {
+                    "https://subdmain.test.com", new[] { "test2.com", ".test.com" }, HttpStatusCode.Redirect
+                },
+                new object[]
+                {
+                    "https://subsubdomain.subdmain.test.com", new[] { "test2.com", ".test.com" }, HttpStatusCode.Redirect
+                },
+
+                new object[]
+                {
+                    "https://bad.com", new[] { "test.com" }, HttpStatusCode.BadRequest
+                },
+                new object[]
+                {
+                    "https://subdmain.bad.com", new[] { ".test.com" }, HttpStatusCode.BadRequest
+                },
+                new object[]
+                {
+                    "https://subsubdomain.subdmain.bad.com", new[] { ".test.com" }, HttpStatusCode.BadRequest
+                },
+
+                new object[]
+                {
+                    "https://test.com", new[] { "Test.com" }, HttpStatusCode.Redirect
+                },
+                new object[]
+                {
+                    "https://subdmain.test.com", new[] { ".Test.com" }, HttpStatusCode.Redirect
+                },
+            };
+        }
+
+        [Theory]
+        [MemberData(nameof(GetAllowedRedirectDomains))]
+        public async Task SignInAllowedRedirectDomains(string query, string[]? allowedRedirectDomains, HttpStatusCode status)
+        {
+            var client = AuthTestsHelpers.GetClient(x => x.AllowedRedirectDomains = allowedRedirectDomains);
+
+            var response = await client.GetAsync($"/signin?rd={HttpUtility.UrlEncode(query)}");
+
+            response.StatusCode.Should().Be(status);
+
+            if (status == HttpStatusCode.Found)
+            {
+                client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response.Headers.GetValues("Set-Cookie"));
+
+                var response2 = await client.GetAsync(response.Headers.Location);
+                response2.StatusCode.Should().Be(HttpStatusCode.Found);
+                response2.Headers.Location.Should().Be(query);
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(GetAllowedRedirectDomains))]
+        public async Task SignOutAllowedRedirectDomains(string query, string[]? allowedRedirectDomains, HttpStatusCode status)
+        {
+            var client = AuthTestsHelpers.GetClient(x => x.AllowedRedirectDomains = allowedRedirectDomains);
+
+            var response = await client.GetAsync($"/signin?rd=/health");
+            client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response.Headers.GetValues("Set-Cookie"));
+
+            var response2 = await client.GetAsync(response.Headers.Location);
+            response2.StatusCode.Should().Be(HttpStatusCode.Found);
+
+            client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response2.Headers.GetValues("Set-Cookie"));
+
+            var response3 = await client.GetAsync($"/signout?rd={HttpUtility.UrlEncode(query)}");
+            response3.StatusCode.Should().Be(status);
+            if (status == HttpStatusCode.Redirect)
+            {
+                response3.Headers.Location.Should().Be(query);
+            }
         }
     }
 }
