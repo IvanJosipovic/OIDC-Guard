@@ -163,23 +163,18 @@ namespace oidc_guard_tests
         {
             var client = AuthTestsHelpers.GetClient(x => x.AllowedRedirectDomains = allowedRedirectDomains);
 
-            var response = await client.GetAsync($"/signin?rd={HttpUtility.UrlEncode(query)}");
+            var response = await client.GetAsync($"/signin?rd=/health");
+            client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response.Headers.GetValues("Set-Cookie"));
 
-            response.StatusCode.Should().Be(status);
+            var response2 = await client.GetAsync(response.Headers.Location);
+            response2.StatusCode.Should().Be(HttpStatusCode.Found);
 
-            if (status == HttpStatusCode.Found)
+            client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response2.Headers.GetValues("Set-Cookie"));
+
+            var response3 = await client.GetAsync($"/signout?rd={HttpUtility.UrlEncode(query)}");
+            response3.StatusCode.Should().Be(status);
+            if (status == HttpStatusCode.Redirect)
             {
-                client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response.Headers.GetValues("Set-Cookie"));
-
-                var response2 = await client.GetAsync(response.Headers.Location);
-                response2.StatusCode.Should().Be(HttpStatusCode.Found);
-                response2.Headers.Location.Should().Be(query);
-
-                client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response2.Headers.GetValues("Set-Cookie"));
-
-                var response3 = await client.GetAsync($"/signout?rd={HttpUtility.UrlEncode(query)}");
-                response3.StatusCode.Should().Be(status);
-                response3.StatusCode.Should().Be(HttpStatusCode.Found);
                 response3.Headers.Location.Should().Be(query);
             }
         }
