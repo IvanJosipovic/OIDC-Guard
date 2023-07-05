@@ -3,12 +3,10 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
 using oidc_guard;
 using oidc_guard_tests.Infra;
-using System;
 using System.Net;
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using Xunit;
 
 namespace oidc_guard_tests;
@@ -427,7 +425,6 @@ public class AuthTests
     [InlineData("?skip-auth-ne=GET,test", "https://test.com", "GET", HttpStatusCode.Unauthorized)]
     [InlineData("?skip-auth-ne=test", "https://bob.com", "GET", HttpStatusCode.OK)]
     [InlineData("?skip-auth-ne=test", "https://test.com", "GET", HttpStatusCode.Unauthorized)]
-
     public async Task SkipAuth(string query, string Url, string httpMethod, HttpStatusCode status)
     {
         var _client = AuthTestsHelpers.GetClient();
