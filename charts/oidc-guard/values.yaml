@@ -163,11 +163,3 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-
-# A Volume is required to store auto generated cookie secret
-# Storage Class Name
-storageClassName: ""
-# Storage class, must be ReadWriteMany if you are running multiple instances of this service
-storageAccessMode: ReadWriteMany
-# Storage Size
-storageSize: 10Gi

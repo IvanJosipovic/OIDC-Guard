@@ -24,16 +24,16 @@ public partial class Program
         var settings = builder.Configuration.GetSection("Settings").Get<Settings>()!;
         builder.Services.AddSingleton(settings);
 
-        if (builder.Environment.IsProduction())
-        {
-            builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo("/data-protection"));
-        }
+        builder.Services
+            .AddDataProtection()
+            .AddKeyManagementOptions(x => x.XmlRepository = new StaticXmlRepository(settings));
 
         builder.Logging.AddFilter("Default", settings.LogLevel);
         builder.Logging.AddFilter("Microsoft.AspNetCore", LogLevel.Warning);
         builder.Logging.AddFilter("Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware", settings.LogLevel);
         builder.Logging.AddFilter("Microsoft.Extensions.Diagnostics.HealthChecks", LogLevel.Warning);
         builder.Logging.AddFilter("Microsoft.Hosting.Lifetime", LogLevel.Warning);
+        builder.Logging.AddFilter("Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager", LogLevel.Error);
 
         builder.Services.Configure<CookiePolicyOptions>(o =>
         {

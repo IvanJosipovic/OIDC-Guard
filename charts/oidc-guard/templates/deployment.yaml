@@ -57,8 +57,6 @@ spec:
           volumeMounts:
             - mountPath: /tmp
               name: tmp-volume
-            - mountPath: /data-protection
-              name: data-protection
             - name: appsettings-volume
               mountPath: /app/appsettings.Production.json
               subPath: appsettings.Production.json
@@ -66,9 +64,6 @@ spec:
       volumes:
         - name: tmp-volume
           emptyDir: {}
-        - name: data-protection
-          persistentVolumeClaim:
-            claimName: {{ include "oidc-guard.fullname" . }}
         - name: appsettings-volume
           secret:
             secretName: {{ include "oidc-guard.fullname" . }}
