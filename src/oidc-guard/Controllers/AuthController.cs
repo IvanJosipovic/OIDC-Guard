@@ -43,10 +43,10 @@ public class AuthController : ControllerBase
             return Ok();
         }
 
-        if (Request.QueryString.HasValue && (Request.Query.ContainsKey("skip-auth") || Request.Query.ContainsKey("skip-auth-ne")))
+        if (Request.QueryString.HasValue && (Request.Query.ContainsKey(QueryParameters.SkipAuth) || Request.Query.ContainsKey(QueryParameters.SkipAuthNe)))
         {
-            var skipEquals = Request.Query["skip-auth"];
-            var skipNotEquals = Request.Query["skip-auth-ne"];
+            var skipEquals = Request.Query[QueryParameters.SkipAuth];
+            var skipNotEquals = Request.Query[QueryParameters.SkipAuthNe];
             var originalUrl = HttpContext.Request.Headers[CustomHeaderNames.OriginalUrl].FirstOrDefault();
             var originalMethod = HttpContext.Request.Headers[CustomHeaderNames.OriginalMethod].FirstOrDefault();
 
@@ -116,13 +116,13 @@ public class AuthController : ControllerBase
         {
             foreach (var item in Request.Query)
             {
-                if (item.Key.Equals("skip-auth", StringComparison.InvariantCultureIgnoreCase))
+                if (item.Key.Equals(QueryParameters.SkipAuth, StringComparison.InvariantCultureIgnoreCase))
                 {
                 }
-                else if (item.Key.Equals("skip-auth-ne", StringComparison.InvariantCultureIgnoreCase))
+                else if (item.Key.Equals(QueryParameters.SkipAuthNe, StringComparison.InvariantCultureIgnoreCase))
                 {
                 }
-                else if (item.Key.Equals("inject-claim", StringComparison.InvariantCultureIgnoreCase))
+                else if (item.Key.Equals(QueryParameters.InjectClaim, StringComparison.InvariantCultureIgnoreCase))
                 {
                     foreach (var value in item.Value)
                     {
