@@ -52,6 +52,8 @@ public partial class Program
         {
             o.Cookie.Domain = settings.CookieDomain;
             o.Cookie.Name = settings.CookieName;
+            o.ExpireTimeSpan = TimeSpan.FromDays(settings.CookieValidDays);
+            o.Cookie.MaxAge = TimeSpan.FromDays(settings.CookieValidDays);
         })
         .AddOpenIdConnect(o =>
         {

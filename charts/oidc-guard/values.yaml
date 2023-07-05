@@ -33,6 +33,9 @@ settings:
   # Cookie Same Site Mode (Unspecified, None, Lax, Strict)
   cookieSameSiteMode: "Unspecified"
 
+  # Controls how many days the authentication ticket stored in the cookie will remain valid from the point it is created
+  cookieValidDays: 7
+
   # Client Id
   clientId: ""
 
