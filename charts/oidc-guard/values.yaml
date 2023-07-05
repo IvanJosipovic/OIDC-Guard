@@ -33,6 +33,9 @@ settings:
   # Cookie Same Site Mode (Unspecified, None, Lax, Strict)
   cookieSameSiteMode: "Unspecified"
 
+  # Controls how many days the authentication ticket stored in the cookie will remain valid from the point it is created
+  cookieValidDays: 7
+
   # Client Id
   clientId: ""
 
@@ -160,11 +163,3 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-
-# A Volume is required to store auto generated cookie secret
-# Storage Class Name
-storageClassName: ""
-# Storage class, must be ReadWriteMany if you are running multiple instances of this service
-storageAccessMode: ReadWriteMany
-# Storage Size
-storageSize: 10Gi

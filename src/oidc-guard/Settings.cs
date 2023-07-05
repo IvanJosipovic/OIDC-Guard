@@ -20,4 +20,5 @@ public class Settings
     public string[]? AllowedRedirectDomains { get; set; }
     public string[]? ValidAudiences { get; set; }
     public string[]? ValidIssuers { get; set; }
+    public int CookieValidDays { get; set; } = 7;
 }
