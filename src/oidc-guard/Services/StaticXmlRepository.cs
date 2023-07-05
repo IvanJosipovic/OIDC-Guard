@@ -11,8 +11,6 @@ namespace oidc_guard.Services
             Settings = settings;
         }
 
-        private readonly string KeyId = "0c5444df-6cfb-4e21-a23c-fdcf4787c584";
-
         private Settings Settings { get; }
 
         private readonly List<XElement> Keys = new();
@@ -27,7 +25,7 @@ namespace oidc_guard.Services
             var date = new DateTime(2023, 01, 01, 01, 01, 01);
             var expire = new DateTime(2199, 01, 01, 01, 01, 01);
 
-            element.Attribute("id")!.Value = KeyId;
+            element.Attribute("id")!.Value = "0c5444df-6cfb-4e21-a23c-fdcf4787c584";
 
             element.Element("creationDate")!.Value = date.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ");
             element.Element("activationDate")!.Value = date.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ");
