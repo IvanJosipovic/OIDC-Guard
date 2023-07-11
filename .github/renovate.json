@@ -21,7 +21,7 @@
       "automerge": true,
       "extends": [":semanticCommitTypeAll(fix)"],
       "excludePackageNames": ["Microsoft.VisualStudio.Azure.Containers.Tools.Targets"],
-      "matchPaths": [
+      "matchFileNames": [
         "src/**",
         "global.json"
       ]
@@ -31,7 +31,7 @@
       "matchCurrentVersion": "!/^0/",
       "automerge": true,
       "matchPackageNames": ["Microsoft.VisualStudio.Azure.Containers.Tools.Targets"],
-      "matchPaths": [
+      "matchFileNames": [
         "src/**"
       ]
     },
@@ -39,7 +39,7 @@
       "matchUpdateTypes": ["minor", "patch", "digest"],
       "matchCurrentVersion": "!/^0/",
       "automerge": true,
-      "matchPaths": [
+      "matchFileNames": [
         "tests/**",
         "benchmarks/**"
       ]
