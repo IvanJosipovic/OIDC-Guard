@@ -141,7 +141,7 @@ namespace oidc_guard_tests
         [MemberData(nameof(GetAllowedRedirectDomains))]
         public async Task SignInAllowedRedirectDomains(string query, string[]? allowedRedirectDomains, HttpStatusCode status)
         {
-            var client = AuthTestsHelpers.GetClient(x => x.AllowedRedirectDomains = allowedRedirectDomains);
+            var client = AuthTestsHelpers.GetClient(x => x.Cookie.AllowedRedirectDomains = allowedRedirectDomains);
 
             var response = await client.GetAsync($"/signin?rd={HttpUtility.UrlEncode(query)}");
 
@@ -161,7 +161,7 @@ namespace oidc_guard_tests
         [MemberData(nameof(GetAllowedRedirectDomains))]
         public async Task SignOutAllowedRedirectDomains(string query, string[]? allowedRedirectDomains, HttpStatusCode status)
         {
-            var client = AuthTestsHelpers.GetClient(x => x.AllowedRedirectDomains = allowedRedirectDomains);
+            var client = AuthTestsHelpers.GetClient(x => x.Cookie.AllowedRedirectDomains = allowedRedirectDomains);
 
             var response = await client.GetAsync($"/signin?rd=/health");
             client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response.Headers.GetValues("Set-Cookie"));

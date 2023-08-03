@@ -35,7 +35,7 @@ namespace oidc_guard.Services
                    .Element("descriptor")!
                    .Element("masterKey")!
                    .Element("value")!
-                   .Value = Convert.ToBase64String(Encoding.UTF8.GetBytes(Settings.ClientSecret));
+                   .Value = Convert.ToBase64String(Encoding.UTF8.GetBytes(Settings.Cookie.ClientSecret));
 
             Keys.Add(element);
         }

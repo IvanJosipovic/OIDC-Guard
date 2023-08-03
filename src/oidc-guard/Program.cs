@@ -37,8 +37,8 @@ public partial class Program
 
         builder.Services.Configure<CookiePolicyOptions>(o =>
         {
-            o.OnAppendCookie = cookieContext => cookieContext.CookieOptions.SameSite = settings.CookieSameSiteMode;
-            o.OnDeleteCookie = cookieContext => cookieContext.CookieOptions.SameSite = settings.CookieSameSiteMode;
+            o.OnAppendCookie = cookieContext => cookieContext.CookieOptions.SameSite = settings.Cookie.CookieSameSiteMode;
+            o.OnDeleteCookie = cookieContext => cookieContext.CookieOptions.SameSite = settings.Cookie.CookieSameSiteMode;
         });
 
         JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
@@ -50,23 +50,23 @@ public partial class Program
         })
         .AddCookie(o =>
         {
-            o.Cookie.Domain = settings.CookieDomain;
-            o.Cookie.Name = settings.CookieName;
-            o.ExpireTimeSpan = TimeSpan.FromDays(settings.CookieValidDays);
-            o.Cookie.MaxAge = TimeSpan.FromDays(settings.CookieValidDays);
+            o.Cookie.Domain = settings.Cookie.CookieDomain;
+            o.Cookie.Name = settings.Cookie.CookieName;
+            o.ExpireTimeSpan = TimeSpan.FromDays(settings.Cookie.CookieValidDays);
+            o.Cookie.MaxAge = TimeSpan.FromDays(settings.Cookie.CookieValidDays);
         })
         .AddOpenIdConnect(o =>
         {
-            o.ClientId = settings.ClientId;
-            o.ClientSecret = settings.ClientSecret;
-            o.CorrelationCookie.Name = settings.CookieName;
+            o.ClientId = settings.Cookie.ClientId;
+            o.ClientSecret = settings.Cookie.ClientSecret;
+            o.CorrelationCookie.Name = settings.Cookie.CookieName;
             o.MetadataAddress = settings.OpenIdProviderConfigurationUrl;
-            o.NonceCookie.Name = settings.CookieName;
+            o.NonceCookie.Name = settings.Cookie.CookieName;
             o.ResponseType = OpenIdConnectResponseType.Code;
-            o.SaveTokens = settings.SaveTokensInCookie;
+            o.SaveTokens = settings.Cookie.SaveTokensInCookie;
             o.TokenValidationParameters.ClockSkew = TimeSpan.FromSeconds(30);
             o.Scope.Clear();
-            foreach (var scope in settings.Scopes)
+            foreach (var scope in settings.Cookie.Scopes)
             {
                 o.Scope.Add(scope);
             }
@@ -77,10 +77,10 @@ public partial class Program
         {
             o.MetadataAddress = settings.OpenIdProviderConfigurationUrl;
             o.TokenValidationParameters.ClockSkew = TimeSpan.FromSeconds(30);
-            o.TokenValidationParameters.ValidateAudience = settings.ValidateAudience;
-            o.TokenValidationParameters.ValidAudiences = settings.ValidAudiences;
-            o.TokenValidationParameters.ValidateIssuer = settings.ValidateIssuer;
-            o.TokenValidationParameters.ValidIssuers = settings.ValidIssuers;
+            o.TokenValidationParameters.ValidateAudience = settings.JWT.ValidateAudience;
+            o.TokenValidationParameters.ValidAudiences = settings.JWT.ValidAudiences;
+            o.TokenValidationParameters.ValidateIssuer = settings.JWT.ValidateIssuer;
+            o.TokenValidationParameters.ValidIssuers = settings.JWT.ValidIssuers;
         })
         .AddPolicyScheme(AuthenticationScheme, AuthenticationScheme, options =>
         {
@@ -131,7 +131,7 @@ public partial class Program
                 context.Request.Host = new HostString(settings.Host);
             }
 
-            if (settings.EnableAccessTokenInQueryParameter &&
+            if (settings.JWT.EnableAccessTokenInQueryParameter &&
                 context.Request.Path.StartsWithSegments("/auth") &&
                 context.Request.Headers.ContainsKey(CustomHeaderNames.OriginalUrl) &&
                 Uri.TryCreate(context.Request.Headers[CustomHeaderNames.OriginalUrl], UriKind.RelativeOrAbsolute, out var uri))

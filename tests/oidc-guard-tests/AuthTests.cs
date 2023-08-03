@@ -369,7 +369,7 @@ public class AuthTests
     [MemberData(nameof(GetTokenAsQueryParameterTests))]
     public async Task TokenInQueryParamTests(string query, List<Claim> claims, HttpStatusCode status, Dictionary<string, string> requestHeaders, bool addAuthorizationHeader = false)
     {
-        var _client = AuthTestsHelpers.GetClient(x => { x.EnableAccessTokenInQueryParameter = true; });
+        var _client = AuthTestsHelpers.GetClient(x => { x.JWT.EnableAccessTokenInQueryParameter = true; });
 
         foreach (var header in requestHeaders)
         {

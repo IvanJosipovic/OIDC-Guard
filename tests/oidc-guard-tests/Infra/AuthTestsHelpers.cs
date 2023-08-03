@@ -17,10 +17,13 @@ internal static class AuthTestsHelpers
 
         var settings = new Settings()
         {
-            ClientId = FakeJwtIssuer.Audience,
-            ClientSecret = "secret",
+            Cookie = new()
+            {
+                ClientId = FakeJwtIssuer.Audience,
+                ClientSecret = "secret",
+                Scopes = new[] { "openid", "profile" }
+            },
             OpenIdProviderConfigurationUrl = "https://inmemory.microsoft.com/common/.well-known/openid-configuration",
-            Scopes = new[] {"openid", "profile"}
         };
 
         settingsAction?.Invoke(settings);
