@@ -27,6 +27,7 @@ public class CookieAuthSettings
 
 public class JWTAuthSettings
 {
+    public string? AuthorizationHeader { get; set; }
     public bool Enable { get; set; } = true;
     public bool EnableAccessTokenInQueryParameter { get; set; }
     public bool ValidateAudience { get; set; }

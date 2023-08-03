@@ -141,15 +141,23 @@ public partial class Program
                 context.Request.Host = new HostString(settings.Host);
             }
 
-            if (settings.JWT.Enable && settings.JWT.EnableAccessTokenInQueryParameter &&
-                context.Request.Path.StartsWithSegments("/auth") &&
-                context.Request.Headers.ContainsKey(CustomHeaderNames.OriginalUrl) &&
-                Uri.TryCreate(context.Request.Headers[CustomHeaderNames.OriginalUrl], UriKind.RelativeOrAbsolute, out var uri))
+            if (settings.JWT.Enable)
             {
-                if (QueryHelpers.ParseQuery(uri.Query).TryGetValue(QueryParameters.AccessToken, out var token) &&
-                    !context.Request.Headers.ContainsKey(HeaderNames.Authorization))
+                if (!string.IsNullOrEmpty(settings.JWT.AuthorizationHeader) && context.Request.Headers.ContainsKey(settings.JWT.AuthorizationHeader))
                 {
-                    context.Request.Headers.Authorization = JwtBearerDefaults.AuthenticationScheme + ' ' + token;
+                    context.Request.Headers.Authorization = context.Request.Headers[settings.JWT.AuthorizationHeader];
+                }
+
+                if (settings.JWT.EnableAccessTokenInQueryParameter &&
+                    context.Request.Path.StartsWithSegments("/auth") &&
+                    context.Request.Headers.ContainsKey(CustomHeaderNames.OriginalUrl) &&
+                    Uri.TryCreate(context.Request.Headers[CustomHeaderNames.OriginalUrl], UriKind.RelativeOrAbsolute, out var uri))
+                {
+                    if (QueryHelpers.ParseQuery(uri.Query).TryGetValue(QueryParameters.AccessToken, out var token) &&
+                        !context.Request.Headers.ContainsKey(HeaderNames.Authorization))
+                    {
+                        context.Request.Headers.Authorization = JwtBearerDefaults.AuthenticationScheme + ' ' + token;
+                    }
                 }
             }
 
