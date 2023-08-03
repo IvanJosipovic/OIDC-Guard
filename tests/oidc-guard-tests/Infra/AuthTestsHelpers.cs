@@ -36,27 +36,33 @@ internal static class AuthTestsHelpers
                     services.AddSingleton<SigninMiddleware>();
                     services.AddTransient<IStartupFilter, SigninStartupFilter>();
 
-                    services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
+                    if (settings.JWT.Enable)
                     {
-                        options.Configuration = null;
-                        options.MetadataAddress = null;
-                        options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                            settings.OpenIdProviderConfigurationUrl,
-                            new OpenIdConnectConfigurationRetriever(),
-                            new TestServerDocumentRetriever()
-                        );
-                    });
+                        services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
+                        {
+                            options.Configuration = null;
+                            options.MetadataAddress = null;
+                            options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+                                settings.OpenIdProviderConfigurationUrl,
+                                new OpenIdConnectConfigurationRetriever(),
+                                new TestServerDocumentRetriever()
+                            );
+                        });
+                    }
 
-                    services.PostConfigure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
+                    if (settings.Cookie.Enable)
                     {
-                        options.Configuration = null;
-                        options.MetadataAddress = null;
-                        options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                            settings.OpenIdProviderConfigurationUrl,
-                            new OpenIdConnectConfigurationRetriever(),
-                            new TestServerDocumentRetriever()
-                        );
-                    });
+                        services.PostConfigure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
+                        {
+                            options.Configuration = null;
+                            options.MetadataAddress = null;
+                            options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+                                settings.OpenIdProviderConfigurationUrl,
+                                new OpenIdConnectConfigurationRetriever(),
+                                new TestServerDocumentRetriever()
+                            );
+                        });
+                    }
                 });
             });
 

@@ -34,6 +34,9 @@ settings:
   logLevel: Information
 
   cookie:
+    # Enable Cookie based Authentication
+    enable: true
+
     # Domains which the sign-in process will be allowed to redirect to
     # Use a dot before the domain to allow subdomains (ie .test.com)
     allowedRedirectDomains: []
@@ -69,6 +72,9 @@ settings:
     - profile
 
   JWT:
+    # Enable JWT based Authentication
+    enable: true
+
     # Accept token from the access_token Query Parameter
     # https://datatracker.ietf.org/doc/html/rfc6750#section-2.3
     enableAccessTokenInQueryParameter: false

@@ -43,44 +43,10 @@ public partial class Program
 
         JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
-        builder.Services.AddAuthentication(o =>
+        var auth = builder.Services.AddAuthentication(o =>
         {
             o.DefaultScheme = AuthenticationScheme;
             o.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-        })
-        .AddCookie(o =>
-        {
-            o.Cookie.Domain = settings.Cookie.CookieDomain;
-            o.Cookie.Name = settings.Cookie.CookieName;
-            o.ExpireTimeSpan = TimeSpan.FromDays(settings.Cookie.CookieValidDays);
-            o.Cookie.MaxAge = TimeSpan.FromDays(settings.Cookie.CookieValidDays);
-        })
-        .AddOpenIdConnect(o =>
-        {
-            o.ClientId = settings.Cookie.ClientId;
-            o.ClientSecret = settings.Cookie.ClientSecret;
-            o.CorrelationCookie.Name = settings.Cookie.CookieName;
-            o.MetadataAddress = settings.OpenIdProviderConfigurationUrl;
-            o.NonceCookie.Name = settings.Cookie.CookieName;
-            o.ResponseType = OpenIdConnectResponseType.Code;
-            o.SaveTokens = settings.Cookie.SaveTokensInCookie;
-            o.TokenValidationParameters.ClockSkew = TimeSpan.FromSeconds(30);
-            o.Scope.Clear();
-            foreach (var scope in settings.Cookie.Scopes)
-            {
-                o.Scope.Add(scope);
-            }
-            o.ClaimActions.Clear();
-            o.ClaimActions.MapAllExcept("nonce", /*"aud",*/ "azp", "acr", "iss", "iat", "nbf", "exp", "at_hash", "c_hash", "ipaddr", "platf", "ver");
-        })
-        .AddJwtBearer(o =>
-        {
-            o.MetadataAddress = settings.OpenIdProviderConfigurationUrl;
-            o.TokenValidationParameters.ClockSkew = TimeSpan.FromSeconds(30);
-            o.TokenValidationParameters.ValidateAudience = settings.JWT.ValidateAudience;
-            o.TokenValidationParameters.ValidAudiences = settings.JWT.ValidAudiences;
-            o.TokenValidationParameters.ValidateIssuer = settings.JWT.ValidateIssuer;
-            o.TokenValidationParameters.ValidIssuers = settings.JWT.ValidIssuers;
         })
         .AddPolicyScheme(AuthenticationScheme, AuthenticationScheme, options =>
         {
@@ -88,11 +54,55 @@ public partial class Program
             {
                 string? authorization = context.Request.Headers.Authorization;
 
-                return !string.IsNullOrEmpty(authorization) && authorization.StartsWith("Bearer ")
+                return settings.JWT.Enable && !string.IsNullOrEmpty(authorization) && authorization.StartsWith("Bearer ")
                     ? JwtBearerDefaults.AuthenticationScheme
-                    : CookieAuthenticationDefaults.AuthenticationScheme;
+                    : settings.Cookie.Enable
+                        ? CookieAuthenticationDefaults.AuthenticationScheme
+                        : JwtBearerDefaults.AuthenticationScheme;
             };
         });
+
+        if (settings.Cookie.Enable)
+        {
+            auth.AddCookie(o =>
+            {
+                o.Cookie.Domain = settings.Cookie.CookieDomain;
+                o.Cookie.Name = settings.Cookie.CookieName;
+                o.ExpireTimeSpan = TimeSpan.FromDays(settings.Cookie.CookieValidDays);
+                o.Cookie.MaxAge = TimeSpan.FromDays(settings.Cookie.CookieValidDays);
+            })
+            .AddOpenIdConnect(o =>
+            {
+                o.ClientId = settings.Cookie.ClientId;
+                o.ClientSecret = settings.Cookie.ClientSecret;
+                o.CorrelationCookie.Name = settings.Cookie.CookieName;
+                o.MetadataAddress = settings.OpenIdProviderConfigurationUrl;
+                o.NonceCookie.Name = settings.Cookie.CookieName;
+                o.ResponseType = OpenIdConnectResponseType.Code;
+                o.SaveTokens = settings.Cookie.SaveTokensInCookie;
+                o.TokenValidationParameters.ClockSkew = TimeSpan.FromSeconds(30);
+                o.Scope.Clear();
+                foreach (var scope in settings.Cookie.Scopes)
+                {
+                    o.Scope.Add(scope);
+                }
+                o.ClaimActions.Clear();
+                o.ClaimActions.MapAllExcept("nonce", /*"aud",*/ "azp", "acr", "iss", "iat", "nbf", "exp", "at_hash", "c_hash", "ipaddr", "platf", "ver");
+            });
+        }
+
+        if (settings.JWT.Enable)
+        {
+            auth.AddJwtBearer(o =>
+            {
+                o.MetadataAddress = settings.OpenIdProviderConfigurationUrl;
+                o.TokenValidationParameters.ClockSkew = TimeSpan.FromSeconds(30);
+                o.TokenValidationParameters.ValidateAudience = settings.JWT.ValidateAudience;
+                o.TokenValidationParameters.ValidAudiences = settings.JWT.ValidAudiences;
+                o.TokenValidationParameters.ValidateIssuer = settings.JWT.ValidateIssuer;
+                o.TokenValidationParameters.ValidIssuers = settings.JWT.ValidIssuers;
+            });
+        }
 
         builder.Services.AddHttpLogging(logging =>
         {
@@ -131,7 +141,7 @@ public partial class Program
                 context.Request.Host = new HostString(settings.Host);
             }
 
-            if (settings.JWT.EnableAccessTokenInQueryParameter &&
+            if (settings.JWT.Enable && settings.JWT.EnableAccessTokenInQueryParameter &&
                 context.Request.Path.StartsWithSegments("/auth") &&
                 context.Request.Headers.ContainsKey(CustomHeaderNames.OriginalUrl) &&
                 Uri.TryCreate(context.Request.Headers[CustomHeaderNames.OriginalUrl], UriKind.RelativeOrAbsolute, out var uri))

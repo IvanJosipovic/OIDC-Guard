@@ -9,6 +9,15 @@ namespace oidc_guard_tests
     public class SingInOutTests
     {
         [Fact]
+        public async Task DisableCookie()
+        {
+            var _client = AuthTestsHelpers.GetClient(x => x.Cookie.Enable = false, allowAutoRedirect: true);
+
+            var response = await _client.GetAsync("/signin?rd=/auth");
+            response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        }
+
+        [Fact]
         public async Task SignIn()
         {
             var _client = AuthTestsHelpers.GetClient(allowAutoRedirect: true);

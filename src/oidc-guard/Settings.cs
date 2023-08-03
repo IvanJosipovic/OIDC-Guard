@@ -13,6 +13,7 @@ public class Settings
 
 public class CookieAuthSettings
 {
+    public bool Enable { get; set; } = true;
     public bool SaveTokensInCookie { get; set; }
     public int CookieValidDays { get; set; } = 7;
     public SameSiteMode CookieSameSiteMode { get; set; }
@@ -26,6 +27,7 @@ public class CookieAuthSettings
 
 public class JWTAuthSettings
 {
+    public bool Enable { get; set; } = true;
     public bool EnableAccessTokenInQueryParameter { get; set; }
     public bool ValidateAudience { get; set; }
     public bool ValidateIssuer { get; set; } = true;

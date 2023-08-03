@@ -296,6 +296,17 @@ public class AuthTests
         }
     }
 
+    [Fact]
+    public async Task DisableJWTAuth()
+    {
+        var _client = AuthTestsHelpers.GetClient(x => x.JWT.Enable = false);
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(new List<Claim>()));
+
+        var response = await _client.GetAsync($"/auth");
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
     public static IEnumerable<object[]> GetTokenAsQueryParameterTests()
     {
         return new List<object[]>
