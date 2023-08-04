@@ -497,4 +497,15 @@ public class AuthTests
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await jwk.GetConfigurationAsync("https://test", null, CancellationToken.None));
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await jwk.GetConfigurationAsync(null, new HttpDocumentRetriever(), CancellationToken.None));
     }
+
+    [Fact]
+    public async Task JWKSPrependBearer()
+    {
+        var _client = AuthTestsHelpers.GetClient(x => x.JWT.PrependBearer = true);
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateJwtToken(new List<Claim>()));
+
+        var response = await _client.GetAsync($"/auth");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
 }

@@ -170,6 +170,13 @@ public partial class Program
                     context.Request.Headers.Authorization = context.Request.Headers[settings.JWT.AuthorizationHeader];
                 }
 
+                if (settings.JWT.PrependBearer &&
+                    context.Request.Headers.ContainsKey(HeaderNames.Authorization) &&
+                    !context.Request.Headers.Authorization[0]!.StartsWith(JwtBearerDefaults.AuthenticationScheme + ' '))
+                {
+                    context.Request.Headers.Authorization = JwtBearerDefaults.AuthenticationScheme + ' ' + context.Request.Headers.Authorization;
+                }
+
                 if (settings.JWT.EnableAccessTokenInQueryParameter &&
                     context.Request.Path.StartsWithSegments("/auth") &&
                     context.Request.Headers.ContainsKey(CustomHeaderNames.OriginalUrl) &&

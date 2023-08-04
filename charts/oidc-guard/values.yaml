@@ -86,6 +86,9 @@ settings:
     # https://datatracker.ietf.org/doc/html/rfc6750#section-2.3
     enableAccessTokenInQueryParameter: false
 
+    # Prepend "Bearer " to the Authorization header if its missing
+    prependBearer: false
+
     # Control if the audience will be validated during JWT token validation.
     # Validation of the audience, mitigates forwarding attacks. For example, a site that receives a token, could not replay it to another site.
     # This value can be validated at the Ingress level using /auth?aud=00000000-0000-0000-0000-000000000000
