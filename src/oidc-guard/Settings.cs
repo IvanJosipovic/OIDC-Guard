@@ -35,4 +35,5 @@ public class JWTAuthSettings
     public string[]? ValidAudiences { get; set; }
     public string[]? ValidIssuers { get; set; }
     public string? JWKSUrl { get; set; }
+    public bool PrependBearer { get; set; }
 }
