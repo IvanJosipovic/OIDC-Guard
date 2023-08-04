@@ -1,8 +1,10 @@
+using Json.Path;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using Prometheus;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 
 namespace oidc_guard.Controllers;
@@ -159,6 +161,47 @@ public class AuthController : ControllerBase
                         else
                         {
                             Response.Headers.Add(headerName, new StringValues(claims.Select(x => x.Value).ToArray()));
+                        }
+                    }
+                }
+                else if (item.Key.Equals(QueryParameters.InjectJsonClaim, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    foreach (var value in item.Value)
+                    {
+                        if (string.IsNullOrEmpty(value))
+                        {
+                            continue;
+                        }
+
+                        string headerName;
+                        string claimName;
+                        string jsonPath;
+
+                        headerName = value.Split(',')[0];
+                        claimName = value.Split(',')[1];
+                        jsonPath = value.Split(',')[2];
+
+                        var jsonClaim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == claimName)?.Value;
+
+                        if (jsonClaim is null)
+                        {
+                            continue;
+                        }
+
+                        var results = JsonPath.Parse(jsonPath).Evaluate(JsonNode.Parse(jsonClaim));
+
+                        if (results is null || results.Matches is null || results.Matches.Count == 0 || results.Matches[0].Value is null)
+                        {
+                            continue;
+                        }
+
+                        if (results.Matches[0].Value is JsonArray)
+                        {
+                            Response.Headers.Add(headerName, new StringValues(((JsonArray)results.Matches[0].Value!).Where(x => x is not null).Select(x => x!.ToString()).ToArray()));
+                        }
+                        else
+                        {
+                            Response.Headers.Add(headerName, results.Matches[0].Value!.ToString());
                         }
                     }
                 }

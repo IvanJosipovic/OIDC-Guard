@@ -13,4 +13,5 @@ public static class QueryParameters
     public static readonly string SkipAuth = "skip-auth";
     public static readonly string SkipAuthNe = "skip-auth-ne";
     public static readonly string InjectClaim = "inject-claim";
+    public static readonly string InjectJsonClaim = "inject-json-claim";
 }
