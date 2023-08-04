@@ -34,4 +34,5 @@ public class JWTAuthSettings
     public bool ValidateIssuer { get; set; } = true;
     public string[]? ValidAudiences { get; set; }
     public string[]? ValidIssuers { get; set; }
+    public string? JWKSUrl { get; set; }
 }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Net.Http.Headers;
 using oidc_guard.Services;
@@ -95,7 +96,28 @@ public partial class Program
         {
             auth.AddJwtBearer(o =>
             {
-                o.MetadataAddress = settings.OpenIdProviderConfigurationUrl;
+                if (!string.IsNullOrEmpty(settings.JWT.JWKSUrl))
+                {
+                    var httpClient = new HttpClient(o.BackchannelHttpHandler ?? new HttpClientHandler())
+                    {
+                        Timeout = o.BackchannelTimeout,
+                        MaxResponseContentBufferSize = 1024 * 1024 * 10 // 10 MB
+                    };
+
+                    o.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+                        settings.JWT.JWKSUrl,
+                        new JwksRetriever(),
+                        new HttpDocumentRetriever(httpClient) { RequireHttps = o.RequireHttpsMetadata }
+                    )
+                    {
+                        RefreshInterval = o.RefreshInterval,
+                        AutomaticRefreshInterval = o.AutomaticRefreshInterval
+                    };
+                }
+                else
+                {
+                    o.MetadataAddress = settings.OpenIdProviderConfigurationUrl;
+                }
                 o.TokenValidationParameters.ClockSkew = TimeSpan.FromSeconds(30);
                 o.TokenValidationParameters.ValidateAudience = settings.JWT.ValidateAudience;
                 o.TokenValidationParameters.ValidAudiences = settings.JWT.ValidAudiences;

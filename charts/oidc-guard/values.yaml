@@ -75,6 +75,10 @@ settings:
     # Enable JWT based Authentication
     enable: true
 
+    # Sets the JSON Web Key Set and ignores the openIdProviderConfigurationUrl
+    # Make sure to set the validIssuers property
+    JWKSUrl: ""
+
     # Sets Authorization header name, if not set "Authorization" will be used
     authorizationHeader: ""
 

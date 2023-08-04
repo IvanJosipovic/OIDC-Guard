@@ -471,4 +471,20 @@ public class AuthTests
         replyUri.Host.Should().Be("fakedomain.com");
         replyUri.Scheme.Should().Be("https");
     }
+
+    [Fact]
+    public async Task JWKSAuth()
+    {
+        var _client = AuthTestsHelpers.GetClient(x =>
+        {
+            x.Cookie.Enable = false;
+            x.JWT.JWKSUrl = "https://inmemory.microsoft.com/common/discovery/keys";
+            x.JWT.ValidIssuers = new string[] { FakeJwtIssuer.Issuer };
+        });
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(new List<Claim>()));
+
+        var response = await _client.GetAsync($"/auth");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
 }

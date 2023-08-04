@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using oidc_guard;
+using oidc_guard.Services;
 
 namespace oidc_guard_tests.Infra;
 
@@ -38,23 +39,36 @@ internal static class AuthTestsHelpers
 
                     if (settings.JWT.Enable)
                     {
-                        services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
+                        if (string.IsNullOrEmpty(settings.JWT.JWKSUrl))
                         {
-                            options.Configuration = null;
-                            options.MetadataAddress = null;
-                            options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                                settings.OpenIdProviderConfigurationUrl,
-                                new OpenIdConnectConfigurationRetriever(),
-                                new TestServerDocumentRetriever()
-                            );
-                        });
+                            services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
+                            {
+                                options.MetadataAddress = null;
+                                options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+                                    settings.OpenIdProviderConfigurationUrl,
+                                    new OpenIdConnectConfigurationRetriever(),
+                                    new TestServerDocumentRetriever()
+                                );
+                            });
+                        }
+                        else
+                        {
+                            services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
+                            {
+                                options.MetadataAddress = null;
+                                options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+                                    settings.JWT.JWKSUrl,
+                                    new JwksRetriever(),
+                                    new TestServerDocumentRetriever()
+                                );
+                            });
+                        }
                     }
 
                     if (settings.Cookie.Enable)
                     {
                         services.PostConfigure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
                         {
-                            options.Configuration = null;
                             options.MetadataAddress = null;
                             options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
                                 settings.OpenIdProviderConfigurationUrl,
