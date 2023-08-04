@@ -5,6 +5,7 @@ using Microsoft.Net.Http.Headers;
 using oidc_guard;
 using oidc_guard.Services;
 using oidc_guard_tests.Infra;
+using System.Data;
 using System.Net;
 using System.Net.Http.Json;
 using System.Security.Claims;
@@ -271,6 +272,80 @@ public class AuthTests
                     new Claim("aud", "22222222-2222-2222-2222-222222222222"),
                 },
                 HttpStatusCode.OK
+            },
+
+            new object[]
+            {
+                "?tid=11111111-1111-1111-1111-111111111111&inject-json-claim=role,gcim,$.firebase.sign_in_attributes.role",
+                new List<Claim>
+                {
+                    new Claim("tid", "11111111-1111-1111-1111-111111111111"),
+                    new Claim("gcim", "{\"auth_time\":1553219869,\"email\":\"demo_user@gmail.com\",\"email_verified\":true,\"firebase\":{\"identities\":{\"email\":[\"demo_user@gmail.com\"],\"saml.myProvider\":[\"demo_user@gmail.com\"]},\"sign_in_attributes\":{\"firstname\":\"John\",\"group\":\"test group\",\"role\":\"admin\",\"lastname\":\"Doe\"},\"sign_in_provider\":\"saml.myProvider\",\"tenant\":\"my_tenant_id\"},\"sub\":\"gZG0yELPypZElTmAT9I55prjHg63\"}")
+                },
+                HttpStatusCode.OK,
+                new List<Claim>
+                {
+                    new Claim("role", "admin"),
+                }
+            },
+            new object[]
+            {
+                "?tid=11111111-1111-1111-1111-111111111111&inject-json-claim=role,gcim,$.firebase.sign_in_attributes.role2",
+                new List<Claim>
+                {
+                    new Claim("tid", "11111111-1111-1111-1111-111111111111"),
+                    new Claim("gcim", "{\"auth_time\":1553219869,\"email\":\"demo_user@gmail.com\",\"email_verified\":true,\"firebase\":{\"identities\":{\"email\":[\"demo_user@gmail.com\"],\"saml.myProvider\":[\"demo_user@gmail.com\"]},\"sign_in_attributes\":{\"firstname\":\"John\",\"group\":\"test group\",\"role\":\"admin\",\"lastname\":\"Doe\"},\"sign_in_provider\":\"saml.myProvider\",\"tenant\":\"my_tenant_id\"},\"sub\":\"gZG0yELPypZElTmAT9I55prjHg63\"}")
+                },
+                HttpStatusCode.OK
+            },
+            new object[]
+            {
+                "?tid=11111111-1111-1111-1111-111111111111&inject-json-claim=email,gcim,$.firebase.identities.email",
+                new List<Claim>
+                {
+                    new Claim("tid", "11111111-1111-1111-1111-111111111111"),
+                    new Claim("gcim", "{\"auth_time\":1553219869,\"email\":\"demo_user@gmail.com\",\"email_verified\":true,\"firebase\":{\"identities\":{\"email\":[\"demo_user@gmail.com\",\"demo_user2@gmail.com\"],\"saml.myProvider\":[\"demo_user@gmail.com\"]},\"sign_in_attributes\":{\"firstname\":\"John\",\"group\":\"test group\",\"role\":\"admin\",\"lastname\":\"Doe\"},\"sign_in_provider\":\"saml.myProvider\",\"tenant\":\"my_tenant_id\"},\"sub\":\"gZG0yELPypZElTmAT9I55prjHg63\"}")
+                },
+                HttpStatusCode.OK,
+                new List<Claim>
+                {
+                    new Claim("email", "demo_user@gmail.com"),
+                    new Claim("email", "demo_user2@gmail.com")
+                }
+            },
+            new object[]
+            {
+                "?tid=11111111-1111-1111-1111-111111111111&inject-json-claim=email,gcim,$.firebase.identities.email",
+                new List<Claim>
+                {
+                    new Claim("tid", "11111111-1111-1111-1111-111111111111"),
+                    new Claim("gcim", "{\"auth_time\":1553219869,\"email\":\"demo_user@gmail.com\",\"email_verified\":true,\"firebase\":{\"identities\":{\"email\":[],\"saml.myProvider\":[\"demo_user@gmail.com\"]},\"sign_in_attributes\":{\"firstname\":\"John\",\"group\":\"test group\",\"role\":\"admin\",\"lastname\":\"Doe\"},\"sign_in_provider\":\"saml.myProvider\",\"tenant\":\"my_tenant_id\"},\"sub\":\"gZG0yELPypZElTmAT9I55prjHg63\"}")
+                },
+                HttpStatusCode.OK
+            },
+            new object[]
+            {
+                "?tid=11111111-1111-1111-1111-111111111111&inject-json-claim=email,gcim,$.firebase.identities.email",
+                new List<Claim>
+                {
+                    new Claim("tid", "11111111-1111-1111-1111-111111111111"),
+                    new Claim("gcim", "{\"auth_time\":1553219869,\"email\":\"demo_user@gmail.com\",\"email_verified\":true,\"firebase\":{\"identities\":{\"email\":null,\"saml.myProvider\":[\"demo_user@gmail.com\"]},\"sign_in_attributes\":{\"firstname\":\"John\",\"group\":\"test group\",\"role\":\"admin\",\"lastname\":\"Doe\"},\"sign_in_provider\":\"saml.myProvider\",\"tenant\":\"my_tenant_id\"},\"sub\":\"gZG0yELPypZElTmAT9I55prjHg63\"}")
+                },
+                HttpStatusCode.OK
+            },
+            new object[]
+            {
+                "?tid=11111111-1111-1111-1111-111111111111&inject-json-claim=email,gcim,$.firebase.identities.email",
+                new List<Claim>
+                {
+                    new Claim("tid", "11111111-1111-1111-1111-111111111111"),
+                    new Claim("gcim", "{\"auth_time\":1553219869,\"email\":\"demo_user@gmail.com\",\"email_verified\":true,\"firebase\":{\"identities\":{\"email\":[\"demo_user@gmail.com\",null],\"saml.myProvider\":[\"demo_user@gmail.com\"]},\"sign_in_attributes\":{\"firstname\":\"John\",\"group\":\"test group\",\"role\":\"admin\",\"lastname\":\"Doe\"},\"sign_in_provider\":\"saml.myProvider\",\"tenant\":\"my_tenant_id\"},\"sub\":\"gZG0yELPypZElTmAT9I55prjHg63\"}")
+                },
+                HttpStatusCode.OK,
+                new List<Claim>
+                {
+                    new Claim("email", "demo_user@gmail.com")
+                }
             },
         };
     }
