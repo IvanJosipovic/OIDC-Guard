@@ -1,7 +1,9 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.IdentityModel.Protocols;
 using Microsoft.Net.Http.Headers;
 using oidc_guard;
+using oidc_guard.Services;
 using oidc_guard_tests.Infra;
 using System.Net;
 using System.Net.Http.Json;
@@ -296,6 +298,28 @@ public class AuthTests
         }
     }
 
+    [Fact]
+    public async Task DisableJWTAuth()
+    {
+        var _client = AuthTestsHelpers.GetClient(x => x.JWT.Enable = false);
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(new List<Claim>()));
+
+        var response = await _client.GetAsync($"/auth");
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task CustomHeader()
+    {
+        var _client = AuthTestsHelpers.GetClient(x => x.JWT.AuthorizationHeader = "TestHeader");
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation("TestHeader", FakeJwtIssuer.GenerateBearerJwtToken(new List<Claim>()));
+
+        var response = await _client.GetAsync($"/auth");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
     public static IEnumerable<object[]> GetTokenAsQueryParameterTests()
     {
         return new List<object[]>
@@ -369,7 +393,7 @@ public class AuthTests
     [MemberData(nameof(GetTokenAsQueryParameterTests))]
     public async Task TokenInQueryParamTests(string query, List<Claim> claims, HttpStatusCode status, Dictionary<string, string> requestHeaders, bool addAuthorizationHeader = false)
     {
-        var _client = AuthTestsHelpers.GetClient(x => { x.EnableAccessTokenInQueryParameter = true; });
+        var _client = AuthTestsHelpers.GetClient(x => { x.JWT.EnableAccessTokenInQueryParameter = true; });
 
         foreach (var header in requestHeaders)
         {
@@ -448,5 +472,29 @@ public class AuthTests
         var replyUri = new Uri(query["redirect_uri"]);
         replyUri.Host.Should().Be("fakedomain.com");
         replyUri.Scheme.Should().Be("https");
+    }
+
+    [Fact]
+    public async Task JWKSAuth()
+    {
+        var _client = AuthTestsHelpers.GetClient(x =>
+        {
+            x.Cookie.Enable = false;
+            x.JWT.JWKSUrl = "https://inmemory.microsoft.com/common/discovery/keys";
+            x.JWT.ValidIssuers = new string[] { FakeJwtIssuer.Issuer };
+        });
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(new List<Claim>()));
+
+        var response = await _client.GetAsync($"/auth");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task JwksRetrieverArgs()
+    {
+        var jwk = new JwksRetriever();
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await jwk.GetConfigurationAsync("https://test", null, CancellationToken.None));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await jwk.GetConfigurationAsync(null, new HttpDocumentRetriever(), CancellationToken.None));
     }
 }

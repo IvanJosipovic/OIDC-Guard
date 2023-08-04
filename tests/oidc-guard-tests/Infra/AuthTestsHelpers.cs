@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using oidc_guard;
+using oidc_guard.Services;
 
 namespace oidc_guard_tests.Infra;
 
@@ -17,10 +18,13 @@ internal static class AuthTestsHelpers
 
         var settings = new Settings()
         {
-            ClientId = FakeJwtIssuer.Audience,
-            ClientSecret = "secret",
+            Cookie = new()
+            {
+                ClientId = FakeJwtIssuer.Audience,
+                ClientSecret = "secret",
+                Scopes = new[] { "openid", "profile" }
+            },
             OpenIdProviderConfigurationUrl = "https://inmemory.microsoft.com/common/.well-known/openid-configuration",
-            Scopes = new[] {"openid", "profile"}
         };
 
         settingsAction?.Invoke(settings);
@@ -33,27 +37,46 @@ internal static class AuthTestsHelpers
                     services.AddSingleton<SigninMiddleware>();
                     services.AddTransient<IStartupFilter, SigninStartupFilter>();
 
-                    services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
+                    if (settings.JWT.Enable)
                     {
-                        options.Configuration = null;
-                        options.MetadataAddress = null;
-                        options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                            settings.OpenIdProviderConfigurationUrl,
-                            new OpenIdConnectConfigurationRetriever(),
-                            new TestServerDocumentRetriever()
-                        );
-                    });
+                        if (string.IsNullOrEmpty(settings.JWT.JWKSUrl))
+                        {
+                            services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
+                            {
+                                options.MetadataAddress = null;
+                                options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+                                    settings.OpenIdProviderConfigurationUrl,
+                                    new OpenIdConnectConfigurationRetriever(),
+                                    new TestServerDocumentRetriever()
+                                );
+                            });
+                        }
+                        else
+                        {
+                            services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
+                            {
+                                options.MetadataAddress = null;
+                                options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+                                    settings.JWT.JWKSUrl,
+                                    new JwksRetriever(),
+                                    new TestServerDocumentRetriever()
+                                );
+                            });
+                        }
+                    }
 
-                    services.PostConfigure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
+                    if (settings.Cookie.Enable)
                     {
-                        options.Configuration = null;
-                        options.MetadataAddress = null;
-                        options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                            settings.OpenIdProviderConfigurationUrl,
-                            new OpenIdConnectConfigurationRetriever(),
-                            new TestServerDocumentRetriever()
-                        );
-                    });
+                        services.PostConfigure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
+                        {
+                            options.MetadataAddress = null;
+                            options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+                                settings.OpenIdProviderConfigurationUrl,
+                                new OpenIdConnectConfigurationRetriever(),
+                                new TestServerDocumentRetriever()
+                            );
+                        });
+                    }
                 });
             });
 

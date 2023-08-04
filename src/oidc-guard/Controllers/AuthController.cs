@@ -218,9 +218,9 @@ public class AuthController : ControllerBase
 
     private bool ValidateRedirect(Uri rd)
     {
-        if (settings.AllowedRedirectDomains?.Length > 0 && rd.IsAbsoluteUri)
+        if (settings.Cookie.AllowedRedirectDomains?.Length > 0 && rd.IsAbsoluteUri)
         {
-            foreach (var allowedDomain in settings.AllowedRedirectDomains)
+            foreach (var allowedDomain in settings.Cookie.AllowedRedirectDomains)
             {
                 if ((allowedDomain[0] == '.' && rd.DnsSafeHost.EndsWith(allowedDomain, StringComparison.InvariantCultureIgnoreCase)) ||
                     rd.DnsSafeHost.Equals(allowedDomain, StringComparison.InvariantCultureIgnoreCase))
