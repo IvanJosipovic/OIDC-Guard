@@ -1,7 +1,9 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.IdentityModel.Protocols;
 using Microsoft.Net.Http.Headers;
 using oidc_guard;
+using oidc_guard.Services;
 using oidc_guard_tests.Infra;
 using System.Net;
 using System.Net.Http.Json;
@@ -486,5 +488,13 @@ public class AuthTests
 
         var response = await _client.GetAsync($"/auth");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task JwksRetrieverArgs()
+    {
+        var jwk = new JwksRetriever();
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await jwk.GetConfigurationAsync("https://test", null, CancellationToken.None));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await jwk.GetConfigurationAsync(null, new HttpDocumentRetriever(), CancellationToken.None));
     }
 }
