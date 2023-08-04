@@ -6,12 +6,12 @@ namespace oidc_guard.Services
 {
     public class StaticXmlRepository : IXmlRepository
     {
-        public StaticXmlRepository(Settings settings)
+        public StaticXmlRepository(string secret)
         {
-            Settings = settings;
+            Secret = secret;
         }
 
-        private Settings Settings { get; }
+        private string Secret { get; }
 
         private readonly List<XElement> Keys = new();
 
@@ -35,7 +35,7 @@ namespace oidc_guard.Services
                    .Element("descriptor")!
                    .Element("masterKey")!
                    .Element("value")!
-                   .Value = Convert.ToBase64String(Encoding.UTF8.GetBytes(Settings.Cookie.ClientSecret));
+                   .Value = Convert.ToBase64String(Encoding.UTF8.GetBytes(Secret));
 
             Keys.Add(element);
         }
