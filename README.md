@@ -14,9 +14,11 @@ This project is an API server which is used along with the [nginx.ingress.kubern
 - Per Ingress JWT Validation
   - A single instance of oidc-guard can protect a whole cluster with configurable rules per Ingress
 - Cookie Auth for Web Applications
-  - Returns a cookie which will be stored in the browser and sent on subsequent requests to pass through AuthN/AuthZ
+  - Returns an encrypted cookie which will be stored in the browser and sent on subsequent requests to pass through AuthN/AuthZ
 - JWT Auth for APIs
   - Requests with a Bearer token in the Authorization header will be validated
+  - Supports loading JSON Web Key Set (JWKS) from Url
+  - Supports custom Authorization header
 - AMD64 and ARM64 support
 
 ## Documentation
