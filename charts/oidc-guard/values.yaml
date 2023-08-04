@@ -18,60 +18,6 @@ settings:
   # OpenID Provider Configuration Url for your Identity Provider
   openIdProviderConfigurationUrl: "https://login.microsoftonline.com/{TenantId}/v2.0/.well-known/openid-configuration"
 
-  # Domains which the sign-in process will be allowed to redirect to
-  # Use a dot before the domain to allow subdomains (ie .test.com)
-  allowedRedirectDomains: []
-  # - test.com
-  # - .test.com
-
-  # Cookie Name
-  cookieName: "oidc-guard"
-
-  # Cookie Domain (Defaults to the hostname of this app)
-  cookieDomain: "test.com"
-
-  # Cookie Same Site Mode (Unspecified, None, Lax, Strict)
-  cookieSameSiteMode: "Unspecified"
-
-  # Controls how many days the authentication ticket stored in the cookie will remain valid from the point it is created
-  cookieValidDays: 7
-
-  # Client Id
-  clientId: ""
-
-  # Client Secret
-  clientSecret: ""
-
-  # Scopes to request
-  scopes:
-  - openid
-  - profile
-
-  # Control if the access and refresh tokens should be stored in the cookie,
-  # disable to reduce the size of the authentication cookie.
-  # You may have to set 'large-client-header-buffers: 4 16k' in ingress-nginx
-  saveTokensInCookie: false
-
-  # Control if the audience will be validated during JWT token validation.
-  # Validation of the audience, mitigates forwarding attacks. For example, a site that receives a token, could not replay it to another site.
-  # This value can be validated at the Ingress level using /auth?aud=00000000-0000-0000-0000-000000000000
-  validateAudience: false
-
-  # Set valid audiences for JWT validation
-  validAudiences: []
-  # - 11111111-1111-1111-1111-111111111111
-
-  # Control if the issuer will be validated during JWT token validation.
-  # Validation of the issuer mitigates forwarding attacks that can occur when an
-  # Identity Provider represents multiple tenants and signs tokens with the same keys.
-  # It is possible that a token issued for the same audience could be from a different tenant.
-  validateIssuer: true
-
-  # Set valid issuers replacing the one found in the settings.openIdProviderConfigurationUrl
-  validIssuers: []
-  # - https://login.microsoftonline.com/{TenantId}/v2.0
-  # - https://sts.windows.net/{TenantId}/
-
   # Skip Authentication for CORS Preflight requests
   # https://developer.mozilla.org/en-US/docs/Glossary/Preflight_request
   skipAuthPreflight: false
@@ -80,16 +26,85 @@ settings:
   # When not set will use the apps hostname
   host: ""
 
-  # Set scheme for http redirect used in the sign-in process
+  # Set scheme for http redirect used in the sign-in process (http or https)
   # When not set, will accept X-Forwarded-Proto
   scheme: ""
 
-  # Accept token from the access_token Query Parameter
-  # https://datatracker.ietf.org/doc/html/rfc6750#section-2.3
-  enableAccessTokenInQueryParameter: false
-
   # Log Level(Trace, Debug, Information, Warning, Error, Critical, and None)
   logLevel: Information
+
+  cookie:
+    # Enable Cookie based Authentication
+    enable: true
+
+    # Domains which the sign-in process will be allowed to redirect to
+    # Use a dot before the domain to allow subdomains (ie .test.com)
+    allowedRedirectDomains: []
+    # - test.com
+    # - .test.com
+
+    # Client Id
+    clientId: ""
+
+    # Client Secret
+    clientSecret: ""
+
+    # Cookie Domain (Defaults to the hostname of this app)
+    cookieDomain: "test.com"
+
+    # Cookie Name
+    cookieName: "oidc-guard"
+
+    # Cookie Same Site Mode (Unspecified, None, Lax, Strict)
+    cookieSameSiteMode: "Unspecified"
+
+    # Controls how many days the authentication ticket stored in the cookie will remain valid from the point it is created
+    cookieValidDays: 7
+
+    # Control if the access and refresh tokens should be stored in the cookie,
+    # disable to reduce the size of the authentication cookie.
+    # You may have to set 'large-client-header-buffers: 4 16k' in ingress-nginx
+    saveTokensInCookie: false
+
+    # Scopes to request
+    scopes:
+    - openid
+    - profile
+
+  JWT:
+    # Enable JWT based Authentication
+    enable: true
+
+    # Sets the JSON Web Key Set and ignores the openIdProviderConfigurationUrl
+    # Make sure to set the validIssuers property
+    JWKSUrl: ""
+
+    # Sets Authorization header name, if not set "Authorization" will be used
+    authorizationHeader: ""
+
+    # Accept token from the access_token Query Parameter
+    # https://datatracker.ietf.org/doc/html/rfc6750#section-2.3
+    enableAccessTokenInQueryParameter: false
+
+    # Control if the audience will be validated during JWT token validation.
+    # Validation of the audience, mitigates forwarding attacks. For example, a site that receives a token, could not replay it to another site.
+    # This value can be validated at the Ingress level using /auth?aud=00000000-0000-0000-0000-000000000000
+    validateAudience: false
+
+    # Set valid audiences for JWT validation
+    validAudiences: []
+    # - 11111111-1111-1111-1111-111111111111
+
+    # Control if the issuer will be validated during JWT token validation.
+    # Validation of the issuer mitigates forwarding attacks that can occur when an
+    # Identity Provider represents multiple tenants and signs tokens with the same keys.
+    # It is possible that a token issued for the same audience could be from a different tenant.
+    validateIssuer: true
+
+    # Set valid issuers replacing the one found in the settings.openIdProviderConfigurationUrl
+    validIssuers: []
+    # - https://login.microsoftonline.com/{TenantId}/v2.0
+    # - https://sts.windows.net/{TenantId}/
 
 serviceAccount:
   # Specifies whether a service account should be created
