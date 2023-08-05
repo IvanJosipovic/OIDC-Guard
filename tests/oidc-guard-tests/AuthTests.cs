@@ -189,17 +189,17 @@ public class AuthTests
 
             new object[]
             {
-                "?tid=11111111-1111-1111-1111-111111111111&inject-claim=tid&inject-claim=aud",
+                "?tid=11111111-1111-1111-1111-111111111111&inject-claim=tid&inject-claim=aud2",
                 new List<Claim>
                 {
                     new Claim("tid", "11111111-1111-1111-1111-111111111111"),
-                    new Claim("aud", "22222222-2222-2222-2222-222222222222"),
+                    new Claim("aud2", "22222222-2222-2222-2222-222222222222"),
                 },
                 HttpStatusCode.OK,
                 new List<Claim>
                 {
                     new Claim("tid", "11111111-1111-1111-1111-111111111111"),
-                    new Claim("aud", "22222222-2222-2222-2222-222222222222"),
+                    new Claim("aud2", "22222222-2222-2222-2222-222222222222"),
                 }
             },
 
@@ -220,11 +220,11 @@ public class AuthTests
 
             new object[]
             {
-                "?tid=11111111-1111-1111-1111-111111111111&inject-claim=tid,tenant&inject-claim=aud,audiance",
+                "?tid=11111111-1111-1111-1111-111111111111&inject-claim=tid,tenant&inject-claim=aud2,audiance",
                 new List<Claim>
                 {
                     new Claim("tid", "11111111-1111-1111-1111-111111111111"),
-                    new Claim("aud", "22222222-2222-2222-2222-222222222222"),
+                    new Claim("aud2", "22222222-2222-2222-2222-222222222222"),
                 },
                 HttpStatusCode.OK,
                 new List<Claim>
@@ -247,8 +247,7 @@ public class AuthTests
                 HttpStatusCode.OK,
                 new List<Claim>
                 {
-                    new Claim("groups", "admin"),
-                    new Claim("groups", "viewer"),
+                    new Claim("groups", "admin, viewer"),
                 }
             },
 
@@ -308,8 +307,7 @@ public class AuthTests
                 HttpStatusCode.OK,
                 new List<Claim>
                 {
-                    new Claim("email", "demo_user@gmail.com"),
-                    new Claim("email", "demo_user2@gmail.com")
+                    new Claim("email", "demo_user@gmail.com, demo_user2@gmail.com")
                 }
             },
             new object[]
