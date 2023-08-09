@@ -1,6 +1,6 @@
 ﻿using BenchmarkDotNet.Running;
 
-namespace ingress_nginx_validate_jwt_benchmarks;
+namespace oidc_guard_benchmarks;
 
 class Program
 {
