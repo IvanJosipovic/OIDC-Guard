@@ -10,7 +10,6 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Net.Http.Headers;
 using oidc_guard.Services;
 using Prometheus;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace oidc_guard;
 
@@ -31,8 +30,6 @@ public partial class Program
         builder.Logging.AddFilter("Microsoft.Extensions.Diagnostics.HealthChecks", LogLevel.Warning);
         builder.Logging.AddFilter("Microsoft.Hosting.Lifetime", LogLevel.Warning);
         builder.Logging.AddFilter("Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager", LogLevel.Error);
-
-        JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
         var auth = builder.Services.AddAuthentication(o =>
         {
@@ -85,6 +82,7 @@ public partial class Program
                 }
                 o.ClaimActions.Clear();
                 o.ClaimActions.MapAllExcept("nonce", /*"aud",*/ "azp", "acr", "iss", "iat", "nbf", "exp", "at_hash", "c_hash", "ipaddr", "platf", "ver");
+                o.MapInboundClaims = false;
             });
         }
 
@@ -119,6 +117,7 @@ public partial class Program
                 o.TokenValidationParameters.ValidAudiences = settings.JWT.ValidAudiences;
                 o.TokenValidationParameters.ValidateIssuer = settings.JWT.ValidateIssuer;
                 o.TokenValidationParameters.ValidIssuers = settings.JWT.ValidIssuers;
+                o.MapInboundClaims = false;
             });
         }
 

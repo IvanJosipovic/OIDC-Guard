@@ -10,7 +10,7 @@ using oidc_guard.Services;
 
 namespace oidc_guard_tests.Infra;
 
-internal static class AuthTestsHelpers
+public static class AuthTestsHelpers
 {
     public static HttpClient GetClient(Action<Settings>? settingsAction = null, bool allowAutoRedirect = false)
     {
