@@ -156,11 +156,11 @@ public class AuthController : ControllerBase
 
                         if (claims.Length == 1)
                         {
-                            Response.Headers.Add(headerName, claims[0].Value);
+                            Response.Headers.Append(headerName, claims[0].Value);
                         }
                         else
                         {
-                            Response.Headers.Add(headerName, claims.Select(x => x.Value).Aggregate((x, y) => x + ", " + y));
+                            Response.Headers.Append(headerName, claims.Select(x => x.Value).Aggregate((x, y) => x + ", " + y));
                         }
                     }
                 }
@@ -197,11 +197,11 @@ public class AuthController : ControllerBase
 
                         if (results.Matches[0].Value is JsonArray)
                         {
-                            Response.Headers.Add(headerName, ((JsonArray)results.Matches[0].Value!).Where(x => x is not null).Select(x => x!.ToString()).DefaultIfEmpty().Aggregate((x, y) => x + ", " + y));
+                            Response.Headers.Append(headerName, ((JsonArray)results.Matches[0].Value!).Where(x => x is not null).Select(x => x!.ToString()).DefaultIfEmpty().Aggregate((x, y) => x + ", " + y));
                         }
                         else
                         {
-                            Response.Headers.Add(headerName, results.Matches[0].Value!.ToString());
+                            Response.Headers.Append(headerName, results.Matches[0].Value!.ToString());
                         }
                     }
                 }
