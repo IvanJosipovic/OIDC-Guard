@@ -25,12 +25,14 @@ namespace oidc_guard_tests
             var response = await _client.GetAsync("/signin?rd=/auth");
             response.StatusCode.Should().Be(HttpStatusCode.Found);
 
+            _client.DefaultRequestHeaders.Clear();
             _client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response.Headers.GetValues("Set-Cookie"));
 
             var response2 = await _client.GetAsync(response.Headers.Location);
             response2.StatusCode.Should().Be(HttpStatusCode.Found);
             response2.Headers.Location.Should().Be("/auth");
 
+            _client.DefaultRequestHeaders.Clear();
             _client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response2.Headers.GetValues("Set-Cookie"));
 
             var response3 = await _client.GetAsync(response2.Headers.Location);
@@ -50,12 +52,14 @@ namespace oidc_guard_tests
             var response = await _client.GetAsync("/signin?rd=/auth");
             response.StatusCode.Should().Be(HttpStatusCode.Found);
 
+            _client.DefaultRequestHeaders.Clear();
             _client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response.Headers.GetValues("Set-Cookie"));
 
             var response2 = await _client.GetAsync(response.Headers.Location);
             response2.StatusCode.Should().Be(HttpStatusCode.Found);
             response2.Headers.Location.Should().Be("/auth");
 
+            _client.DefaultRequestHeaders.Clear();
             _client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response2.Headers.GetValues("Set-Cookie"));
 
             var response3 = await _client.GetAsync(response2.Headers.Location);
@@ -64,6 +68,7 @@ namespace oidc_guard_tests
             var response4 = await _client.GetAsync("/signout?rd=/auth");
             response4.StatusCode.Should().Be(HttpStatusCode.Found);
 
+            _client.DefaultRequestHeaders.Clear();
             _client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response4.Headers.GetValues("Set-Cookie"));
 
             var response5 = await _client.GetAsync(response4.Headers.Location);
@@ -158,6 +163,7 @@ namespace oidc_guard_tests
 
             if (status == HttpStatusCode.Found)
             {
+                client.DefaultRequestHeaders.Clear();
                 client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response.Headers.GetValues("Set-Cookie"));
 
                 var response2 = await client.GetAsync(response.Headers.Location);
@@ -173,11 +179,14 @@ namespace oidc_guard_tests
             var client = AuthTestsHelpers.GetClient(x => x.Cookie.AllowedRedirectDomains = allowedRedirectDomains);
 
             var response = await client.GetAsync($"/signin?rd=/health");
+
+            client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response.Headers.GetValues("Set-Cookie"));
 
             var response2 = await client.GetAsync(response.Headers.Location);
             response2.StatusCode.Should().Be(HttpStatusCode.Found);
 
+            client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response2.Headers.GetValues("Set-Cookie"));
 
             var response3 = await client.GetAsync($"/signout?rd={HttpUtility.UrlEncode(query)}");
