@@ -9,7 +9,8 @@ using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Net.Http.Headers;
 using oidc_guard.Services;
-using Prometheus;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 
 namespace oidc_guard;
 
@@ -23,6 +24,38 @@ public partial class Program
 
         var settings = builder.Configuration.GetSection("Settings").Get<Settings>()!;
         builder.Services.AddSingleton(settings);
+
+        var resource = ResourceBuilder.CreateDefault().AddService(serviceName: "oidc-guard");
+
+        builder.Services
+            .AddOpenTelemetry()
+            .WithMetrics(metrics =>
+            {
+                metrics
+                    .SetResourceBuilder(resource)
+                    .AddRuntimeInstrumentation()
+                    .AddAspNetCoreInstrumentation()
+                    .AddEventCountersInstrumentation(c =>
+                    {
+                        c.AddEventSources(
+                            "Microsoft.AspNetCore.Hosting",
+                            "Microsoft-AspNetCore-Server-Kestrel",
+                            "System.Net.Http",
+                            "System.Net.Sockets");
+                    })
+                    .AddView("request-duration", new ExplicitBucketHistogramConfiguration
+                    {
+                        Boundaries = new double[] { 0, 0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1, 2.5, 5, 7.5, 10 }
+                    })
+                    .AddMeter(
+                        "Microsoft.AspNetCore.Hosting",
+                        "Microsoft.AspNetCore.Server.Kestrel",
+                        "oidc_guard"
+                    )
+                    .AddPrometheusExporter();
+            });
+
+        builder.Services.AddMetrics();
 
         builder.Logging.AddFilter("Default", settings.LogLevel);
         builder.Logging.AddFilter("Microsoft.AspNetCore", LogLevel.Warning);
@@ -192,7 +225,7 @@ public partial class Program
 
         app.MapControllers();
 
-        app.UseMetricServer();
+        app.MapPrometheusScrapingEndpoint();
 
         app.MapHealthChecks("/health");
 

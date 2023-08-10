@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
-using Prometheus;
+using System.Diagnostics.Metrics;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 
@@ -17,18 +17,25 @@ public class AuthController : ControllerBase
     private readonly ILogger<AuthController> _logger;
     private readonly Settings settings;
 
-    private static readonly Gauge AuthorizedGauge = Metrics.CreateGauge("oidc_guard_authorized", "Number of Authorized operations ongoing.");
+    private readonly Counter<long> AuthorizedCounter;
 
-    private static readonly Gauge UnauthorizedGauge = Metrics.CreateGauge("oidc_guard_unauthorized", "Number of Unauthorized operations ongoing.");
+    private readonly Counter<long> UnauthorizedCounter;
 
-    private static readonly Gauge SigninGauge = Metrics.CreateGauge("oidc_guard_signin", "Number of Sign-in operations ongoing.");
+    private readonly Counter<long> SigninCounter;
 
-    private static readonly Gauge SignoutGauge = Metrics.CreateGauge("oidc_guard_signout", "Number of Sign-out operations ongoing.");
+    private readonly Counter<long> SignoutCounter;
 
-    public AuthController(ILogger<AuthController> logger, Settings settings)
+    public AuthController(ILogger<AuthController> logger, Settings settings, IMeterFactory meterFactory)
     {
         _logger = logger;
         this.settings = settings;
+
+        var meter = meterFactory.Create("oidc_guard");
+
+        AuthorizedCounter = meter.CreateCounter<long>("oidc_guard_authorized", description: "Number of Authorized operations ongoing.");
+        UnauthorizedCounter = meter.CreateCounter<long>("oidc_guard_unauthorized", description: "Number of Unauthorized operations ongoing.");
+        SigninCounter = meter.CreateCounter<long>("oidc_guard_signin", description: "Number of Sign-in operations ongoing.");
+        SignoutCounter = meter.CreateCounter<long>("oidc_guard_signout", description: "Number of Sign-out operations ongoing.");
     }
 
     [HttpGet("auth")]
@@ -41,7 +48,7 @@ public class AuthController : ControllerBase
             !StringValues.IsNullOrEmpty(HttpContext.Request.Headers.AccessControlRequestMethod) &&
             !StringValues.IsNullOrEmpty(HttpContext.Request.Headers.Origin))
         {
-            AuthorizedGauge.Inc();
+            AuthorizedCounter.Add(1);
             return Ok();
         }
 
@@ -64,7 +71,7 @@ public class AuthController : ControllerBase
 
                         if (method == originalMethod && Regex.IsMatch(originalUrl, regex))
                         {
-                            AuthorizedGauge.Inc();
+                            AuthorizedCounter.Add(1);
                             return Ok();
                         }
                     }
@@ -72,7 +79,7 @@ public class AuthController : ControllerBase
                     {
                         if (Regex.IsMatch(originalUrl, item))
                         {
-                            AuthorizedGauge.Inc();
+                            AuthorizedCounter.Add(1);
                             return Ok();
                         }
                     }
@@ -91,7 +98,7 @@ public class AuthController : ControllerBase
 
                         if (method != originalMethod && !Regex.IsMatch(originalUrl, regex))
                         {
-                            AuthorizedGauge.Inc();
+                            AuthorizedCounter.Add(1);
                             return Ok();
                         }
                     }
@@ -99,7 +106,7 @@ public class AuthController : ControllerBase
                     {
                         if (!Regex.IsMatch(originalUrl, item))
                         {
-                            AuthorizedGauge.Inc();
+                            AuthorizedCounter.Add(1);
                             return Ok();
                         }
                     }
@@ -109,7 +116,7 @@ public class AuthController : ControllerBase
 
         if (HttpContext.User.Identity?.IsAuthenticated == false)
         {
-            UnauthorizedGauge.Inc();
+            UnauthorizedCounter.Add(1);
             return Unauthorized();
         }
 
@@ -207,13 +214,13 @@ public class AuthController : ControllerBase
                 }
                 else if (!HttpContext.User.Claims.Any(x => x.Type == item.Key && item.Value.Contains(x.Value)))
                 {
-                    UnauthorizedGauge.Inc();
+                    UnauthorizedCounter.Add(1);
                     return Unauthorized($"Claim {item.Key} does not match!");
                 }
             }
         }
 
-        AuthorizedGauge.Inc();
+        AuthorizedCounter.Add(1);
         return Ok();
     }
 
@@ -226,7 +233,7 @@ public class AuthController : ControllerBase
             return BadRequest();
         }
 
-        SigninGauge.Inc();
+        SigninCounter.Add(1);
 
         return Challenge(new AuthenticationProperties { RedirectUri = rd.ToString() });
     }
@@ -240,7 +247,7 @@ public class AuthController : ControllerBase
             return BadRequest();
         }
 
-        SignoutGauge.Inc();
+        SignoutCounter.Add(1);
 
         return SignOut(new AuthenticationProperties { RedirectUri = rd.ToString() });
     }
