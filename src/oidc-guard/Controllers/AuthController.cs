@@ -36,7 +36,7 @@ public class AuthController : ControllerBase
     public IActionResult Auth()
     {
         if (settings.SkipAuthPreflight &&
-            HttpContext.Request.Headers[CustomHeaderNames.OriginalMethod].FirstOrDefault() == "OPTIONS" &&
+            HttpContext.Request.Headers[CustomHeaderNames.OriginalMethod][0] == HttpMethod.Options.Method &&
             !StringValues.IsNullOrEmpty(HttpContext.Request.Headers.AccessControlRequestHeaders) &&
             !StringValues.IsNullOrEmpty(HttpContext.Request.Headers.AccessControlRequestMethod) &&
             !StringValues.IsNullOrEmpty(HttpContext.Request.Headers.Origin))
@@ -45,12 +45,12 @@ public class AuthController : ControllerBase
             return Ok();
         }
 
-        if (Request.QueryString.HasValue && (Request.Query.ContainsKey(QueryParameters.SkipAuth) || Request.Query.ContainsKey(QueryParameters.SkipAuthNe)))
+        if (Request.QueryString.HasValue &&
+            (Request.Query.TryGetValue(QueryParameters.SkipAuth, out var skipEquals) |
+            Request.Query.TryGetValue(QueryParameters.SkipAuthNe, out var skipNotEquals)))
         {
-            var skipEquals = Request.Query[QueryParameters.SkipAuth];
-            var skipNotEquals = Request.Query[QueryParameters.SkipAuthNe];
-            var originalUrl = HttpContext.Request.Headers[CustomHeaderNames.OriginalUrl].FirstOrDefault();
-            var originalMethod = HttpContext.Request.Headers[CustomHeaderNames.OriginalMethod].FirstOrDefault();
+            var originalUrl = HttpContext.Request.Headers[CustomHeaderNames.OriginalUrl][0]!;
+            var originalMethod = HttpContext.Request.Headers[CustomHeaderNames.OriginalMethod][0];
 
             if (skipEquals.Count > 0)
             {

@@ -71,7 +71,6 @@ public partial class Program
                 o.CorrelationCookie.Name = settings.Cookie.CookieName;
                 o.MetadataAddress = settings.OpenIdProviderConfigurationUrl;
                 o.NonceCookie.Name = settings.Cookie.CookieName;
-                o.NonceCookie.SameSite = settings.Cookie.CookieSameSiteMode;
                 o.ResponseType = OpenIdConnectResponseType.Code;
                 o.SaveTokens = settings.Cookie.SaveTokensInCookie;
                 o.TokenValidationParameters.ClockSkew = TimeSpan.FromSeconds(30);
@@ -160,9 +159,9 @@ public partial class Program
 
             if (settings.JWT.Enable)
             {
-                if (!string.IsNullOrEmpty(settings.JWT.AuthorizationHeader) && context.Request.Headers.ContainsKey(settings.JWT.AuthorizationHeader))
+                if (!string.IsNullOrEmpty(settings.JWT.AuthorizationHeader) && context.Request.Headers.TryGetValue(settings.JWT.AuthorizationHeader, out var authHeader))
                 {
-                    context.Request.Headers.Authorization = context.Request.Headers[settings.JWT.AuthorizationHeader];
+                    context.Request.Headers.Authorization = authHeader;
                 }
 
                 if (settings.JWT.PrependBearer &&
@@ -174,8 +173,8 @@ public partial class Program
 
                 if (settings.JWT.EnableAccessTokenInQueryParameter &&
                     context.Request.Path.StartsWithSegments("/auth") &&
-                    context.Request.Headers.ContainsKey(CustomHeaderNames.OriginalUrl) &&
-                    Uri.TryCreate(context.Request.Headers[CustomHeaderNames.OriginalUrl], UriKind.RelativeOrAbsolute, out var uri))
+                    context.Request.Headers.TryGetValue(CustomHeaderNames.OriginalUrl, out var originalUrlHeader) &&
+                    Uri.TryCreate(originalUrlHeader, UriKind.RelativeOrAbsolute, out var uri))
                 {
                     if (QueryHelpers.ParseQuery(uri.Query).TryGetValue(QueryParameters.AccessToken, out var token) &&
                         !context.Request.Headers.ContainsKey(HeaderNames.Authorization))
@@ -187,8 +186,6 @@ public partial class Program
 
             return next();
         });
-
-        app.UseCookiePolicy();
 
         app.UseAuthentication();
         app.UseAuthorization();
