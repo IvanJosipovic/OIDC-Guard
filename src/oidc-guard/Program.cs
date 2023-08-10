@@ -1,16 +1,22 @@
+using Json.Path;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Net.Http.Headers;
 using oidc_guard.Services;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
+using System.Diagnostics.Metrics;
+using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 
 namespace oidc_guard;
 
@@ -165,7 +171,7 @@ public partial class Program
             logging.RequestHeaders.Add("X-Scheme");
         });
 
-        builder.Services.AddControllers();
+        builder.Services.AddAuthorization();
         builder.Services.AddHealthChecks();
 
         builder.Services.Configure<ForwardedHeadersOptions>(options => options.ForwardedHeaders = ForwardedHeaders.All);
@@ -223,12 +229,251 @@ public partial class Program
         app.UseAuthentication();
         app.UseAuthorization();
 
-        app.MapControllers();
-
         app.MapPrometheusScrapingEndpoint();
 
         app.MapHealthChecks("/health");
 
+        app.MapGet("/robots.txt", () => "User-agent: *\r\nDisallow: /");
+
+        app.MapGet("/userinfo", (HttpContext httpContext) => httpContext.User.Claims.ToDictionary(x => x.Type, x => x.Value))
+            .RequireAuthorization();
+
+        app.MapGet("/auth", ([FromServices] Settings settings, [FromServices] IMeterFactory meterFactory, HttpContext httpContext) =>
+        {
+            meterFactory.Create("oidc_guard").CreateCounter<long>("oidc_guard_signin", description: "Number of Sign-in operations ongoing.").Add(1);
+
+            var meter = meterFactory.Create("oidc_guard");
+
+            var AuthorizedCounter = meter.CreateCounter<long>("oidc_guard_authorized", description: "Number of Authorized operations ongoing.");
+            var UnauthorizedCounter = meter.CreateCounter<long>("oidc_guard_unauthorized", description: "Number of Unauthorized operations ongoing.");
+
+            if (settings.SkipAuthPreflight &&
+                httpContext.Request.Headers[CustomHeaderNames.OriginalMethod][0] == HttpMethod.Options.Method &&
+                !StringValues.IsNullOrEmpty(httpContext.Request.Headers.AccessControlRequestHeaders) &&
+                !StringValues.IsNullOrEmpty(httpContext.Request.Headers.AccessControlRequestMethod) &&
+                !StringValues.IsNullOrEmpty(httpContext.Request.Headers.Origin))
+            {
+                AuthorizedCounter.Add(1);
+                return Results.Ok();
+            }
+
+            if (httpContext.Request.QueryString.HasValue &&
+                (httpContext.Request.Query.TryGetValue(QueryParameters.SkipAuth, out var skipEquals) |
+                httpContext.Request.Query.TryGetValue(QueryParameters.SkipAuthNe, out var skipNotEquals)))
+            {
+                var originalUrl = httpContext.Request.Headers[CustomHeaderNames.OriginalUrl][0]!;
+                var originalMethod = httpContext.Request.Headers[CustomHeaderNames.OriginalMethod][0];
+
+                if (skipEquals.Count > 0)
+                {
+                    foreach (var item in skipEquals)
+                    {
+                        var commaIndex = item.IndexOf(',');
+                        if (commaIndex != -1)
+                        {
+                            var method = item[..commaIndex];
+                            var regex = item[(commaIndex + 1)..];
+
+                            if (method == originalMethod && Regex.IsMatch(originalUrl, regex))
+                            {
+                                AuthorizedCounter.Add(1);
+                                return Results.Ok();
+                            }
+                        }
+                        else
+                        {
+                            if (Regex.IsMatch(originalUrl, item))
+                            {
+                                AuthorizedCounter.Add(1);
+                                return Results.Ok();
+                            }
+                        }
+                    }
+                }
+
+                if (skipNotEquals.Count > 0)
+                {
+                    foreach (var item in skipNotEquals)
+                    {
+                        var commaIndex = item.IndexOf(',');
+                        if (commaIndex != -1)
+                        {
+                            var method = item[..commaIndex];
+                            var regex = item[(commaIndex + 1)..];
+
+                            if (method != originalMethod && !Regex.IsMatch(originalUrl, regex))
+                            {
+                                AuthorizedCounter.Add(1);
+                                return Results.Ok();
+                            }
+                        }
+                        else
+                        {
+                            if (!Regex.IsMatch(originalUrl, item))
+                            {
+                                AuthorizedCounter.Add(1);
+                                return Results.Ok();
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (httpContext.User.Identity?.IsAuthenticated == false)
+            {
+                UnauthorizedCounter.Add(1);
+                return Results.Unauthorized();
+            }
+
+            // Validate based on rules
+            if (httpContext.Request.QueryString.HasValue)
+            {
+                foreach (var item in httpContext.Request.Query)
+                {
+                    if (item.Key.Equals(QueryParameters.SkipAuth, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                    }
+                    else if (item.Key.Equals(QueryParameters.SkipAuthNe, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                    }
+                    else if (item.Key.Equals(QueryParameters.InjectClaim, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        foreach (var value in item.Value)
+                        {
+                            if (string.IsNullOrEmpty(value))
+                            {
+                                continue;
+                            }
+
+                            string claimName;
+                            string headerName;
+
+                            if (value.Contains(','))
+                            {
+                                claimName = value.Split(',')[0];
+                                headerName = value.Split(',')[1];
+                            }
+                            else
+                            {
+                                claimName = value;
+                                headerName = value;
+                            }
+
+                            var claims = httpContext.User.Claims.Where(x => x.Type == claimName).ToArray();
+
+                            if (claims == null || claims.Length == 0)
+                            {
+                                continue;
+                            }
+
+                            if (claims.Length == 1)
+                            {
+                                httpContext.Response.Headers.Append(headerName, claims[0].Value);
+                            }
+                            else
+                            {
+                                httpContext.Response.Headers.Append(headerName, claims.Select(x => x.Value).Aggregate((x, y) => x + ", " + y));
+                            }
+                        }
+                    }
+                    else if (item.Key.Equals(QueryParameters.InjectJsonClaim, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        foreach (var value in item.Value)
+                        {
+                            if (string.IsNullOrEmpty(value))
+                            {
+                                continue;
+                            }
+
+                            string headerName;
+                            string claimName;
+                            string jsonPath;
+
+                            headerName = value.Split(',')[0];
+                            claimName = value.Split(',')[1];
+                            jsonPath = value.Split(',')[2];
+
+                            var jsonClaim = httpContext.User.Claims.FirstOrDefault(x => x.Type == claimName)?.Value;
+
+                            if (jsonClaim is null)
+                            {
+                                continue;
+                            }
+
+                            var results = JsonPath.Parse(jsonPath).Evaluate(JsonNode.Parse(jsonClaim));
+
+                            if (results is null || results.Matches is null || results.Matches.Count == 0 || results.Matches[0].Value is null)
+                            {
+                                continue;
+                            }
+
+                            if (results.Matches[0].Value is JsonArray)
+                            {
+                                httpContext.Response.Headers.Append(headerName, ((JsonArray)results.Matches[0].Value!).Where(x => x is not null).Select(x => x!.ToString()).DefaultIfEmpty().Aggregate((x, y) => x + ", " + y));
+                            }
+                            else
+                            {
+                                httpContext.Response.Headers.Append(headerName, results.Matches[0].Value!.ToString());
+                            }
+                        }
+                    }
+                    else if (!httpContext.User.Claims.Any(x => x.Type == item.Key && item.Value.Contains(x.Value)))
+                    {
+                        UnauthorizedCounter.Add(1);
+                        //return Results.Unauthorized($"Claim {item.Key} does not match!");
+                        return Results.Unauthorized();
+                    }
+                }
+            }
+
+            AuthorizedCounter.Add(1);
+            return Results.Ok();
+        });
+
+        app.MapGet("/signin", ([FromServices] Settings settings, [FromServices] IMeterFactory meterFactory, [FromQuery] Uri rd) =>
+        {
+            if (!ValidateRedirect(rd, settings))
+            {
+                return Results.BadRequest();
+            }
+
+            meterFactory.Create("oidc_guard").CreateCounter<long>("oidc_guard_signin", description: "Number of Sign-in operations ongoing.").Add(1);
+
+            return Results.Challenge(new AuthenticationProperties { RedirectUri = rd.ToString() });
+        });
+
+        app.MapGet("/signout", ([FromServices] Settings settings, [FromServices] IMeterFactory meterFactory, [FromQuery] Uri rd) =>
+        {
+            if (!ValidateRedirect(rd, settings))
+            {
+                return Results.BadRequest();
+            }
+
+            meterFactory.Create("oidc_guard").CreateCounter<long>("oidc_guard_signout", description: "Number of Sign-out operations ongoing.").Add(1);
+
+            return Results.SignOut(new AuthenticationProperties { RedirectUri = rd.ToString() });
+        })
+            .RequireAuthorization();
+
         app.Run();
+    }
+
+    private static bool ValidateRedirect(Uri rd, Settings settings)
+    {
+        if (settings.Cookie.AllowedRedirectDomains?.Length > 0 && rd.IsAbsoluteUri)
+        {
+            foreach (var allowedDomain in settings.Cookie.AllowedRedirectDomains)
+            {
+                if ((allowedDomain[0] == '.' && rd.DnsSafeHost.EndsWith(allowedDomain, StringComparison.InvariantCultureIgnoreCase)) ||
+                    rd.DnsSafeHost.Equals(allowedDomain, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        return true;
     }
 }
