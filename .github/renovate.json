@@ -40,7 +40,6 @@
       "matchUpdateTypes": [ "minor", "patch", "digest" ],
       "matchCurrentVersion": "!/^0/",
       "automerge": true,
-      "excludePackageNames": [ "Moq" ],
       "matchFileNames": [
         "tests/**",
         "benchmarks/**"
