@@ -3,12 +3,8 @@
   "enabled": true,
   "timezone": "America/Vancouver",
   "dependencyDashboard": true,
-  "dependencyDashboardTitle": "Renovate Dashboard",
   "semanticCommits": "enabled",
-  "suppressNotifications": ["prIgnoreNotification"],
-  "rebaseWhen": "conflicted",
   "assignees": ["@ivanjosipovic"],
-  "extends": ["config:base"],
   "platformAutomerge": true,
   "ignorePaths": [
     "**/docs/**",
@@ -21,7 +17,6 @@
       "matchCurrentVersion": "!/^0/",
       "automerge": true,
       "extends": [":semanticCommitTypeAll(fix)"],
-      "excludePackageNames": ["Microsoft.VisualStudio.Azure.Containers.Tools.Targets"],
       "matchFileNames": [
         "src/**"
       ]
