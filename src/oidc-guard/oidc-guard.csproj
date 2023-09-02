@@ -7,8 +7,6 @@
     <InvariantGlobalization>true</InvariantGlobalization>
     <RootNamespace>oidc_guard</RootNamespace>
     <UserSecretsId>a70c2d04-572e-41af-8710-66bacf303453</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerfileContext>.</DockerfileContext>
     <PublishSingleFile>true</PublishSingleFile>
     <PublishTrimmed>false</PublishTrimmed>
   </PropertyGroup>
@@ -18,7 +16,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.10" />
     <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="6.32.2" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
     <PackageReference Include="prometheus-net.AspNetCore" Version="8.0.1" />
     <PackageReference Include="System.Private.Uri" Version="4.3.2" />
   </ItemGroup>
