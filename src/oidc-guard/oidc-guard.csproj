@@ -7,19 +7,16 @@
     <InvariantGlobalization>true</InvariantGlobalization>
     <RootNamespace>oidc_guard</RootNamespace>
     <UserSecretsId>a70c2d04-572e-41af-8710-66bacf303453</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerfileContext>.</DockerfileContext>
     <PublishSingleFile>true</PublishSingleFile>
     <PublishTrimmed>false</PublishTrimmed>
     <EnableRequestDelegateGenerator>true</EnableRequestDelegateGenerator>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JsonPath.Net" Version="0.6.4" />
+    <PackageReference Include="JsonPath.Net" Version="0.6.5" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0-preview.7.23375.9" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.0-preview.7.23375.9" />
     <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="7.1.0-preview" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
     <PackageReference Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.6.0-alpha.1" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.6.0-alpha.1" />
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.5.1-beta.1" />
