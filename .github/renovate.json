@@ -5,6 +5,7 @@
   "dependencyDashboard": true,
   "semanticCommits": "enabled",
   "assignees": ["@ivanjosipovic"],
+  "extends": [ "config:recommended" ],
   "platformAutomerge": true,
   "ignorePaths": [
     "**/docs/**",
@@ -15,7 +16,7 @@
     {
       "matchUpdateTypes": ["minor", "patch", "digest"],
       "matchCurrentVersion": "!/^0/",
-      "automerge": true,
+      "automerge": false,
       "extends": [":semanticCommitTypeAll(fix)"],
       "matchFileNames": [
         "src/**"
@@ -24,7 +25,7 @@
     {
       "matchUpdateTypes": [ "minor", "patch", "digest" ],
       "matchCurrentVersion": "!/^0/",
-      "automerge": true,
+      "automerge": false,
       "matchFileNames": [
         "tests/**",
         "benchmarks/**",
