@@ -9,7 +9,7 @@ namespace oidc_guard_benchmarks;
 [MemoryDiagnoser]
 public class Benchmark
 {
-    private HttpClient client;
+    private HttpClient client = default!;
 
     private string query = "/auth";
 

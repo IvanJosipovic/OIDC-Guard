@@ -24,7 +24,7 @@ public class TestServerDocumentRetriever : IDocumentRetriever
                       "issuer": "{{FakeJwtIssuer.Issuer}}",
                       "claims_supported": ["sub", "iss", "aud", "exp", "iat", "auth_time", "acr", "amr", "nonce", "email", "given_name", "family_name", "nickname"],
                       "check_session_iframe": "https://inmemory.microsoft.com/common/oauth2/checksession",
-                      "userinfo_endpoint": "https://inmemory.microsoft.com/common/openid/userinfo",
+                      "userinfo_endpoint": "https://inmemory.microsoft.com/common/openid/userinfo"
                     }
                     """;
 
