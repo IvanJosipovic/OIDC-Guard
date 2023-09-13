@@ -11,7 +11,7 @@ FROM build AS publish
 ARG VERSION=0.0.1
 RUN dotnet publish "oidc-guard.csproj" -c Release --use-current-runtime -o /app/publish /p:Version=${VERSION}
 
-FROM mcr.microsoft.com/dotnet/runtime:8.0-alpine@sha256:916901d8a875c188ca6339871279f32b50afc3078e24490e698934f558a3e4bb AS base
+FROM mcr.microsoft.com/dotnet/runtime-deps:8.0-alpine@sha256:37da83ce1ce4e3c3ac853d923581cf8a2fd0d92a0a21752020e66d8b59650831 AS base
 WORKDIR /app
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
