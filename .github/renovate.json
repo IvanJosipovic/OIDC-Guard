@@ -16,7 +16,7 @@
       "matchUpdateTypes": ["minor", "patch", "digest"],
       "matchCurrentVersion": "!/^0/",
       "automerge": false,
-      "extends": [":semanticCommitTypeAll(fix)"],
+      "semanticCommitType": "fix",
       "matchFileNames": [
         "src/**"
       ]
