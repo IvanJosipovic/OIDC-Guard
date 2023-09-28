@@ -14,7 +14,6 @@
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch", "digest"],
-      "matchCurrentVersion": "!/^0/",
       "automerge": false,
       "semanticCommitType": "fix",
       "matchFileNames": [
@@ -23,7 +22,6 @@
     },
     {
       "matchUpdateTypes": [ "minor", "patch", "digest" ],
-      "matchCurrentVersion": "!/^0/",
       "automerge": false,
       "matchFileNames": [
         "tests/**",
