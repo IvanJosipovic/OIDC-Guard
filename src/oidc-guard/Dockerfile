@@ -1,6 +1,6 @@
 ARG BUILDPLATFORM=linux/amd64
 
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-alpine@sha256:f2a31f8b5d9744df36b7aeb89bf22231a8032c150345297d3ab52fc1988aa754 AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-alpine@sha256:fcf11110dd72ac7d83edc1d0103024a055476eb8c78add62557317f0f9c42eb6 AS build
 WORKDIR /src
 COPY oidc-guard.csproj .
 RUN dotnet restore "oidc-guard.csproj"
@@ -11,7 +11,7 @@ FROM build AS publish
 ARG VERSION=0.0.1
 RUN dotnet publish "oidc-guard.csproj" -c Release --use-current-runtime -o /app/publish /p:Version=${VERSION}
 
-FROM mcr.microsoft.com/dotnet/runtime-deps:8.0-alpine@sha256:37da83ce1ce4e3c3ac853d923581cf8a2fd0d92a0a21752020e66d8b59650831 AS base
+FROM mcr.microsoft.com/dotnet/runtime-deps:8.0-alpine@sha256:5a8a7d56f703d2d2ccc6b8290621172c34fda375671b8b47691f844ecdc552ef AS base
 WORKDIR /app
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
