@@ -235,7 +235,7 @@ public partial class Program
 
         app.MapGet("/robots.txt", () => "User-agent: *\r\nDisallow: /");
 
-        app.MapGet("/userinfo", (HttpContext httpContext) => httpContext.User.Claims.ToDictionary(x => x.Type, x => x.Value))
+        app.MapGet("/userinfo", (HttpContext httpContext) => httpContext.User.Claims.GroupBy(x => x.Type).ToDictionary(x => x.Key, y => y.Count() > 1 ? (object)y.Select(x => x.Value) : y.First().Value))
             .RequireAuthorization();
 
         app.MapGet("/auth", ([FromServices] Settings settings, [FromServices] IMeterFactory meterFactory, HttpContext httpContext) =>
