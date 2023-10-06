@@ -510,6 +510,31 @@ public class AuthTests
         json.RootElement.GetProperty("username").GetString().Should().Be("test");
     }
 
+    [Fact]
+    public async Task UserInfoMulti()
+    {
+        var _client = AuthTestsHelpers.GetClient();
+
+        var claims = new List<Claim>()
+        {
+            new Claim("username", "test"),
+            new Claim("multi", "one"),
+            new Claim("multi", "two")
+        };
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(claims));
+
+        var response = await _client.GetAsync("/userinfo");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var json = await response.Content.ReadFromJsonAsync<JsonDocument>();
+
+        json.RootElement.GetProperty("username").GetString().Should().Be("test");
+
+        json.RootElement.GetProperty("multi").GetArrayLength().Should().Be(2);
+        json.RootElement.GetProperty("multi").EnumerateArray().ElementAt(0).GetString().Should().Be("one");
+        json.RootElement.GetProperty("multi").EnumerateArray().ElementAt(1).GetString().Should().Be("two");
+    }
+
     [Theory]
     [InlineData("?skip-auth=GET,test", "https://test.com", "GET", HttpStatusCode.OK)]
     [InlineData("?skip-auth=GET,test", "https://test.com", "POST", HttpStatusCode.Unauthorized)]
