@@ -18,7 +18,6 @@
     </PackageReference>
     <PackageReference Include="Ductus.FluentDocker" Version="2.10.59" />
     <PackageReference Include="KubernetesClient" Version="12.1.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.0" />
     <PackageReference Include="FluentAssertions" Version="6.12.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.0-rc.1.23421.29" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
