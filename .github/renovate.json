@@ -22,7 +22,7 @@
     },
     {
       "matchUpdateTypes": [ "minor", "patch", "digest" ],
-      "automerge": false,
+      "automerge": true,
       "matchFileNames": [
         "tests/**",
         "benchmarks/**",
