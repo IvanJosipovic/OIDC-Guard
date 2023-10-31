@@ -14,7 +14,6 @@ using Microsoft.Net.Http.Headers;
 using oidc_guard.Services;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
-using System.Diagnostics.Metrics;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 
@@ -62,6 +61,8 @@ public partial class Program
             });
 
         builder.Services.AddMetrics();
+
+        builder.Services.AddSingleton<Instrumentation>();
 
         builder.Logging.AddFilter("Default", settings.LogLevel);
         builder.Logging.AddFilter("Microsoft.AspNetCore", LogLevel.Warning);
@@ -238,14 +239,9 @@ public partial class Program
         app.MapGet("/userinfo", (HttpContext httpContext) => httpContext.User.Claims.GroupBy(x => x.Type).ToDictionary(x => x.Key, y => y.Count() > 1 ? (object)y.Select(x => x.Value) : y.First().Value))
             .RequireAuthorization();
 
-        app.MapGet("/auth", ([FromServices] Settings settings, [FromServices] IMeterFactory meterFactory, HttpContext httpContext) =>
+        app.MapGet("/auth", ([FromServices] Settings settings, [FromServices] Instrumentation meters, HttpContext httpContext) =>
         {
-            meterFactory.Create("oidc_guard").CreateCounter<long>("oidc_guard_signin", description: "Number of Sign-in operations ongoing.").Add(1);
-
-            var meter = meterFactory.Create("oidc_guard");
-
-            var AuthorizedCounter = meter.CreateCounter<long>("oidc_guard_authorized", description: "Number of Authorized operations ongoing.");
-            var UnauthorizedCounter = meter.CreateCounter<long>("oidc_guard_unauthorized", description: "Number of Unauthorized operations ongoing.");
+            meters.SignInCounter.Add(1);
 
             if (settings.SkipAuthPreflight &&
                 httpContext.Request.Headers[CustomHeaderNames.OriginalMethod][0] == HttpMethod.Options.Method &&
@@ -253,7 +249,7 @@ public partial class Program
                 !StringValues.IsNullOrEmpty(httpContext.Request.Headers.AccessControlRequestMethod) &&
                 !StringValues.IsNullOrEmpty(httpContext.Request.Headers.Origin))
             {
-                AuthorizedCounter.Add(1);
+                meters.AuthorizedCounter.Add(1);
                 return Results.Ok();
             }
 
@@ -276,7 +272,7 @@ public partial class Program
 
                             if (method == originalMethod && Regex.IsMatch(originalUrl, regex))
                             {
-                                AuthorizedCounter.Add(1);
+                                meters.AuthorizedCounter.Add(1);
                                 return Results.Ok();
                             }
                         }
@@ -284,7 +280,7 @@ public partial class Program
                         {
                             if (Regex.IsMatch(originalUrl, item))
                             {
-                                AuthorizedCounter.Add(1);
+                                meters.AuthorizedCounter.Add(1);
                                 return Results.Ok();
                             }
                         }
@@ -303,7 +299,7 @@ public partial class Program
 
                             if (method != originalMethod && !Regex.IsMatch(originalUrl, regex))
                             {
-                                AuthorizedCounter.Add(1);
+                                meters.AuthorizedCounter.Add(1);
                                 return Results.Ok();
                             }
                         }
@@ -311,7 +307,7 @@ public partial class Program
                         {
                             if (!Regex.IsMatch(originalUrl, item))
                             {
-                                AuthorizedCounter.Add(1);
+                                meters.AuthorizedCounter.Add(1);
                                 return Results.Ok();
                             }
                         }
@@ -321,7 +317,7 @@ public partial class Program
 
             if (httpContext.User.Identity?.IsAuthenticated == false)
             {
-                UnauthorizedCounter.Add(1);
+                meters.UnauthorizedCounter.Add(1);
                 return Results.Unauthorized();
             }
 
@@ -419,37 +415,37 @@ public partial class Program
                     }
                     else if (!httpContext.User.Claims.Any(x => x.Type == item.Key && item.Value.Contains(x.Value)))
                     {
-                        UnauthorizedCounter.Add(1);
+                        meters.UnauthorizedCounter.Add(1);
                         //return Results.Unauthorized($"Claim {item.Key} does not match!");
                         return Results.Unauthorized();
                     }
                 }
             }
 
-            AuthorizedCounter.Add(1);
+            meters.AuthorizedCounter.Add(1);
             return Results.Ok();
         });
 
-        app.MapGet("/signin", ([FromServices] Settings settings, [FromServices] IMeterFactory meterFactory, [FromQuery] Uri rd) =>
+        app.MapGet("/signin", ([FromServices] Settings settings, [FromServices] Instrumentation meters, [FromQuery] Uri rd) =>
         {
             if (!ValidateRedirect(rd, settings))
             {
                 return Results.BadRequest();
             }
 
-            meterFactory.Create("oidc_guard").CreateCounter<long>("oidc_guard_signin", description: "Number of Sign-in operations ongoing.").Add(1);
+            meters.SignInCounter.Add(1);
 
             return Results.Challenge(new AuthenticationProperties { RedirectUri = rd.ToString() });
         });
 
-        app.MapGet("/signout", ([FromServices] Settings settings, [FromServices] IMeterFactory meterFactory, [FromQuery] Uri rd) =>
+        app.MapGet("/signout", ([FromServices] Settings settings, [FromServices] Instrumentation meters, [FromQuery] Uri rd) =>
         {
             if (!ValidateRedirect(rd, settings))
             {
                 return Results.BadRequest();
             }
 
-            meterFactory.Create("oidc_guard").CreateCounter<long>("oidc_guard_signout", description: "Number of Sign-out operations ongoing.").Add(1);
+            meters.SignOutCounter.Add(1);
 
             return Results.SignOut(new AuthenticationProperties { RedirectUri = rd.ToString() });
         })
