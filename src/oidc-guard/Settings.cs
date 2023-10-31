@@ -5,7 +5,7 @@ public class Settings
     public bool SkipAuthPreflight { get; set; }
     public LogLevel LogLevel { get; set; }
     public string OpenIdProviderConfigurationUrl { get; set; } = null!;
-    public bool RequireRequireHttpsMetadata { get; set; } = true;
+    public bool RequireHttpsMetadata { get; set; } = true;
     public string? Host { get; set; }
     public string? Scheme { get; set; }
     public CookieAuthSettings Cookie { get; set; } = new();

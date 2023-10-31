@@ -48,10 +48,10 @@ settings:
     # - .test.com
 
     # Client Id
-    clientId: ""
+    clientId: "client-credentials-mock-client"
 
     # Client Secret
-    clientSecret: ""
+    clientSecret: "client-credentials-mock-client-secret"
 
     # Cookie Domain (Defaults to the hostname of this app)
     cookieDomain: "localhost"

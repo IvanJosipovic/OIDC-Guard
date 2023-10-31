@@ -110,7 +110,7 @@ public partial class Program
                 o.ClientSecret = settings.Cookie.ClientSecret;
                 o.CorrelationCookie.Name = settings.Cookie.CookieName;
                 o.MetadataAddress = settings.OpenIdProviderConfigurationUrl;
-                o.RequireHttpsMetadata = settings.RequireRequireHttpsMetadata;
+                o.RequireHttpsMetadata = settings.RequireHttpsMetadata;
                 o.NonceCookie.Name = settings.Cookie.CookieName;
                 o.ResponseType = OpenIdConnectResponseType.Code;
                 o.SaveTokens = settings.Cookie.SaveTokensInCookie;
@@ -130,7 +130,7 @@ public partial class Program
         {
             auth.AddJwtBearer(o =>
             {
-                o.RequireHttpsMetadata = settings.RequireRequireHttpsMetadata;
+                o.RequireHttpsMetadata = settings.RequireHttpsMetadata;
 
                 if (!string.IsNullOrEmpty(settings.JWT.JWKSUrl))
                 {
