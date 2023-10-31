@@ -36,6 +36,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="EndToEnd\oidc-guard-values.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="EndToEnd\ingress-nginx-values.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

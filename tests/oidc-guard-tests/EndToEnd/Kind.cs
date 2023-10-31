@@ -6,6 +6,9 @@ using System.Text;
 
 namespace KubeUI.Core.Tests;
 
+/// <summary>
+/// Interface for KIND https://github.com/kubernetes-sigs/kind/releases
+/// </summary>
 public static class Kind
 {
     private const string Version = "0.20.0";
@@ -164,6 +167,23 @@ public static class Kind
         foreach (var cluster in await GetClusters())
         {
             await DeleteCluster(cluster);
+        }
+    }
+
+    public static async Task LoadDockerImage(string clusterName, string imageName)
+    {
+        var stdErrBuffer = new StringBuilder();
+
+        await Cli.Wrap(FileName)
+            .WithArguments($"load docker-image {imageName} --name {clusterName}")
+            .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer))
+            .ExecuteAsync();
+
+        var stdErr = stdErrBuffer.ToString();
+
+        if (!string.IsNullOrEmpty(stdErr) && stdErr.StartsWith("ERROR:"))
+        {
+            throw new Exception(stdErr);
         }
     }
 }

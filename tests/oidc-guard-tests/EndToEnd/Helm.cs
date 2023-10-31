@@ -1,10 +1,7 @@
 ﻿using CliWrap;
-using SharpCompress.Common;
 using SharpCompress.Readers;
 using System.Runtime.InteropServices;
-using static System.Net.Mime.MediaTypeNames;
 using System.Text;
-using System.Xml.Linq;
 using CliWrap.Buffered;
 
 namespace oidc_guard_tests.EndToEnd

@@ -1,14 +1,14 @@
-# Default values for oidc-guard.
+﻿# Default values for oidc-guard.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
 
 image:
-  repository: ghcr.io/ivanjosipovic/oidc-guard/oidc-guard
+  repository: oidc-guard
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "latest"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -16,11 +16,11 @@ fullnameOverride: ""
 
 settings:
   # OpenID Provider Configuration Url for your Identity Provider
-  openIdProviderConfigurationUrl: "https://login.microsoftonline.com/{TenantId}/v2.0/.well-known/openid-configuration"
+  openIdProviderConfigurationUrl: "http://oidc-server.oidc-server.svc.cluster.local/{TenantId}/v2.0/.well-known/openid-configuration"
 
   # Gets or sets if HTTPS is required for the metadata address or authority.
   # This should be disabled only in development environments.
-  requireHttpsMetadata: true
+  requireHttpsMetadata: false
 
   # Skip Authentication for CORS Preflight requests
   # https://developer.mozilla.org/en-US/docs/Glossary/Preflight_request
@@ -54,7 +54,7 @@ settings:
     clientSecret: ""
 
     # Cookie Domain (Defaults to the hostname of this app)
-    cookieDomain: "test.com"
+    cookieDomain: "localhost"
 
     # Cookie Name
     cookieName: "oidc-guard"
