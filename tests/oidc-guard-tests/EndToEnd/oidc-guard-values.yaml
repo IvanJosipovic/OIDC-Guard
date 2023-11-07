@@ -28,7 +28,7 @@ settings:
 
   # Set host for http redirect used in the sign-in process
   # When not set will use the apps hostname
-  host: "oidc-guard.test.loc:32443"
+  host: ""
 
   # Set scheme for http redirect used in the sign-in process (http or https)
   # When not set, will accept X-Forwarded-Proto
@@ -54,7 +54,7 @@ settings:
     clientSecret: "client-credentials-mock-client-secret"
 
     # Cookie Domain (Defaults to the hostname of this app)
-    cookieDomain: ".test.loc"
+    cookieDomain: "test.loc"
 
     # Cookie Name
     cookieName: "oidc-guard"

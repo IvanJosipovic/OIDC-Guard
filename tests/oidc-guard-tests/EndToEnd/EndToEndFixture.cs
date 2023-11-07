@@ -290,7 +290,7 @@ namespace oidc_guard_tests.EndToEnd
                     Annotations = new Dictionary<string, string>()
                     {
                         { "nginx.ingress.kubernetes.io/auth-url", "http://oidc-guard.oidc-guard.svc.cluster.local:8080/auth" },
-                        { "nginx.ingress.kubernetes.io/auth-signin", "http://oidc-guard.test.loc:32443/signin" }
+                        { "nginx.ingress.kubernetes.io/auth-signin", "https://oidc-guard.test.loc:32443/signin" }
                     }
                 },
                 Spec = new()
