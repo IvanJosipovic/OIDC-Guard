@@ -184,8 +184,6 @@ public partial class Program
 
         var app = builder.Build();
 
-        app.UseHttpLogging();
-
         app.UseForwardedHeaders();
 
         app.Use((context, next) =>
@@ -229,6 +227,8 @@ public partial class Program
 
             return next();
         });
+
+        app.UseHttpLogging();
 
         app.UseAuthentication();
         app.UseAuthorization();

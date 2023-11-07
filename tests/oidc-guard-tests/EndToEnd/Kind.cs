@@ -11,7 +11,7 @@ namespace KubeUI.Core.Tests;
 /// </summary>
 public static class Kind
 {
-    private const string Version = "0.20.0";
+    private const string Version = "latest";
 
     public static string FileName { get; } = "kind" + (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : "");
 
@@ -38,7 +38,7 @@ public static class Kind
             os = "windows";
         }
 
-        var url = $"https://kind.sigs.k8s.io/dl/v{Version}/kind-{os}-{arch}";
+        var url = $"https://kind.sigs.k8s.io/dl/{Version}/kind-{os}-{arch}";
 
         var bytes = await client.GetByteArrayAsync(url);
 

@@ -1,5 +1,5 @@
-﻿using Ductus.FluentDocker.Builders;
-using Ductus.FluentDocker.Model.Common;
+﻿using Ductus.FluentDocker.Model.Common;
+using Ductus.FluentDocker.Builders;
 using k8s;
 using k8s.Models;
 using KubeUI.Core.Tests;
@@ -18,13 +18,13 @@ namespace oidc_guard_tests.EndToEnd
 
         public string Name { get; set; } = Guid.NewGuid().ToString();
 
-        public string Version { get; set; } = "kindest/node:v1.27.3";
+        public string Version { get; set; } = "kindest/node:v1.28.0";
 
         public Kubernetes Kubernetes { get; set; }
 
         public EndToEndFixture()
         {
-            //// Build oidc-guard image
+            // Build oidc-guard image
             var path = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(GetType().Assembly.Location)))))) + "\\src\\oidc-guard\\";
             new Builder()
               .DefineImage("oidc-guard")
@@ -38,16 +38,18 @@ namespace oidc_guard_tests.EndToEnd
             Kind.CreateCluster(Name, Version, "EndToEnd/kind-config.yaml").Wait();
             Kubernetes = Kind.GetKubernetesClient(Name).Result;
 
+            Helm.DownloadClient().Wait();
+            Helm.RepoAdd("nginx", "https://kubernetes.github.io/ingress-nginx").Wait();
+            Helm.RepoUpdate().Wait();
+            Helm.Upgrade("ingress-nginx", "nginx/ingress-nginx", $"--install -f ./EndToEnd/ingress-nginx-values.yaml --namespace ingress-nginx --create-namespace --kube-context kind-{Name} --wait").Wait();
+
             DeployOIDCServer(Kubernetes).Wait();
 
-            //Helm.DownloadClient().Wait();
-            //Helm.RepoAdd("nginx", "https://kubernetes.github.io/ingress-nginx").Wait();
-            //Helm.RepoUpdate().Wait();
-            //Helm.Upgrade("ingress-nginx", "nginx/ingress-nginx", $"--install -f ./EndToEnd/ingress-nginx-values.yaml --namespace ingress-nginx --create-namespace --kube-context kind-{Name}").Wait();
+            DeployDemoApp(Kubernetes).Wait();
 
             Kind.LoadDockerImage(Name, "oidc-guard:latest").Wait();
 
-            Helm.Upgrade("oidc-guad", "..\\..\\..\\..\\..\\charts\\oidc-guard", $"--install -f ./EndToEnd/oidc-guard-values.yaml --namespace oidc-guard --create-namespace --kube-context kind-{Name}").Wait();
+            Helm.Upgrade("oidc-guard", "..\\..\\..\\..\\..\\charts\\oidc-guard", $"--install -f ./EndToEnd/oidc-guard-values.yaml --namespace oidc-guard --create-namespace --kube-context kind-{Name} --wait").Wait();
         }
 
         public async Task DeployOIDCServer(Kubernetes kube)
@@ -66,7 +68,7 @@ namespace oidc_guard_tests.EndToEnd
             {
                 Metadata = new()
                 {
-                    Name = "oidc-server",
+                    Name = ns.Name(),
                     NamespaceProperty = ns.Name()
                 },
                 Spec = new()
@@ -76,7 +78,7 @@ namespace oidc_guard_tests.EndToEnd
                     {
                         MatchLabels = new Dictionary<string, string>
                         {
-                            {"app", "oidc-server"}
+                            {"app", ns.Name()}
                         }
                     },
                     Template = new()
@@ -85,7 +87,7 @@ namespace oidc_guard_tests.EndToEnd
                         {
                             Labels = new Dictionary<string, string>
                             {
-                                {"app", "oidc-server"}
+                                {"app", ns.Name()}
                             }
                         },
                         Spec = new()
@@ -94,7 +96,7 @@ namespace oidc_guard_tests.EndToEnd
                             {
                                 new()
                                 {
-                                    Name = "oidc-server",
+                                    Name = ns.Name(),
                                     Image = "ghcr.io/soluto/oidc-server-mock:latest",
                                     Env = new List<V1EnvVar>()
                                     {
@@ -111,7 +113,12 @@ namespace oidc_guard_tests.EndToEnd
                                         new()
                                         {
                                             Name = "CLIENTS_CONFIGURATION_INLINE",
-                                            Value = """[{"ClientId":"client-credentials-mock-client","ClientSecrets":["client-credentials-mock-client-secret"],"Description":"Client for client credentials flow","AllowedGrantTypes":["code"],"AllowedScopes":["openid","profile","email"],"RedirectUris":["http://localhost:12345/signin-oidc"],"Claims":[{"Type":"string_claim","Value":"string_claim_value","ValueType":"string"},{"Type":"json_claim","Value":"[\"value1\", \"value2\"]","ValueType":"json"}]}]"""
+                                            Value = """[{"ClientId":"client-credentials-mock-client","ClientSecrets":["client-credentials-mock-client-secret"],"Description":"Client for client credentials flow","AllowedGrantTypes":["authorization_code"],"AllowedScopes":["openid","profile","email"],"RedirectUris":["https://oidc-guard.test.loc:32443/signin-oidc"],"Claims":[{"Type":"string_claim","Value":"string_claim_value","ValueType":"string"},{"Type":"json_claim","Value":"[\"value1\", \"value2\"]","ValueType":"json"}]}]"""
+                                        },
+                                        new()
+                                        {
+                                            Name = "ASPNET_SERVICES_OPTIONS_INLINE",
+                                            Value = """{"ForwardedHeadersOptions":{"ForwardedHeaders":"All"}}"""
                                         }
                                     }
                                 }
@@ -127,23 +134,200 @@ namespace oidc_guard_tests.EndToEnd
             {
                 Metadata = new()
                 {
-                    Name = "oidc-server",
+                    Name = ns.Name(),
                     NamespaceProperty = ns.Name()
                 },
                 Spec = new()
                 {
                     Selector = new Dictionary<string, string>
                     {
-                        {"app", "oidc-server"}
+                        {"app", ns.Name()}
                     },
                     Ports = new List<V1ServicePort>()
                     {
-                        new() { Port = 80 }
+                        new()
+                        {
+                            Port = 32443,
+                            TargetPort = 80
+                        }
                     }
                 }
             };
 
             await Kubernetes.CoreV1.CreateNamespacedServiceAsync(service, service.Namespace());
+
+            var ingress = new V1Ingress()
+            {
+                Metadata = new()
+                {
+                    Name = ns.Name(),
+                    NamespaceProperty = ns.Name()
+                },
+                Spec = new()
+                {
+                    Rules = new List<V1IngressRule>()
+                    {
+                        new()
+                        {
+                            Host = ns.Name() + "." + ns.Name(),
+                            Http = new()
+                            {
+                                Paths = new List<V1HTTPIngressPath>()
+                                {
+                                    new()
+                                    {
+                                        Path = "/",
+                                        PathType = "Prefix",
+                                        Backend = new()
+                                        {
+                                            Service = new()
+                                            {
+                                                Name = ns.Name(),
+                                                Port = new()
+                                                {
+                                                    Number = 32443
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            await Kubernetes.NetworkingV1.CreateNamespacedIngressAsync(ingress, ingress.Namespace());
+        }
+
+        public async Task DeployDemoApp(Kubernetes kube)
+        {
+            var ns = new V1Namespace()
+            {
+                Metadata = new()
+                {
+                    Name = "demo-app"
+                }
+            };
+
+            await Kubernetes.CreateNamespaceAsync(ns);
+
+            var deployment = new V1Deployment
+            {
+                Metadata = new()
+                {
+                    Name = ns.Name(),
+                    NamespaceProperty = ns.Name()
+                },
+                Spec = new()
+                {
+                    Replicas = 1,
+                    Selector = new()
+                    {
+                        MatchLabels = new Dictionary<string, string>
+                        {
+                            {"app", ns.Name()}
+                        }
+                    },
+                    Template = new()
+                    {
+                        Metadata = new()
+                        {
+                            Labels = new Dictionary<string, string>
+                            {
+                                {"app", ns.Name()}
+                            }
+                        },
+                        Spec = new()
+                        {
+                            Containers = new List<V1Container>()
+                            {
+                                new()
+                                {
+                                    Name = ns.Name(),
+                                    Image = "nginx"
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            await Kubernetes.AppsV1.CreateNamespacedDeploymentAsync(deployment, deployment.Namespace());
+
+            var service = new V1Service()
+            {
+                Metadata = new()
+                {
+                    Name = ns.Name(),
+                    NamespaceProperty = ns.Name()
+                },
+                Spec = new()
+                {
+                    Selector = new Dictionary<string, string>
+                    {
+                        {"app", ns.Name()}
+                    },
+                    Ports = new List<V1ServicePort>()
+                    {
+                        new()
+                        {
+                            Port = 32443,
+                            TargetPort = 80
+                        }
+                    }
+                }
+            };
+
+            await Kubernetes.CoreV1.CreateNamespacedServiceAsync(service, service.Namespace());
+
+            var ingress = new V1Ingress()
+            {
+                Metadata = new()
+                {
+                    Name = ns.Name(),
+                    NamespaceProperty = ns.Name(),
+                    Annotations = new Dictionary<string, string>()
+                    {
+                        { "nginx.ingress.kubernetes.io/auth-url", "http://oidc-guard.oidc-guard.svc.cluster.local:8080/auth" },
+                        { "nginx.ingress.kubernetes.io/auth-signin", "http://oidc-guard.test.loc:32443/signin" }
+                    }
+                },
+                Spec = new()
+                {
+                    Rules = new List<V1IngressRule>()
+                    {
+                        new()
+                        {
+                            Host = ns.Name() + ".test.loc",
+                            Http = new()
+                            {
+                                Paths = new List<V1HTTPIngressPath>()
+                                {
+                                    new()
+                                    {
+                                        Path = "/",
+                                        PathType = "Prefix",
+                                        Backend = new()
+                                        {
+                                            Service = new()
+                                            {
+                                                Name = ns.Name(),
+                                                Port = new()
+                                                {
+                                                    Number = 32443
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            await Kubernetes.NetworkingV1.CreateNamespacedIngressAsync(ingress, ingress.Namespace());
         }
 
         public void Dispose()
