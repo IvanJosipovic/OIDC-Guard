@@ -48,10 +48,10 @@ settings:
     # - .test.com
 
     # Client Id
-    clientId: "client-credentials-mock-client"
+    clientId: "oidc-guard-mock-client"
 
     # Client Secret
-    clientSecret: "client-credentials-mock-client-secret"
+    clientSecret: "oidc-guard-mock-client-secret"
 
     # Cookie Domain (Defaults to the hostname of this app)
     cookieDomain: "test.loc"
@@ -109,9 +109,8 @@ settings:
     validateIssuer: true
 
     # Set valid issuers replacing the one found in the settings.openIdProviderConfigurationUrl
-    validIssuers: []
-    # - https://login.microsoftonline.com/{TenantId}/v2.0
-    # - https://sts.windows.net/{TenantId}/
+    validIssuers:
+      - https://oidc-server.oidc-server:32443
 
 serviceAccount:
   # Specifies whether a service account should be created
