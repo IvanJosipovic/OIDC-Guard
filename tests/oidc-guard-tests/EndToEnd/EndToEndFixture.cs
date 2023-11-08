@@ -39,7 +39,7 @@ public class EndToEndFixture : IDisposable
         HttpClient = new HttpClient(handler);
 
         // Build oidc-guard image
-        var path = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(GetType().Assembly.Location)))))), "src", "oidc-guard");
+        var path = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(GetType().Assembly.Location)))))), "src", "oidc-guard") + Path.DirectorySeparatorChar;
         new Builder()
           .DefineImage("oidc-guard")
           .FromFile(path + "Dockerfile")
@@ -49,7 +49,7 @@ public class EndToEndFixture : IDisposable
 
         // Start Kind
         Kind.DownloadClient().Wait();
-        Kind.CreateCluster(Name, Version, "EndToEnd/kind-config.yaml").Wait();
+        Kind.CreateCluster(Name, Version, Path.Combine("EndToEnd", "kind-config.yaml")).Wait();
         Kubernetes = Kind.GetKubernetesClient(Name).Result;
 
         DeployOIDCServer(Kubernetes).Wait();
@@ -59,11 +59,11 @@ public class EndToEndFixture : IDisposable
         Helm.DownloadClient().Wait();
         Helm.RepoAdd("nginx", "https://kubernetes.github.io/ingress-nginx").Wait();
         Helm.RepoUpdate().Wait();
-        Helm.Upgrade("ingress-nginx", "nginx/ingress-nginx", $"--install -f ./EndToEnd/ingress-nginx-values.yaml --namespace ingress-nginx --create-namespace --kube-context kind-{Name} --wait").Wait();
+        Helm.Upgrade("ingress-nginx", "nginx/ingress-nginx", $"--install -f {Path.Combine(".", "EndToEnd", "ingress-nginx-values.yaml")} --namespace ingress-nginx --create-namespace --kube-context kind-{Name} --wait").Wait();
 
         Kind.LoadDockerImage(Name, "oidc-guard:latest").Wait();
 
-        Helm.Upgrade("oidc-guard", "..\\..\\..\\..\\..\\charts\\oidc-guard", $"--install -f ./EndToEnd/oidc-guard-values.yaml --namespace oidc-guard --create-namespace --kube-context kind-{Name} --wait").Wait();
+        Helm.Upgrade("oidc-guard", Path.Combine("..", "..", "..", "..", "..", "charts", "oidc-guard"), $"--install -f {Path.Combine(".", "EndToEnd", "oidc-guard-values.yaml")} --namespace oidc-guard --create-namespace --kube-context kind-{Name} --wait").Wait();
 
         while (HttpClient.GetAsync("https://oidc-guard.test.loc:32443/health").Result.StatusCode != System.Net.HttpStatusCode.OK)
         {
