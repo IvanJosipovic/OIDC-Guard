@@ -39,7 +39,7 @@ public class EndToEndFixture : IDisposable
         HttpClient = new HttpClient(handler);
 
         // Build oidc-guard image
-        var path = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(GetType().Assembly.Location)))))) + "\\src\\oidc-guard\\";
+        var path = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(GetType().Assembly.Location)))))), "src", "oidc-guard");
         new Builder()
           .DefineImage("oidc-guard")
           .FromFile(path + "Dockerfile")
