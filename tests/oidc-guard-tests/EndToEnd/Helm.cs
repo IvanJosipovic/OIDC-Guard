@@ -8,7 +8,7 @@ namespace oidc_guard_tests.EndToEnd
 {
     public class Helm
     {
-        private const string Version = "3.12.3";
+        private const string Version = "3.13.1";
 
         public static string FileName { get; } = "helm" + (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : "");
 
@@ -51,7 +51,7 @@ namespace oidc_guard_tests.EndToEnd
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 await Cli.Wrap("chmod")
-                    .WithArguments("+x ./helm")
+                    .WithArguments("+x ./" + FileName)
                     .ExecuteAsync();
             }
         }

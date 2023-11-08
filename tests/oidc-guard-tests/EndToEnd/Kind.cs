@@ -47,7 +47,7 @@ public static class Kind
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             await Cli.Wrap("chmod")
-                .WithArguments("+x ./kind")
+                .WithArguments("+x ./" + FileName)
                 .ExecuteAsync();
         }
     }
