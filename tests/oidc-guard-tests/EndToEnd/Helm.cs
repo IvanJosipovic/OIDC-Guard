@@ -51,7 +51,7 @@ namespace oidc_guard_tests.EndToEnd
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 await Cli.Wrap("chmod")
-                    .WithArguments("+x ./kind")
+                    .WithArguments("+x ./helm")
                     .ExecuteAsync();
             }
         }
