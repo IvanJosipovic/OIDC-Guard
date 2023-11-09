@@ -46,7 +46,7 @@ jobs:
 
     - name: Install Playwright
       working-directory: tests/oidc-guard-tests/bin/Release/net8.0
-      run: ./playwright.ps1 install
+      run: ./playwright.ps1 install --with-deps
       shell: pwsh
 
     - name: .NET Test
