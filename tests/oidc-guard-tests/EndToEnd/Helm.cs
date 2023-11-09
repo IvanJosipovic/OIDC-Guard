@@ -103,14 +103,15 @@ namespace oidc_guard_tests.EndToEnd
         public static async Task Upgrade(string name, string chart, string flags)
         {
             var stdErrBuffer = new StringBuilder();
-            await Cli.Wrap(FileName)
+            var result = await Cli.Wrap(FileName)
             .WithArguments($"upgrade {name} {chart} {flags}")
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer))
+            .WithValidation(CommandResultValidation.None)
             .ExecuteAsync();
 
             var stdErr = stdErrBuffer.ToString();
 
-            if (!string.IsNullOrEmpty(stdErr))
+            if (result.ExitCode != 0)
             {
                 throw new Exception(stdErr);
             }
