@@ -105,6 +105,7 @@ namespace oidc_guard_tests.EndToEnd
             var stdErrBuffer = new StringBuilder();
             var result = await Cli.Wrap(FileName)
             .WithArguments($"upgrade {name} {chart} {flags}")
+            .WithStandardOutputPipe(PipeTarget.ToDelegate(Console.WriteLine))
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer))
             .ExecuteAsync();
 
