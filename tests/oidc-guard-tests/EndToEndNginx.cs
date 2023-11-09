@@ -1,7 +1,8 @@
-﻿using Ductus.FluentDocker.Commands;
-using FluentAssertions;
+﻿using FluentAssertions;
 using IdentityModel.Client;
+using Microsoft.Playwright;
 using oidc_guard_tests.EndToEnd;
+using System.Text.RegularExpressions;
 using Xunit;
 
 namespace oidc_guard_tests
@@ -36,6 +37,35 @@ namespace oidc_guard_tests
             response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
             var content = await response.Content.ReadAsStringAsync();
             content.Contains("Welcome to nginx!").Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task OIDC()
+        {
+            using var playwright = await Playwright.CreateAsync();
+
+            await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions() { Headless = false });
+            var page = await browser.NewPageAsync(new BrowserNewPageOptions() { IgnoreHTTPSErrors = true });
+
+            await page.GotoAsync("https://demo-app.test.loc:32443/");
+
+            await page.WaitForURLAsync(new Regex("^http:\\/\\/oidc-server.oidc-server:32443/"));
+
+            await page.GotoAsync(page.Url.Replace("http://", "https://"));
+
+            await page.WaitForURLAsync(new Regex("^https:\\/\\/oidc-server.oidc-server:32443/"));
+
+            await page.Locator("#Input_Username").TypeAsync("User1");
+
+            await page.Locator("#Input_Password").TypeAsync("pwd");
+
+            await page.Locator("#Input_Password").PressAsync("Enter");
+
+            await page.WaitForURLAsync(new Regex("^https:\\/\\/demo-app.test.loc:32443/"), new() { WaitUntil = WaitUntilState.Load });
+
+            var title = await page.TitleAsync();
+
+            title.Should().Be("Welcome to nginx!");
         }
 
         private async Task<string> GetToken()
