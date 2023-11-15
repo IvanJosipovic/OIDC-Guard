@@ -51,9 +51,9 @@ public class EndToEndFixture : IDisposable
         Kind.CreateCluster(Name, Version, Path.Combine("EndToEnd", "kind-config.yaml")).Wait();
         Kubernetes = Kind.GetKubernetesClient(Name).Result;
 
-        DeployOIDCServer(Kubernetes).Wait();
+        DeployOIDCServer().Wait();
 
-        DeployDemoApp(Kubernetes).Wait();
+        DeployDemoApp().Wait();
 
         Helm.DownloadClient().Wait();
         Helm.RepoAdd("nginx", "https://kubernetes.github.io/ingress-nginx").Wait();
@@ -70,7 +70,7 @@ public class EndToEndFixture : IDisposable
         }
     }
 
-    public async Task DeployOIDCServer(Kubernetes kube)
+    public async Task DeployOIDCServer()
     {
         var ns = new V1Namespace()
         {
@@ -228,7 +228,7 @@ public class EndToEndFixture : IDisposable
         await Kubernetes.NetworkingV1.CreateNamespacedIngressAsync(ingress, ingress.Namespace());
     }
 
-    public async Task DeployDemoApp(Kubernetes kube)
+    public async Task DeployDemoApp()
     {
         var ns = new V1Namespace()
         {
