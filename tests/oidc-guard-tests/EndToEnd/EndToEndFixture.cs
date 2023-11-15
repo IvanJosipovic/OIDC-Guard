@@ -4,7 +4,6 @@ using k8s;
 using k8s.Models;
 using KubeUI.Core.Tests;
 using Xunit;
-using Ductus.FluentDocker.Commands;
 
 namespace oidc_guard_tests.EndToEnd;
 
