@@ -9,6 +9,7 @@
     <UserSecretsId>a70c2d04-572e-41af-8710-66bacf303453</UserSecretsId>
     <PublishSingleFile>true</PublishSingleFile>
     <PublishTrimmed>false</PublishTrimmed>
+    <PublishReadyToRun>true</PublishReadyToRun>
     <EnableRequestDelegateGenerator>true</EnableRequestDelegateGenerator>
   </PropertyGroup>
 
