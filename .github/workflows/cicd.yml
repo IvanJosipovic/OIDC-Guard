@@ -38,6 +38,17 @@ jobs:
       working-directory: src/oidc-guard
       run: docker build -t oidc-guard .
 
+    - name: Add hosts to /etc/hosts
+      run: |
+          sudo echo "127.0.0.1 demo-app.test.loc" | sudo tee -a /etc/hosts
+          sudo echo "127.0.0.1 oidc-guard.test.loc" | sudo tee -a /etc/hosts
+          sudo echo "127.0.0.1 oidc-server.oidc-server" | sudo tee -a /etc/hosts
+
+    - name: Install Playwright
+      working-directory: tests/oidc-guard-tests/bin/Release/net8.0
+      run: ./playwright.ps1 install --with-deps
+      shell: pwsh
+
     - name: .NET Test
       run: dotnet test -c Release --collect:"XPlat Code Coverage"
 

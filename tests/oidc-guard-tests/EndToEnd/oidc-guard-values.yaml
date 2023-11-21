@@ -1,0 +1,186 @@
+﻿# Default values for oidc-guard.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: oidc-guard
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+settings:
+  # OpenID Provider Configuration Url for your Identity Provider
+  openIdProviderConfigurationUrl: "http://oidc-server.oidc-server:32443/.well-known/openid-configuration"
+
+  # Gets or sets if HTTPS is required for the metadata address or authority.
+  # This should be disabled only in development environments.
+  requireHttpsMetadata: false
+
+  # Skip Authentication for CORS Preflight requests
+  # https://developer.mozilla.org/en-US/docs/Glossary/Preflight_request
+  skipAuthPreflight: false
+
+  # Set host for http redirect used in the sign-in process
+  # When not set will use the apps hostname
+  host: ""
+
+  # Set scheme for http redirect used in the sign-in process (http or https)
+  # When not set, will accept X-Forwarded-Proto
+  scheme: "https"
+
+  # Log Level(Trace, Debug, Information, Warning, Error, Critical, and None)
+  logLevel: Information
+
+  cookie:
+    # Enable Cookie based Authentication
+    enable: true
+
+    # Domains which the sign-in process will be allowed to redirect to
+    # Use a dot before the domain to allow subdomains (ie .test.com)
+    allowedRedirectDomains: []
+    # - test.com
+    # - .test.com
+
+    # Client Id
+    clientId: "oidc-guard-mock-client"
+
+    # Client Secret
+    clientSecret: "oidc-guard-mock-client-secret"
+
+    # Cookie Domain (Defaults to the hostname of this app)
+    cookieDomain: "test.loc"
+
+    # Cookie Name
+    cookieName: "oidc-guard"
+
+    # Cookie Same Site Mode (Unspecified, None, Lax, Strict)
+    cookieSameSiteMode: "Unspecified"
+
+    # Controls how many days the authentication ticket stored in the cookie will remain valid from the point it is created
+    cookieValidDays: 7
+
+    # Control if the access and refresh tokens should be stored in the cookie,
+    # disable to reduce the size of the authentication cookie.
+    # You may have to set 'large-client-header-buffers: 4 16k' in ingress-nginx
+    saveTokensInCookie: false
+
+    # Scopes to request
+    scopes:
+    - openid
+    - profile
+
+  JWT:
+    # Enable JWT based Authentication
+    enable: true
+
+    # Sets the JSON Web Key Set and ignores the openIdProviderConfigurationUrl
+    # Make sure to set the validIssuers property
+    JWKSUrl: ""
+
+    # Sets Authorization header name, if not set "Authorization" will be used
+    authorizationHeader: ""
+
+    # Accept token from the access_token Query Parameter
+    # https://datatracker.ietf.org/doc/html/rfc6750#section-2.3
+    enableAccessTokenInQueryParameter: false
+
+    # Prepend "Bearer " to the Authorization header if its missing
+    prependBearer: false
+
+    # Control if the audience will be validated during JWT token validation.
+    # Validation of the audience, mitigates forwarding attacks. For example, a site that receives a token, could not replay it to another site.
+    # This value can be validated at the Ingress level using /auth?aud=00000000-0000-0000-0000-000000000000
+    validateAudience: false
+
+    # Set valid audiences for JWT validation
+    validAudiences: []
+    # - 11111111-1111-1111-1111-111111111111
+
+    # Control if the issuer will be validated during JWT token validation.
+    # Validation of the issuer mitigates forwarding attacks that can occur when an
+    # Identity Provider represents multiple tenants and signs tokens with the same keys.
+    # It is possible that a token issued for the same audience could be from a different tenant.
+    validateIssuer: true
+
+    # Set valid issuers replacing the one found in the settings.openIdProviderConfigurationUrl
+    validIssuers:
+      - https://oidc-server.oidc-server:32443
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations:
+  prometheus.io/scrape: 'true'
+  prometheus.io/port: '8080'
+  prometheus.io/path: '/metrics'
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 2000
+  allowPrivilegeEscalation: false
+  privileged: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+    - ALL
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: true
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: oidc-guard.test.loc
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
