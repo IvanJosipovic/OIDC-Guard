@@ -1,6 +1,6 @@
 ARG BUILDPLATFORM=linux/amd64
 
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-alpine@sha256:4c2ed06d729b26c96c3b0e64c98356058c1ad342c54b08238434f0ef05d70bfa AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0.100-1@sha256:8660607969015201ce9f2103db5888f99776314d074234ca1aeb2961040b5fc6 AS build
 WORKDIR /src
 COPY oidc-guard.csproj .
 RUN dotnet restore "oidc-guard.csproj"
@@ -11,15 +11,11 @@ FROM build AS publish
 ARG VERSION=0.0.1
 RUN dotnet publish "oidc-guard.csproj" -c Release --use-current-runtime -o /app/publish /p:Version=${VERSION}
 
-FROM mcr.microsoft.com/dotnet/runtime-deps:8.0-alpine@sha256:2ec1a344a016a6c9fb4828a5df017bbf8237defc4f64c0a4ee6479b4a44b3ec9 AS base
+FROM mcr.microsoft.com/dotnet/runtime-deps:8.0.0-jammy-chiseled@sha256:b2d7564d74260ec88ebcbf42ecbfe2f6901cdf06de77c460054339e500fd2e48 AS base
 WORKDIR /app
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
 LABEL org.opencontainers.image.description OpenID Connect (OIDC) Proxy Server for securing Kubernetes Ingress
-
-RUN apk update && \
-    apk upgrade && \
-    rm -rf /var/cache/apk/*
 
 USER app
 
