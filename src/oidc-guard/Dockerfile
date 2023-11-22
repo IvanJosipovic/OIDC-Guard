@@ -17,6 +17,21 @@ EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
 LABEL org.opencontainers.image.description OpenID Connect (OIDC) Proxy Server for securing Kubernetes Ingress
 
+# renovate: datasource=repology depName=alpine_3_18/ca-certificates-bundle
+ENV CA-CERTIFICATES-BUNDLES_VERSION="20230506-r0"
+
+# renovate: datasource=repology depName=alpine_3_18/libgcc
+ENV LIBGCC_VERSION="12.2.1_git20220924-r10"
+
+# renovate: datasource=repology depName=alpine_3_18/libssl3
+ENV LIBSSL3_VERSION="3.1.4-r1"
+
+# renovate: datasource=repology depName=alpine_3_18/libstdc++
+ENV LIBSTDC_VERSION="12.2.1_git20220924-r10"
+
+# renovate: datasource=repology depName=alpine_3_18/zlib
+ENV ZLIB_VERSION="1.2.13-r1"
+
 RUN apk update && \
     apk upgrade && \
     rm -rf /var/cache/apk/*
