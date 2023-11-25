@@ -15,6 +15,15 @@ namespace oidc_guard_tests
         public EndToEndNginx(EndToEndFixture fixture)
         {
             this.fixture = fixture;
+
+            if (this.fixture.CurrentChart != "nginx")
+            {
+                Helm.RepoAdd("nginx", "https://kubernetes.github.io/ingress-nginx").Wait();
+                Helm.RepoUpdate().Wait();
+                Helm.Upgrade("ingress-nginx", "nginx/ingress-nginx", $"--install -f {Path.Combine(".", "EndToEnd", "ingress-nginx-values.yaml")} --namespace ingress-nginx --create-namespace --kube-context kind-{fixture.Name} --wait").Wait();
+
+                this.fixture.CurrentChart = "nginx";
+            }
         }
 
         [Fact]

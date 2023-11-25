@@ -38,6 +38,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="EndToEnd\traefik-values.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="EndToEnd\oidc-guard-values.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
