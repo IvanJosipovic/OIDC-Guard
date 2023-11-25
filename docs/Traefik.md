@@ -33,3 +33,29 @@ info: Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware[1]
       X-Forwarded-Uri: /test123123123?id=2
       X-Real-Ip: [Redacted]
 ```
+
+CORS
+
+```text
+info: Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware[1]
+      Request:
+      Protocol: HTTP/1.1
+      Method: GET
+      Scheme: https
+      PathBase: 
+      Path: /auth
+      Host: oidc-guard.oidc-guard.svc.cluster.local:8080
+      User-Agent: Go-http-client/1.1
+      Accept-Encoding: gzip
+      Access-Control-Request-Headers: Content-Type
+      Access-Control-Request-Method: POST
+      Origin: https://demo-app.test.loc:32443
+      X-Forwarded-For: [Redacted]
+      X-Forwarded-Host: demo-app.test.loc:32443
+      X-Forwarded-Method: OPTIONS
+      X-Forwarded-Port: [Redacted]
+      X-Forwarded-Proto: https
+      X-Forwarded-Server: [Redacted]
+      X-Forwarded-Uri: /
+      X-Real-Ip: [Redacted]
+```

@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using IdentityModel.Client;
 using k8s;
+using Microsoft.Net.Http.Headers;
 using Microsoft.Playwright;
 using oidc_guard_tests.EndToEnd;
 using System.Text.RegularExpressions;
@@ -32,7 +33,7 @@ namespace oidc_guard_tests
                     },
                     Spec = new {
                         ForwardAuth = new {
-                            Address = "http://oidc-guard.oidc-guard.svc.cluster.local:8080/auth"
+                            Address = "http://oidc-guard.oidc-guard.svc.cluster.local:8080/auth",
                         }
                     }
                 };
@@ -52,6 +53,18 @@ namespace oidc_guard_tests
             response.StatusCode.Should().Be(System.Net.HttpStatusCode.Unauthorized);
             //response.StatusCode.Should().Be(System.Net.HttpStatusCode.Found);
             //response.Headers.Location.OriginalString.Should().StartWith("http://oidc-server.oidc-server:32443/connect/authorize?");
+        }
+
+        [Fact]
+        public async Task CORS()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Options, "https://demo-app.test.loc:32443/");
+            request.Headers.Add(HeaderNames.AccessControlRequestMethod, "POST");
+            request.Headers.Add(HeaderNames.Origin, "https://demo-app.test.loc:32443");
+            request.Headers.Add(HeaderNames.AccessControlRequestHeaders, "Content-Type");
+
+            var response = await fixture.HttpClient.SendAsync(request);
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.MethodNotAllowed);
         }
 
         [Fact]

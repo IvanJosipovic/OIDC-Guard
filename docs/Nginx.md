@@ -33,3 +33,27 @@ info: Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware[1]
       sec-fetch-user: [Redacted]
       sec-fetch-dest: [Redacted]
 ```
+
+CORS
+
+```text
+info: Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware[1]
+      Request:
+      Protocol: HTTP/1.1
+      Method: GET
+      Scheme: https
+      PathBase: 
+      Path: /auth
+      Connection: close
+      Host: oidc-guard.oidc-guard.svc.cluster.local
+      Access-Control-Request-Headers: Content-Type
+      Access-Control-Request-Method: POST
+      Origin: https://demo-app.test.loc:32443
+      X-Request-ID: [Redacted]
+      X-Original-URL: https://demo-app.test.loc:32443/
+      X-Original-Method: OPTIONS
+      X-Sent-From: [Redacted]
+      X-Real-IP: [Redacted]
+      X-Forwarded-For: [Redacted]
+      X-Auth-Request-Redirect: [Redacted]
+```
