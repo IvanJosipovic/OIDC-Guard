@@ -15,7 +15,7 @@ namespace oidc_guard_tests
             var _client = AuthTestsHelpers.GetClient(x => { x.SkipAuthPreflight = true; });
 
             _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Origin, "localhost");
-            _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, "OPTIONS");
+            _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XOriginalMethod, "OPTIONS");
             _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestHeaders, "origin, x-requested-with");
             _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestMethod, "DELETE");
 
@@ -28,7 +28,7 @@ namespace oidc_guard_tests
         {
             var _client = AuthTestsHelpers.GetClient(x => { x.SkipAuthPreflight = false; });
 
-            _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, "OPTIONS");
+            _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XOriginalMethod, "OPTIONS");
             _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestHeaders, "origin, x-requested-with");
             _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestMethod, "DELETE");
 
@@ -42,7 +42,7 @@ namespace oidc_guard_tests
             var _client = AuthTestsHelpers.GetClient(x => { x.SkipAuthPreflight = true; });
 
             _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Origin, "localhost");
-            _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, "OPTIONS");
+            _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XOriginalMethod, "OPTIONS");
             _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestHeaders, "origin, x-requested-with");
 
             var response = await _client.GetAsync("/auth");
@@ -55,7 +55,7 @@ namespace oidc_guard_tests
             var _client = AuthTestsHelpers.GetClient(x => { x.SkipAuthPreflight = true; });
 
             _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Origin, "localhost");
-            _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, "OPTIONS");
+            _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XOriginalMethod, "OPTIONS");
             _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestMethod, "DELETE");
 
             var response = await _client.GetAsync("/auth");

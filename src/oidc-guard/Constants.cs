@@ -2,9 +2,17 @@
 
 public static class CustomHeaderNames
 {
-    public static readonly string OriginalMethod = "X-Original-Method";
+    public static readonly string XOriginalMethod = "X-Original-Method";
 
-    public static readonly string OriginalUrl = "X-Original-Url";
+    public static readonly string XOriginalUrl = "X-Original-Url";
+
+    public static readonly string XForwardedProto = "X-Forwarded-Proto";
+
+    public static readonly string XForwardedHost = "X-Forwarded-Host";
+
+    public static readonly string XForwardedUri = "X-Forwarded-Uri";
+
+    public static readonly string XForwardedMethod = "X-Forwarded-Method";
 }
 
 public static class QueryParameters

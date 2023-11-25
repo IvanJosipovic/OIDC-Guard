@@ -165,14 +165,14 @@ public partial class Program
 
         builder.Services.AddHttpLogging(logging =>
         {
-            logging.RequestHeaders.Add("Access-Control-Request-Headers");
-            logging.RequestHeaders.Add("Access-Control-Request-Method");
-            logging.RequestHeaders.Add("X-Forwarded-Host");
-            logging.RequestHeaders.Add("X-Forwarded-Proto");
-            logging.RequestHeaders.Add("X-Forwarded-Scheme");
-            logging.RequestHeaders.Add("X-Original-Method");
-            logging.RequestHeaders.Add("X-Original-Url");
-            logging.RequestHeaders.Add("X-Scheme");
+            logging.RequestHeaders.Add(HeaderNames.AccessControlRequestHeaders);
+            logging.RequestHeaders.Add(HeaderNames.AccessControlRequestMethod);
+            logging.RequestHeaders.Add(CustomHeaderNames.XForwardedHost);
+            logging.RequestHeaders.Add(CustomHeaderNames.XForwardedMethod);
+            logging.RequestHeaders.Add(CustomHeaderNames.XForwardedProto);
+            logging.RequestHeaders.Add(CustomHeaderNames.XForwardedUri);
+            logging.RequestHeaders.Add(CustomHeaderNames.XOriginalMethod);
+            logging.RequestHeaders.Add(CustomHeaderNames.XOriginalUrl);
         });
 
         builder.Services.AddAuthorization();
@@ -214,7 +214,7 @@ public partial class Program
 
                 if (settings.JWT.EnableAccessTokenInQueryParameter &&
                     context.Request.Path.StartsWithSegments("/auth") &&
-                    context.Request.Headers.TryGetValue(CustomHeaderNames.OriginalUrl, out var originalUrlHeader) &&
+                    context.Request.Headers.TryGetValue(CustomHeaderNames.XOriginalUrl, out var originalUrlHeader) &&
                     Uri.TryCreate(originalUrlHeader, UriKind.RelativeOrAbsolute, out var uri))
                 {
                     if (QueryHelpers.ParseQuery(uri.Query).TryGetValue(QueryParameters.AccessToken, out var token) &&
@@ -247,7 +247,7 @@ public partial class Program
             meters.SignInCounter.Add(1);
 
             if (settings.SkipAuthPreflight &&
-                httpContext.Request.Headers[CustomHeaderNames.OriginalMethod][0] == HttpMethod.Options.Method &&
+                httpContext.Request.Headers[CustomHeaderNames.XOriginalMethod][0] == HttpMethod.Options.Method &&
                 !StringValues.IsNullOrEmpty(httpContext.Request.Headers.AccessControlRequestHeaders) &&
                 !StringValues.IsNullOrEmpty(httpContext.Request.Headers.AccessControlRequestMethod) &&
                 !StringValues.IsNullOrEmpty(httpContext.Request.Headers.Origin))
@@ -260,8 +260,8 @@ public partial class Program
                 (httpContext.Request.Query.TryGetValue(QueryParameters.SkipAuth, out var skipEquals) |
                 httpContext.Request.Query.TryGetValue(QueryParameters.SkipAuthNe, out var skipNotEquals)))
             {
-                var originalUrl = httpContext.Request.Headers[CustomHeaderNames.OriginalUrl][0]!;
-                var originalMethod = httpContext.Request.Headers[CustomHeaderNames.OriginalMethod][0];
+                var originalUrl = httpContext.Request.Headers[CustomHeaderNames.XOriginalUrl][0]!;
+                var originalMethod = httpContext.Request.Headers[CustomHeaderNames.XOriginalMethod][0];
 
                 if (skipEquals.Count > 0)
                 {
@@ -455,6 +455,11 @@ public partial class Program
             .RequireAuthorization();
 
         app.Run();
+    }
+
+    private static string GenerateRedirectUrl(IHeaderDictionary headers)
+    {
+        return $"{headers[CustomHeaderNames.XForwardedProto]}://{headers[CustomHeaderNames.XForwardedHost]}{headers[CustomHeaderNames.XForwardedUri]}";
     }
 
     private static bool ValidateRedirect(Uri rd, Settings settings)

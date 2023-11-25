@@ -10,7 +10,12 @@ OpenID Connect (OIDC) & OAuth 2 API Server for securing Kubernetes Ingress
 
 ## What is this?
 
-This project is an API server which is used along with the [nginx.ingress.kubernetes.io/auth-url](https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md#external-authentication) annotation for ingress-nginx and enables per Ingress customizable JWT validation with Cookie support for Web Applications.
+This project is an API server which is used along with Ingress Controllers that support External Authentication and enables per Ingress customizable JWT validation with Cookie support for Web Applications.
+
+| Ingress Controller | JWT | Cookie|
+|---|---|---|
+| Nginx Ingress | X | X |
+| Traefik | X |   |
 
 ## Features
 

@@ -403,7 +403,7 @@ public class AuthTests
                 HttpStatusCode.OK,
                 new Dictionary<string, string>()
                 {
-                    {CustomHeaderNames.OriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken(Enumerable.Empty<Claim>())}" }
+                    {CustomHeaderNames.XOriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken(Enumerable.Empty<Claim>())}" }
                 }
             },
             new object[] // Bad Token Only in Query String
@@ -413,7 +413,7 @@ public class AuthTests
                 HttpStatusCode.Unauthorized,
                 new Dictionary<string, string>()
                 {
-                    {CustomHeaderNames.OriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}=BAD" }
+                    {CustomHeaderNames.XOriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}=BAD" }
                 }
             },
             new object[] // Bad Token in Query String and Header, Header is used
@@ -423,7 +423,7 @@ public class AuthTests
                 HttpStatusCode.OK,
                 new Dictionary<string, string>()
                 {
-                    {CustomHeaderNames.OriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}=BAD" }
+                    {CustomHeaderNames.XOriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}=BAD" }
                 },
                 true
             },
@@ -434,7 +434,7 @@ public class AuthTests
                 HttpStatusCode.OK,
                 new Dictionary<string, string>()
                 {
-                    {CustomHeaderNames.OriginalUrl, "https://www.example.com" }
+                    {CustomHeaderNames.XOriginalUrl, "https://www.example.com" }
                 },
                 true
             },
@@ -445,7 +445,7 @@ public class AuthTests
                 HttpStatusCode.OK,
                 new Dictionary<string, string>()
                 {
-                    {CustomHeaderNames.OriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken(new List<Claim>{new Claim("tid", "11111111-1111-1111-1111-111111111111")})}" }
+                    {CustomHeaderNames.XOriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken(new List<Claim>{new Claim("tid", "11111111-1111-1111-1111-111111111111")})}" }
                 },
             },
             new object[] // Token in Query String with Bad Claim
@@ -455,7 +455,7 @@ public class AuthTests
                 HttpStatusCode.Unauthorized,
                 new Dictionary<string, string>()
                 {
-                    {CustomHeaderNames.OriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken(new List<Claim>{new Claim("tid", "22222222-2222-2222-2222-222222222222")})}" }
+                    {CustomHeaderNames.XOriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken(new List<Claim>{new Claim("tid", "22222222-2222-2222-2222-222222222222")})}" }
                 },
             },
         };
@@ -550,8 +550,8 @@ public class AuthTests
     {
         var _client = AuthTestsHelpers.GetClient();
 
-        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalUrl, Url);
-        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, httpMethod);
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XOriginalUrl, Url);
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XOriginalMethod, httpMethod);
 
         var response = await _client.GetAsync($"/auth{query}");
         response.StatusCode.Should().Be(status);
