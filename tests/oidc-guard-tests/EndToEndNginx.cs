@@ -77,9 +77,9 @@ namespace oidc_guard_tests
 
             await page.WaitForURLAsync(new Regex("^https:\\/\\/oidc-server\\.oidc-server:32443/"));
 
-            await page.Locator("#Input_Username").TypeAsync("User1");
+            await page.Locator("#Input_Username").FillAsync("User1");
 
-            await page.Locator("#Input_Password").TypeAsync("pwd");
+            await page.Locator("#Input_Password").FillAsync("pwd");
 
             await page.Locator("#Input_Password").PressAsync("Enter");
 
