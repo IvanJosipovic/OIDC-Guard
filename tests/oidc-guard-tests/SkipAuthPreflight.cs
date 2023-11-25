@@ -37,6 +37,7 @@ namespace oidc_guard_tests
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
+
         [Fact]
         public async Task SkipAuthPreflightDisabled()
         {
@@ -58,6 +59,19 @@ namespace oidc_guard_tests
             _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Origin, "localhost");
             _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XOriginalMethod, "OPTIONS");
             _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestHeaders, "origin, x-requested-with");
+
+            var response = await _client.GetAsync("/auth");
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task SkipAuthPreflightMissingOrigin()
+        {
+            var _client = AuthTestsHelpers.GetClient(x => { x.SkipAuthPreflight = true; });
+
+            _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XForwardedMethod, "OPTIONS");
+            _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestHeaders, "origin, x-requested-with");
+            _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestMethod, "DELETE");
 
             var response = await _client.GetAsync("/auth");
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);

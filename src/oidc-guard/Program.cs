@@ -458,7 +458,7 @@ public partial class Program
         app.Run();
     }
 
-    private static string GetOriginalUrl(IHeaderDictionary headers)
+    private static string? GetOriginalUrl(IHeaderDictionary headers)
     {
         if (headers.TryGetValue(CustomHeaderNames.XOriginalUrl, out var xOriginalUrl))
         {
@@ -471,10 +471,10 @@ public partial class Program
             return $"{xForwardedProto}://{xForwardedHost}{xForwardedUri}";
         }
 
-        throw new Exception("Unable to determine Original Url");
+        return null;
     }
 
-    private static string GetOriginalMethod(IHeaderDictionary headers)
+    private static string? GetOriginalMethod(IHeaderDictionary headers)
     {
         if (headers.TryGetValue(CustomHeaderNames.XForwardedMethod, out var xForwardedMethod))
         {
@@ -485,7 +485,7 @@ public partial class Program
             return xOriginalMethod;
         }
 
-        throw new Exception("Unable to determine Original Method");
+        return null;
     }
 
     private static bool ValidateRedirect(Uri rd, Settings settings)
