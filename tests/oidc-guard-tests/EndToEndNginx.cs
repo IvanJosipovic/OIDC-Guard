@@ -88,6 +88,12 @@ namespace oidc_guard_tests
             var title = await page.TitleAsync();
 
             title.Should().Be("Welcome to nginx!");
+
+            await page.GotoAsync("https://demo-app.test.loc:32443/");
+
+            var title2 = await page.TitleAsync();
+
+            title2.Should().Be("Welcome to nginx!");
         }
 
         private async Task<string> GetToken()
