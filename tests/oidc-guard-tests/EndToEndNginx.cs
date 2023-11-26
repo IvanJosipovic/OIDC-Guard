@@ -3,6 +3,7 @@ using IdentityModel.Client;
 using Microsoft.Net.Http.Headers;
 using Microsoft.Playwright;
 using oidc_guard_tests.EndToEnd;
+using System.Net;
 using System.Text.RegularExpressions;
 using Xunit;
 
@@ -31,7 +32,7 @@ namespace oidc_guard_tests
         public async Task NoAuth()
         {
             var response = await fixture.HttpClient.GetAsync("https://demo-app.test.loc:32443/");
-            response.StatusCode.Should().Be(System.Net.HttpStatusCode.Found);
+            response.StatusCode.Should().Be(HttpStatusCode.Found);
             response.Headers.Location.OriginalString.Should().StartWith("http://oidc-server.oidc-server:32443/connect/authorize?");
         }
 
@@ -44,7 +45,7 @@ namespace oidc_guard_tests
             request.Headers.Add(HeaderNames.AccessControlRequestHeaders, "Content-Type");
 
             var response = await fixture.HttpClient.SendAsync(request);
-            response.StatusCode.Should().Be(System.Net.HttpStatusCode.MethodNotAllowed);
+            response.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
         }
 
         [Fact]
@@ -53,10 +54,10 @@ namespace oidc_guard_tests
             var token = await GetToken();
 
             var request = new HttpRequestMessage(HttpMethod.Get, "https://demo-app.test.loc:32443/");
-            request.Headers.Add("Authorization", "Bearer " + token);
+            request.Headers.Add(HeaderNames.Authorization, "Bearer " + token);
 
             var response = await fixture.HttpClient.SendAsync(request);
-            response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
             var content = await response.Content.ReadAsStringAsync();
             content.Contains("Welcome to nginx!").Should().BeTrue();
         }

@@ -471,6 +471,16 @@ public class AuthTests
                     { CustomHeaderNames.XForwardedUri, $"?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken(Enumerable.Empty<Claim>())}" }
                 }
             },
+
+            new object[] // Token Only in Query String
+            {
+                "",
+                new List<Claim>(),
+                HttpStatusCode.Unauthorized,
+                new Dictionary<string, string>()
+                {
+                }
+            },
         };
     }
 
