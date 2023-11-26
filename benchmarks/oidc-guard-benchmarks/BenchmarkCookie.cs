@@ -1,7 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using Microsoft.Net.Http.Headers;
 using oidc_guard_tests.Infra;
 using System.Net;
 
