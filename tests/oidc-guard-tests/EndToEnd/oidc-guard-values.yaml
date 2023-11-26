@@ -88,7 +88,7 @@ settings:
 
     # Accept token from the access_token Query Parameter
     # https://datatracker.ietf.org/doc/html/rfc6750#section-2.3
-    enableAccessTokenInQueryParameter: false
+    enableAccessTokenInQueryParameter: true
 
     # Prepend "Bearer " to the Authorization header if its missing
     prependBearer: false

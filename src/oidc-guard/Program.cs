@@ -82,7 +82,7 @@ public partial class Program
             {
                 string? authorization = context.Request.Headers.Authorization;
 
-                return settings.JWT.Enable && !string.IsNullOrEmpty(authorization) && authorization.StartsWith("Bearer ")
+                return settings.JWT.Enable && !string.IsNullOrEmpty(authorization) && authorization.StartsWith(JwtBearerDefaults.AuthenticationScheme + ' ')
                     ? JwtBearerDefaults.AuthenticationScheme
                     : settings.Cookie.Enable
                         ? CookieAuthenticationDefaults.AuthenticationScheme
@@ -213,15 +213,17 @@ public partial class Program
                     context.Request.Headers.Authorization = JwtBearerDefaults.AuthenticationScheme + ' ' + context.Request.Headers.Authorization;
                 }
 
-                if (settings.JWT.EnableAccessTokenInQueryParameter &&
-                    context.Request.Path.StartsWithSegments("/auth") &&
-                    context.Request.Headers.TryGetValue(CustomHeaderNames.XOriginalUrl, out var originalUrlHeader) &&
-                    Uri.TryCreate(originalUrlHeader, UriKind.RelativeOrAbsolute, out var uri))
+                if (settings.JWT.EnableAccessTokenInQueryParameter && context.Request.Path.StartsWithSegments("/auth"))
                 {
-                    if (QueryHelpers.ParseQuery(uri.Query).TryGetValue(QueryParameters.AccessToken, out var token) &&
-                        !context.Request.Headers.ContainsKey(HeaderNames.Authorization))
+                    var originalUrl = GetOriginalUrl(context);
+
+                    if (originalUrl != null && Uri.TryCreate(originalUrl, UriKind.RelativeOrAbsolute, out var uri))
                     {
-                        context.Request.Headers.Authorization = JwtBearerDefaults.AuthenticationScheme + ' ' + token;
+                        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue(QueryParameters.AccessToken, out var token) &&
+                            !context.Request.Headers.ContainsKey(HeaderNames.Authorization))
+                        {
+                            context.Request.Headers.Authorization = JwtBearerDefaults.AuthenticationScheme + ' ' + token;
+                        }
                     }
                 }
             }
@@ -261,7 +263,7 @@ public partial class Program
                 (httpContext.Request.Query.TryGetValue(QueryParameters.SkipAuth, out var skipEquals) |
                 httpContext.Request.Query.TryGetValue(QueryParameters.SkipAuthNe, out var skipNotEquals)))
             {
-                var originalUrl = GetOriginalUrl(httpContext.Request.Headers);
+                var originalUrl = GetOriginalUrl(httpContext);
                 var originalMethod = GetOriginalMethod(httpContext.Request.Headers);
 
                 if (skipEquals.Count > 0)
@@ -458,17 +460,16 @@ public partial class Program
         app.Run();
     }
 
-    private static string? GetOriginalUrl(IHeaderDictionary headers)
+    private static string? GetOriginalUrl(HttpContext httpContext)
     {
-        if (headers.TryGetValue(CustomHeaderNames.XOriginalUrl, out var xOriginalUrl))
+        if (httpContext.Request.Headers.TryGetValue(CustomHeaderNames.XOriginalUrl, out var xOriginalUrl))
         {
             return xOriginalUrl!;
         }
-        else if (headers.TryGetValue(CustomHeaderNames.XForwardedProto, out var xForwardedProto) &&
-            headers.TryGetValue(CustomHeaderNames.XForwardedHost, out var xForwardedHost) &&
-            headers.TryGetValue(CustomHeaderNames.XForwardedUri, out var xForwardedUri))
+        else if (httpContext.Request.Headers.TryGetValue(HeaderNames.Host, out var host) &&
+            httpContext.Request.Headers.TryGetValue(CustomHeaderNames.XForwardedUri, out var xForwardedUri))
         {
-            return $"{xForwardedProto}://{xForwardedHost}{xForwardedUri}";
+            return $"{httpContext.Request.Scheme}://{host}{xForwardedUri}";
         }
 
         return null;

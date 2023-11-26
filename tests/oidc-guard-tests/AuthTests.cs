@@ -458,6 +458,19 @@ public class AuthTests
                     {CustomHeaderNames.XOriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken(new List<Claim>{new Claim("tid", "22222222-2222-2222-2222-222222222222")})}" }
                 },
             },
+
+            new object[] // Token Only in Query String
+            {
+                "",
+                new List<Claim>(),
+                HttpStatusCode.OK,
+                new Dictionary<string, string>()
+                {
+                    { CustomHeaderNames.XForwardedProto, "https" },
+                    { CustomHeaderNames.XForwardedHost, "www.example.com" },
+                    { CustomHeaderNames.XForwardedUri, $"?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken(Enumerable.Empty<Claim>())}" }
+                }
+            },
         };
     }
 
@@ -548,10 +561,30 @@ public class AuthTests
     [InlineData("?skip-auth-ne=test", "https://test.com", "GET", HttpStatusCode.Unauthorized)]
     public async Task SkipAuth(string query, string Url, string httpMethod, HttpStatusCode status)
     {
+        await SkipAuthNginx(query, Url, httpMethod, status);
+
+        await SkipAuthTraefik(query, Url, httpMethod, status);
+    }
+
+    private async Task SkipAuthNginx(string query, string Url, string httpMethod, HttpStatusCode status)
+    {
         var _client = AuthTestsHelpers.GetClient();
 
         _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XOriginalUrl, Url);
         _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XOriginalMethod, httpMethod);
+
+        var response = await _client.GetAsync($"/auth{query}");
+        response.StatusCode.Should().Be(status);
+    }
+
+    private async Task SkipAuthTraefik(string query, string Url, string httpMethod, HttpStatusCode status)
+    {
+        var _client = AuthTestsHelpers.GetClient();
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XForwardedHost, new Uri(Url).Host);
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XForwardedMethod, httpMethod);
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XForwardedProto, new Uri(Url).Scheme);
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XForwardedUri, "/");
 
         var response = await _client.GetAsync($"/auth{query}");
         response.StatusCode.Should().Be(status);
@@ -578,7 +611,7 @@ public class AuthTests
         {
             x.Cookie.Enable = false;
             x.JWT.JWKSUrl = "https://inmemory.microsoft.com/common/discovery/keys";
-            x.JWT.ValidIssuers = new string[] { FakeJwtIssuer.Issuer };
+            x.JWT.ValidIssuers = [FakeJwtIssuer.Issuer];
         });
 
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(new List<Claim>()));
