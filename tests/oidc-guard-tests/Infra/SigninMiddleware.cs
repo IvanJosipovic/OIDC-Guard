@@ -28,7 +28,14 @@ public class SigninMiddleware : IMiddleware
         var span = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
         var unixTime = span.TotalSeconds;
 
-        var token = FakeJwtIssuer.GenerateJwtToken(new List<Claim>() { new Claim("nonce", nonce), new Claim("iat", unixTime.ToString()), new Claim("sub", FakeJwtIssuer.Audience) });
+        var token = FakeJwtIssuer.GenerateJwtToken(new List<Claim>()
+        {
+            new Claim("nonce", nonce),
+            new Claim("iat", unixTime.ToString()),
+            new Claim("sub", FakeJwtIssuer.Audience),
+            new Claim("tid", "11111111-1111-1111-1111-111111111111"),
+            new Claim("gcip", "{\"auth_time\":1553219869,\"email\":\"demo_user@gmail.com\",\"email_verified\":true,\"firebase\":{\"identities\":{\"email\":[\"demo_user@gmail.com\"],\"saml.myProvider\":[\"demo_user@gmail.com\"]},\"sign_in_attributes\":{\"firstname\":\"John\",\"group\":\"test group\",\"role\":\"admin\",\"lastname\":\"Doe\"},\"sign_in_provider\":\"saml.myProvider\",\"tenant\":\"my_tenant_id\"},\"sub\":\"gZG0yELPypZElTmAT9I55prjHg63\"}")
+        });
 
         httpContext.Request.Method = HttpMethods.Post;
         httpContext.Request.QueryString = QueryString.Empty;

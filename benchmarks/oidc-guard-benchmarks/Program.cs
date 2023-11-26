@@ -6,6 +6,7 @@ class Program
 {
     public static void Main(string[] args)
     {
-        BenchmarkRunner.Run<Benchmark>();
+        BenchmarkRunner.Run<BenchmarkJWT>();
+        BenchmarkRunner.Run<BenchmarkCookie>();
     }
 }

@@ -7,11 +7,11 @@ using System.Security.Claims;
 namespace oidc_guard_benchmarks;
 
 [MemoryDiagnoser]
-public class Benchmark
+public class BenchmarkJWT
 {
     private HttpClient client = default!;
 
-    private string query = "/auth";
+    private readonly string query = "/auth";
 
     [GlobalSetup]
     public void GlobalSetup()
