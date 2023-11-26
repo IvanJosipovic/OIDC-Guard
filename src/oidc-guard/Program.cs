@@ -27,6 +27,8 @@ public partial class Program
     {
         var builder = WebApplication.CreateSlimBuilder(args);
 
+        builder.WebHost.UseKestrelHttpsConfiguration();
+
         var settings = builder.Configuration.GetSection("Settings").Get<Settings>()!;
         builder.Services.AddSingleton(settings);
 
@@ -92,9 +94,7 @@ public partial class Program
 
         if (settings.Cookie.Enable)
         {
-            builder.Services
-                .AddDataProtection()
-                .AddKeyManagementOptions(x => x.XmlRepository = new StaticXmlRepository(settings.Cookie.ClientSecret));
+            var dataProtector = new DataProtector(settings.Cookie.ClientSecret);
 
             auth.AddCookie(o =>
             {
@@ -103,6 +103,7 @@ public partial class Program
                 o.ExpireTimeSpan = TimeSpan.FromDays(settings.Cookie.CookieValidDays);
                 o.Cookie.MaxAge = TimeSpan.FromDays(settings.Cookie.CookieValidDays);
                 o.Cookie.SameSite = settings.Cookie.CookieSameSiteMode;
+                o.DataProtectionProvider = dataProtector;
             })
             .AddOpenIdConnect(o =>
             {
@@ -123,6 +124,7 @@ public partial class Program
                 o.ClaimActions.Clear();
                 o.ClaimActions.MapAllExcept("nonce", /*"aud",*/ "azp", "acr", "iss", "iat", "nbf", "exp", "at_hash", "c_hash", "ipaddr", "platf", "ver");
                 o.MapInboundClaims = false;
+                o.DataProtectionProvider = dataProtector;
             });
         }
 
@@ -217,13 +219,11 @@ public partial class Program
                 {
                     var originalUrl = GetOriginalUrl(context);
 
-                    if (originalUrl != null && Uri.TryCreate(originalUrl, UriKind.RelativeOrAbsolute, out var uri))
+                    if (originalUrl != null && Uri.TryCreate(originalUrl, UriKind.RelativeOrAbsolute, out var uri) &&
+                        QueryHelpers.ParseQuery(uri.Query).TryGetValue(QueryParameters.AccessToken, out var token) &&
+                        !context.Request.Headers.ContainsKey(HeaderNames.Authorization))
                     {
-                        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue(QueryParameters.AccessToken, out var token) &&
-                            !context.Request.Headers.ContainsKey(HeaderNames.Authorization))
-                        {
-                            context.Request.Headers.Authorization = JwtBearerDefaults.AuthenticationScheme + ' ' + token;
-                        }
+                        context.Request.Headers.Authorization = JwtBearerDefaults.AuthenticationScheme + ' ' + token;
                     }
                 }
             }
@@ -332,12 +332,8 @@ public partial class Program
             {
                 foreach (var item in httpContext.Request.Query)
                 {
-                    if (item.Key.Equals(QueryParameters.SkipAuth, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                    }
-                    else if (item.Key.Equals(QueryParameters.SkipAuthNe, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                    }
+                    if (item.Key.Equals(QueryParameters.SkipAuth, StringComparison.InvariantCultureIgnoreCase)) { }
+                    else if (item.Key.Equals(QueryParameters.SkipAuthNe, StringComparison.InvariantCultureIgnoreCase)) { }
                     else if (item.Key.Equals(QueryParameters.InjectClaim, StringComparison.InvariantCultureIgnoreCase))
                     {
                         foreach (var value in item.Value)
