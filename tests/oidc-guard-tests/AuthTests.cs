@@ -472,7 +472,7 @@ public class AuthTests
                 }
             },
 
-            new object[] // Token Only in Query String
+            new object[] // Missing Headers
             {
                 "",
                 new List<Claim>(),
@@ -571,10 +571,21 @@ public class AuthTests
     [InlineData("?skip-auth-ne=test", "https://test.com", "GET", HttpStatusCode.Unauthorized)]
     public async Task SkipAuth(string query, string Url, string httpMethod, HttpStatusCode status)
     {
+        await SkipAuthMissingHeaders(query);
+
         await SkipAuthNginx(query, Url, httpMethod, status);
 
         await SkipAuthTraefik(query, Url, httpMethod, status);
     }
+
+    private async Task SkipAuthMissingHeaders(string query)
+    {
+        var _client = AuthTestsHelpers.GetClient();
+
+        var response = await _client.GetAsync($"/auth{query}");
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
 
     private async Task SkipAuthNginx(string query, string Url, string httpMethod, HttpStatusCode status)
     {

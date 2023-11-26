@@ -266,55 +266,58 @@ public partial class Program
                 var originalUrl = GetOriginalUrl(httpContext);
                 var originalMethod = GetOriginalMethod(httpContext.Request.Headers);
 
-                if (skipEquals.Count > 0)
+                if (originalUrl != null)
                 {
-                    foreach (var item in skipEquals)
+                    if (skipEquals.Count > 0)
                     {
-                        var commaIndex = item.IndexOf(',');
-                        if (commaIndex != -1)
+                        foreach (var item in skipEquals)
                         {
-                            var method = item[..commaIndex];
-                            var regex = item[(commaIndex + 1)..];
+                            var commaIndex = item.IndexOf(',');
+                            if (commaIndex != -1)
+                            {
+                                var method = item[..commaIndex];
+                                var regex = item[(commaIndex + 1)..];
 
-                            if (method == originalMethod && Regex.IsMatch(originalUrl, regex))
-                            {
-                                meters.AuthorizedCounter.Add(1);
-                                return Results.Ok();
+                                if (method == originalMethod && Regex.IsMatch(originalUrl, regex))
+                                {
+                                    meters.AuthorizedCounter.Add(1);
+                                    return Results.Ok();
+                                }
                             }
-                        }
-                        else
-                        {
-                            if (Regex.IsMatch(originalUrl, item))
+                            else
                             {
-                                meters.AuthorizedCounter.Add(1);
-                                return Results.Ok();
+                                if (Regex.IsMatch(originalUrl, item))
+                                {
+                                    meters.AuthorizedCounter.Add(1);
+                                    return Results.Ok();
+                                }
                             }
                         }
                     }
-                }
 
-                if (skipNotEquals.Count > 0)
-                {
-                    foreach (var item in skipNotEquals)
+                    if (skipNotEquals.Count > 0)
                     {
-                        var commaIndex = item.IndexOf(',');
-                        if (commaIndex != -1)
+                        foreach (var item in skipNotEquals)
                         {
-                            var method = item[..commaIndex];
-                            var regex = item[(commaIndex + 1)..];
+                            var commaIndex = item.IndexOf(',');
+                            if (commaIndex != -1)
+                            {
+                                var method = item[..commaIndex];
+                                var regex = item[(commaIndex + 1)..];
 
-                            if (method != originalMethod && !Regex.IsMatch(originalUrl, regex))
-                            {
-                                meters.AuthorizedCounter.Add(1);
-                                return Results.Ok();
+                                if (method != originalMethod && !Regex.IsMatch(originalUrl, regex))
+                                {
+                                    meters.AuthorizedCounter.Add(1);
+                                    return Results.Ok();
+                                }
                             }
-                        }
-                        else
-                        {
-                            if (!Regex.IsMatch(originalUrl, item))
+                            else
                             {
-                                meters.AuthorizedCounter.Add(1);
-                                return Results.Ok();
+                                if (!Regex.IsMatch(originalUrl, item))
+                                {
+                                    meters.AuthorizedCounter.Add(1);
+                                    return Results.Ok();
+                                }
                             }
                         }
                     }
