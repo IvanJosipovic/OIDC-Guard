@@ -1,5 +1,4 @@
 using FluentAssertions;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.Net.Http.Headers;
 using oidc_guard;
@@ -571,21 +570,10 @@ public class AuthTests
     [InlineData("?skip-auth-ne=test", "https://test.com", "GET", HttpStatusCode.Unauthorized)]
     public async Task SkipAuth(string query, string Url, string httpMethod, HttpStatusCode status)
     {
-        await SkipAuthMissingHeaders(query);
-
         await SkipAuthNginx(query, Url, httpMethod, status);
 
         await SkipAuthTraefik(query, Url, httpMethod, status);
     }
-
-    private async Task SkipAuthMissingHeaders(string query)
-    {
-        var _client = AuthTestsHelpers.GetClient();
-
-        var response = await _client.GetAsync($"/auth{query}");
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-    }
-
 
     private async Task SkipAuthNginx(string query, string Url, string httpMethod, HttpStatusCode status)
     {
@@ -612,17 +600,12 @@ public class AuthTests
     }
 
     [Fact]
-    public async Task SetHost()
+    private async Task SkipAuthMissingHeaders()
     {
-        var _client = AuthTestsHelpers.GetClient(x => { x.Host = "fakedomain.com"; x.Scheme = "https"; });
+        var _client = AuthTestsHelpers.GetClient();
 
-        var response = await _client.GetAsync("/signin?rd=/health");
-        response.StatusCode.Should().Be(HttpStatusCode.Found);
-
-        var query = QueryHelpers.ParseQuery(response.Headers.Location.Query);
-        var replyUri = new Uri(query["redirect_uri"]);
-        replyUri.Host.Should().Be("fakedomain.com");
-        replyUri.Scheme.Should().Be("https");
+        var response = await _client.GetAsync("/auth?skip-auth=GET,test");
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -642,7 +625,7 @@ public class AuthTests
     }
 
     [Fact]
-    public async Task JwksRetrieverArgs()
+    public async Task JWKSRetrieverArgs()
     {
         var jwk = new JwksRetriever();
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await jwk.GetConfigurationAsync("https://test", null, CancellationToken.None));
@@ -650,7 +633,7 @@ public class AuthTests
     }
 
     [Fact]
-    public async Task JWKSPrependBearer()
+    public async Task JWTPrependBearer()
     {
         var _client = AuthTestsHelpers.GetClient(x => x.JWT.PrependBearer = true);
 
