@@ -22,7 +22,7 @@ public class CookieAuthSettings
     public string ClientSecret { get; set; } = null!;
     public string CookieName { get; set; } = "oidc-guard";
     public string? CookieDomain { get; set; }
-    public string[] Scopes { get; set; }
+    public string[] Scopes { get; set; } = null!;
     public string[]? AllowedRedirectDomains { get; set; }
 }
 
