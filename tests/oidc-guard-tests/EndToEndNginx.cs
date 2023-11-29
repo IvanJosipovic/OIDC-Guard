@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using IdentityModel.Client;
 using Microsoft.Net.Http.Headers;
 using Microsoft.Playwright;
 using oidc_guard_tests.EndToEnd;
@@ -51,7 +50,7 @@ namespace oidc_guard_tests
         [Fact]
         public async Task JWT()
         {
-            var token = await GetToken();
+            var token = await fixture.GetToken();
 
             var request = new HttpRequestMessage(HttpMethod.Get, "https://demo-app.test.loc:32443/");
             request.Headers.Add(HeaderNames.Authorization, "Bearer " + token);
@@ -95,22 +94,6 @@ namespace oidc_guard_tests
             var title2 = await page.TitleAsync();
 
             title2.Should().Be("Welcome to nginx!");
-        }
-
-        private async Task<string> GetToken()
-        {
-            var settings = new ClientCredentialsTokenRequest
-            {
-                Address = "https://oidc-server.oidc-server:32443/connect/token",
-
-                ClientId = "client-credentials-mock-client",
-                ClientSecret = "client-credentials-mock-client-secret",
-                Scope = "some-app-scope-1"
-            };
-
-            var response = await fixture.HttpClient.RequestClientCredentialsTokenAsync(settings);
-
-            return response.AccessToken;
         }
     }
 }

@@ -47,6 +47,9 @@ settings:
     # - test.com
     # - .test.com
 
+    # Configures the /auth endpoint to redirect unauthenticated requests to the /signin endpoint
+    redirectUnathenticatedSignin: false
+
     # Client Id
     clientId: "oidc-guard-mock-client"
 

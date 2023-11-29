@@ -642,4 +642,51 @@ public class AuthTests
         var response = await _client.GetAsync($"/auth");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
+
+    [Fact]
+    public async Task RedirectUnauthenticatedSignin()
+    {
+        var _client = AuthTestsHelpers.GetClient(x => x.Cookie.RedirectUnauthenticatedSignin = true);
+
+        var response = await _client.GetAsync($"/auth");
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task RedirectUnauthenticatedSignin2()
+    {
+        var _client = AuthTestsHelpers.GetClient(x => x.Cookie.RedirectUnauthenticatedSignin = true);
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XOriginalUrl, "https://redirect/test123");
+
+        var response = await _client.GetAsync("/auth");
+        response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+
+        _client.DefaultRequestHeaders.Clear();
+        _client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response.Headers.GetValues("Set-Cookie"));
+
+        var response2 = await _client.GetAsync(response.Headers.Location);
+        response2.StatusCode.Should().Be(HttpStatusCode.Found);
+        response2.Headers.Location.Should().Be("https://redirect/test123");
+    }
+
+    [Fact]
+    public async Task RedirectUnauthenticatedSignin3()
+    {
+        var _client = AuthTestsHelpers.GetClient(x => x.Cookie.RedirectUnauthenticatedSignin = true);
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XForwardedProto, "https");
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XForwardedHost, "redirect");
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XForwardedUri, "/test123");
+
+        var response = await _client.GetAsync("/auth");
+        response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+
+        _client.DefaultRequestHeaders.Clear();
+        _client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response.Headers.GetValues("Set-Cookie"));
+
+        var response2 = await _client.GetAsync(response.Headers.Location);
+        response2.StatusCode.Should().Be(HttpStatusCode.Found);
+        response2.Headers.Location.Should().Be("https://redirect/test123");
+    }
 }

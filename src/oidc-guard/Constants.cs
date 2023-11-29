@@ -2,6 +2,7 @@
 
 public static class CustomHeaderNames
 {
+    public static readonly string XAuthRequestRedirect = "X-Auth-Request-Redirect";
     public static readonly string XForwardedHost = "X-Forwarded-Host";
     public static readonly string XForwardedMethod = "X-Forwarded-Method";
     public static readonly string XForwardedProto = "X-Forwarded-Proto";

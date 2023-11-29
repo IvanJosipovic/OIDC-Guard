@@ -166,6 +166,7 @@ public class Program
 
         builder.Services.AddHttpLogging(logging =>
         {
+            logging.RequestHeaders.Add(CustomHeaderNames.XAuthRequestRedirect);
             logging.RequestHeaders.Add(CustomHeaderNames.XForwardedHost);
             logging.RequestHeaders.Add(CustomHeaderNames.XForwardedMethod);
             logging.RequestHeaders.Add(CustomHeaderNames.XForwardedProto);
@@ -326,7 +327,22 @@ public class Program
             if (httpContext.User.Identity?.IsAuthenticated == false)
             {
                 meters.UnauthorizedCounter.Add(1);
-                return Results.Unauthorized();
+
+                if (settings.Cookie.RedirectUnauthenticatedSignin)
+                {
+                    var redirect = GetOriginalUrl(httpContext);
+
+                    if (redirect != null && ValidateRedirect(new Uri(redirect), settings))
+                    {
+                        return Results.Challenge(new AuthenticationProperties { RedirectUri = redirect });
+                    }
+
+                    return Results.Unauthorized();
+                }
+                else
+                {
+                    return Results.Unauthorized();
+                }
             }
 
             // Validate based on rules
@@ -420,8 +436,22 @@ public class Program
                     else if (!httpContext.User.Claims.Any(x => x.Type == item.Key && item.Value.Contains(x.Value)))
                     {
                         meters.UnauthorizedCounter.Add(1);
-                        //return Results.Unauthorized($"Claim {item.Key} does not match!");
-                        return Results.Unauthorized();
+
+                        if (settings.Cookie.RedirectUnauthenticatedSignin)
+                        {
+                            var redirect = GetOriginalUrl(httpContext);
+
+                            if (redirect != null && ValidateRedirect(new Uri(redirect), settings))
+                            {
+                                return Results.Challenge(new AuthenticationProperties { RedirectUri = redirect });
+                            }
+
+                            return Results.Unauthorized();
+                        }
+                        else
+                        {
+                            return Results.Unauthorized();
+                        }
                     }
                 }
             }

@@ -24,7 +24,7 @@ info: Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware[1]
       X-Sent-From: [Redacted]
       X-Real-IP: [Redacted]
       X-Forwarded-For: [Redacted]
-      X-Auth-Request-Redirect: [Redacted]
+      X-Auth-Request-Redirect: /test123123123?id=2
       sec-ch-ua: [Redacted]
       sec-ch-ua-mobile: [Redacted]
       sec-ch-ua-platform: [Redacted]

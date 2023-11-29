@@ -24,6 +24,7 @@ public class CookieAuthSettings
     public string? CookieDomain { get; set; }
     public string[] Scopes { get; set; } = null!;
     public string[]? AllowedRedirectDomains { get; set; }
+    public bool RedirectUnauthenticatedSignin { get; set; }
 }
 
 public class JWTAuthSettings

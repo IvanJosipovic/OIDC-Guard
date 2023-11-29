@@ -4,6 +4,7 @@ using k8s;
 using k8s.Models;
 using KubeUI.Core.Tests;
 using Xunit;
+using IdentityModel.Client;
 
 namespace oidc_guard_tests.EndToEnd;
 
@@ -351,6 +352,22 @@ public class EndToEndFixture : IDisposable
         };
 
         await Kubernetes.NetworkingV1.CreateNamespacedIngressAsync(ingress, ingress.Namespace());
+    }
+
+    public async Task<string> GetToken()
+    {
+        var settings = new ClientCredentialsTokenRequest
+        {
+            Address = "https://oidc-server.oidc-server:32443/connect/token",
+
+            ClientId = "client-credentials-mock-client",
+            ClientSecret = "client-credentials-mock-client-secret",
+            Scope = "some-app-scope-1"
+        };
+
+        var response = await HttpClient.RequestClientCredentialsTokenAsync(settings);
+
+        return response.AccessToken;
     }
 
     public void Dispose()
