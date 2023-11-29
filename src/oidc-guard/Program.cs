@@ -339,10 +339,8 @@ public class Program
 
                     return Results.Unauthorized();
                 }
-                else
-                {
-                    return Results.Unauthorized();
-                }
+
+                return Results.Unauthorized();
             }
 
             // Validate based on rules

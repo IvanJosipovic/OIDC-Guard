@@ -62,6 +62,19 @@ namespace oidc_guard_tests
         }
 
         [Fact]
+        public async Task TokenInQuery()
+        {
+            var token = await fixture.GetToken();
+
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://demo-app.test.loc:32443/?access_token={token}");
+
+            var response = await fixture.HttpClient.SendAsync(request);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var content = await response.Content.ReadAsStringAsync();
+            content.Contains("Welcome to nginx!").Should().BeTrue();
+        }
+
+        [Fact]
         public async Task OIDC()
         {
             using var playwright = await Playwright.CreateAsync();
