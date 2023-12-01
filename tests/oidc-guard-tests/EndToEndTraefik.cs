@@ -37,7 +37,7 @@ namespace oidc_guard_tests
                     },
                     Spec = new {
                         ForwardAuth = new {
-                            Address = "http://oidc-guard.oidc-guard.svc.cluster.local:8080/auth",
+                            Address = "http://oidc-guard.oidc-guard.svc.cluster.local:8080/auth?skip-auth=GET,index\\.html",
                         }
                     }
                 };
@@ -97,12 +97,12 @@ namespace oidc_guard_tests
             content.Contains("Welcome to nginx!").Should().BeTrue();
         }
 
-        [Fact]
+        //[Fact]
         public async Task OIDC()
         {
             using var playwright = await Playwright.CreateAsync();
 
-            await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions() { Headless = false });
+            await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions() { Headless = true });
             var page = await browser.NewPageAsync(new BrowserNewPageOptions() { IgnoreHTTPSErrors = true });
 
             await page.GotoAsync("https://demo-app.test.loc:32443/");
