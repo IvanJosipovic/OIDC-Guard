@@ -14,6 +14,7 @@ using oidc_guard.Services;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 namespace oidc_guard;
@@ -30,6 +31,11 @@ public class Program
 
         var settings = builder.Configuration.GetSection("Settings").Get<Settings>()!;
         builder.Services.AddSingleton(settings);
+
+        builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
+        {
+            options.SerializerOptions.TypeInfoResolverChain.Add(LocalJsonSerializerContext.Default);
+        });
 
         var resource = ResourceBuilder.CreateDefault().AddService(serviceName: "oidc-guard");
 
@@ -533,4 +539,9 @@ public class Program
 
         return true;
     }
+}
+
+[JsonSerializable(typeof(Dictionary<string, object>))]
+internal partial class LocalJsonSerializerContext : JsonSerializerContext
+{
 }
