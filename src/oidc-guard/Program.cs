@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -99,7 +100,13 @@ public class Program
 
         if (settings.Cookie.Enable)
         {
-            var dataProtector = new DataProtector(settings.Cookie.ClientSecret);
+            builder.Services
+                .AddDataProtection()
+                .AddKeyManagementOptions(x =>
+                {
+                    x.XmlRepository = new StaticXmlRepository(settings.Cookie.ClientSecret);
+                    x.NewKeyLifetime = TimeSpan.FromDays(365);
+                });
 
             auth.AddCookie(o =>
             {
@@ -108,7 +115,6 @@ public class Program
                 o.ExpireTimeSpan = TimeSpan.FromDays(settings.Cookie.CookieValidDays);
                 o.Cookie.MaxAge = TimeSpan.FromDays(settings.Cookie.CookieValidDays);
                 o.Cookie.SameSite = settings.Cookie.CookieSameSiteMode;
-                o.DataProtectionProvider = dataProtector;
             })
             .AddOpenIdConnect(o =>
             {
@@ -129,7 +135,6 @@ public class Program
                 o.ClaimActions.Clear();
                 o.ClaimActions.MapAllExcept("nonce", /*"aud",*/ "azp", "acr", "iss", "iat", "nbf", "exp", "at_hash", "c_hash", "ipaddr", "platf", "ver");
                 o.MapInboundClaims = false;
-                o.DataProtectionProvider = dataProtector;
             });
         }
 
