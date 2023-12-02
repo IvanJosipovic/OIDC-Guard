@@ -657,6 +657,8 @@ public class AuthTests
     {
         var _client = AuthTestsHelpers.GetClient(x => x.Cookie.RedirectUnauthenticatedSignin = true);
 
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(new List<Claim>()));
+
         var response = await _client.GetAsync($"/auth?test=2");
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
@@ -667,6 +669,7 @@ public class AuthTests
         var _client = AuthTestsHelpers.GetClient(x => x.Cookie.RedirectUnauthenticatedSignin = true);
 
         _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XOriginalUrl, "https://redirect/test123");
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(new List<Claim>()));
 
         var response = await _client.GetAsync($"/auth?test=2");
         response.StatusCode.Should().Be(HttpStatusCode.Redirect);
