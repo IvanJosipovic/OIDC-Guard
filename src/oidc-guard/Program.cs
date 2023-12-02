@@ -38,14 +38,12 @@ public class Program
             options.SerializerOptions.TypeInfoResolverChain.Add(LocalJsonSerializerContext.Default);
         });
 
-        var resource = ResourceBuilder.CreateDefault().AddService(serviceName: "oidc-guard");
-
         builder.Services
             .AddOpenTelemetry()
             .WithMetrics(metrics =>
             {
                 metrics
-                    .SetResourceBuilder(resource)
+                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName: "oidc-guard"))
                     .AddRuntimeInstrumentation()
                     .AddAspNetCoreInstrumentation()
                     .AddEventCountersInstrumentation(c =>

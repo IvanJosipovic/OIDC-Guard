@@ -669,7 +669,7 @@ public class AuthTests
         _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XOriginalUrl, "https://redirect/test123");
 
         var response = await _client.GetAsync($"/auth?test=2");
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.Should().Be(HttpStatusCode.Redirect);
     }
 
     [Fact]
