@@ -136,7 +136,7 @@ public class EndToEndFixture : IDisposable
                                     new()
                                     {
                                         Name = "CLIENTS_CONFIGURATION_INLINE",
-                                        Value = """[{"ClientId":"oidc-guard-mock-client","ClientSecrets":["oidc-guard-mock-client-secret"],"Description":"Client for oidc-guard","AllowedGrantTypes":["authorization_code"],"AllowedScopes":["openid","profile","email"],"RedirectUris":["https://oidc-guard.test.loc:32443/signin-oidc"],},{"ClientId":"client-credentials-mock-client","ClientSecrets":["client-credentials-mock-client-secret"],"Description":"Client for client credentials flow","AllowedGrantTypes":["client_credentials"],"AllowedScopes":["some-app-scope-1"],"ClientClaimsPrefix":"","Claims":[{"Type":"string_claim","Value":"string_claim_value","ValueType":"string"},{"Type":"json_claim","Value":"[\"value1\", \"value2\"]","ValueType":"json"}]}]"""
+                                        Value = """[{"ClientId":"oidc-guard-mock-client","ClientSecrets":["oidc-guard-mock-client-secret"],"Description":"Client for oidc-guard","AllowedGrantTypes":["authorization_code"],"AllowedScopes":["openid","profile","email"],"RedirectUris":["https://oidc-guard.test.loc:32443/signin-oidc"],},{"ClientId":"client-credentials-mock-client","ClientSecrets":["client-credentials-mock-client-secret"],"Description":"Client for client credentials flow","AllowedGrantTypes":["client_credentials"],"AllowedScopes":["some-app-scope-1"],"ClientClaimsPrefix":"","Claims":[{"Type":"string_claim","Value":"string_claim_value","ValueType":"string"},{"Type":"json_claim","Value":"{\"auth_time\":1553219869,\"email\":\"demo_user@gmail.com\",\"email_verified\":true,\"firebase\":{\"identities\":{\"email\":[\"demo_user@gmail.com\"],\"saml.myProvider\":[\"demo_user@gmail.com\"]},\"sign_in_attributes\":{\"firstname\":\"John\",\"group\":\"test group\",\"role\":\"admin\",\"lastname\":\"Doe\"},\"sign_in_provider\":\"saml.myProvider\",\"tenant\":\"my_tenant_id\"},\"sub\":\"gZG0yELPypZElTmAT9I55prjHg63\"}","ValueType":"json"}]}]"""
                                     },
                                     new()
                                     {
@@ -312,7 +312,7 @@ public class EndToEndFixture : IDisposable
                 NamespaceProperty = ns.Name(),
                 Annotations = new Dictionary<string, string>()
                 {
-                    { "nginx.ingress.kubernetes.io/auth-url", "http://oidc-guard.oidc-guard.svc.cluster.local:8080/auth" },
+                    { "nginx.ingress.kubernetes.io/auth-url", "http://oidc-guard.oidc-guard.svc.cluster.local:8080/auth?inject-json-claim=role%2Cjson_claim%2C%24.firebase.sign_in_attributes.role" },
                     { "nginx.ingress.kubernetes.io/auth-signin", "https://oidc-guard.test.loc:32443/signin" },
                     { "traefik.ingress.kubernetes.io/router.middlewares", "demo-app-test-auth@kubernetescrd" }
                 }
