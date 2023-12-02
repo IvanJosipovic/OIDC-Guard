@@ -345,6 +345,8 @@ public class Program
 
                     if (redirect != null && ValidateRedirect(new Uri(redirect), settings))
                     {
+                        meters.SignInCounter.Add(1);
+
                         return Results.Challenge(new AuthenticationProperties { RedirectUri = redirect });
                     }
 
@@ -452,6 +454,8 @@ public class Program
 
                             if (redirect != null && ValidateRedirect(new Uri(redirect), settings))
                             {
+                                meters.SignInCounter.Add(1);
+
                                 return Results.Challenge(new AuthenticationProperties { RedirectUri = redirect });
                             }
 
