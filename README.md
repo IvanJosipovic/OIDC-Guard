@@ -1,5 +1,3 @@
-# OIDC-Guard
-
 ![Logo](/docs/icon.png)
 
 [![codecov](https://codecov.io/gh/IvanJosipovic/OIDC-Guard/branch/main/graph/badge.svg?token=M16OFqam3T)](https://codecov.io/gh/IvanJosipovic/OIDC-Guard)
@@ -15,7 +13,7 @@ This project is an API server which is used along with Ingress Controllers that 
 | Ingress Controller | JWT | Cookie|
 |---|---|---|
 | Nginx Ingress | X | X |
-| Traefik | X |   |
+| Traefik | X | X |
 
 ## Features
 
