@@ -1,5 +1,4 @@
 using FluentAssertions;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.Net.Http.Headers;
 using oidc_guard;
@@ -403,7 +402,7 @@ public class AuthTests
                 HttpStatusCode.OK,
                 new Dictionary<string, string>()
                 {
-                    {CustomHeaderNames.OriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken(Enumerable.Empty<Claim>())}" }
+                    {CustomHeaderNames.XOriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken(Enumerable.Empty<Claim>())}" }
                 }
             },
             new object[] // Bad Token Only in Query String
@@ -413,7 +412,7 @@ public class AuthTests
                 HttpStatusCode.Unauthorized,
                 new Dictionary<string, string>()
                 {
-                    {CustomHeaderNames.OriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}=BAD" }
+                    {CustomHeaderNames.XOriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}=BAD" }
                 }
             },
             new object[] // Bad Token in Query String and Header, Header is used
@@ -423,7 +422,7 @@ public class AuthTests
                 HttpStatusCode.OK,
                 new Dictionary<string, string>()
                 {
-                    {CustomHeaderNames.OriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}=BAD" }
+                    {CustomHeaderNames.XOriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}=BAD" }
                 },
                 true
             },
@@ -434,7 +433,7 @@ public class AuthTests
                 HttpStatusCode.OK,
                 new Dictionary<string, string>()
                 {
-                    {CustomHeaderNames.OriginalUrl, "https://www.example.com" }
+                    {CustomHeaderNames.XOriginalUrl, "https://www.example.com" }
                 },
                 true
             },
@@ -445,7 +444,7 @@ public class AuthTests
                 HttpStatusCode.OK,
                 new Dictionary<string, string>()
                 {
-                    {CustomHeaderNames.OriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken(new List<Claim>{new Claim("tid", "11111111-1111-1111-1111-111111111111")})}" }
+                    {CustomHeaderNames.XOriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken(new List<Claim>{new Claim("tid", "11111111-1111-1111-1111-111111111111")})}" }
                 },
             },
             new object[] // Token in Query String with Bad Claim
@@ -455,8 +454,31 @@ public class AuthTests
                 HttpStatusCode.Unauthorized,
                 new Dictionary<string, string>()
                 {
-                    {CustomHeaderNames.OriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken(new List<Claim>{new Claim("tid", "22222222-2222-2222-2222-222222222222")})}" }
+                    {CustomHeaderNames.XOriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken(new List<Claim>{new Claim("tid", "22222222-2222-2222-2222-222222222222")})}" }
                 },
+            },
+
+            new object[] // Token Only in Query String
+            {
+                "",
+                new List<Claim>(),
+                HttpStatusCode.OK,
+                new Dictionary<string, string>()
+                {
+                    { CustomHeaderNames.XForwardedProto, "https" },
+                    { CustomHeaderNames.XForwardedHost, "www.example.com" },
+                    { CustomHeaderNames.XForwardedUri, $"?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken(Enumerable.Empty<Claim>())}" }
+                }
+            },
+
+            new object[] // Missing Headers
+            {
+                "",
+                new List<Claim>(),
+                HttpStatusCode.Unauthorized,
+                new Dictionary<string, string>()
+                {
+                }
             },
         };
     }
@@ -548,27 +570,42 @@ public class AuthTests
     [InlineData("?skip-auth-ne=test", "https://test.com", "GET", HttpStatusCode.Unauthorized)]
     public async Task SkipAuth(string query, string Url, string httpMethod, HttpStatusCode status)
     {
+        await SkipAuthNginx(query, Url, httpMethod, status);
+
+        await SkipAuthTraefik(query, Url, httpMethod, status);
+    }
+
+    private async Task SkipAuthNginx(string query, string Url, string httpMethod, HttpStatusCode status)
+    {
         var _client = AuthTestsHelpers.GetClient();
 
-        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalUrl, Url);
-        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, httpMethod);
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XOriginalUrl, Url);
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XOriginalMethod, httpMethod);
+
+        var response = await _client.GetAsync($"/auth{query}");
+        response.StatusCode.Should().Be(status);
+    }
+
+    private async Task SkipAuthTraefik(string query, string Url, string httpMethod, HttpStatusCode status)
+    {
+        var _client = AuthTestsHelpers.GetClient();
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XForwardedHost, new Uri(Url).Host);
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XForwardedMethod, httpMethod);
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XForwardedProto, new Uri(Url).Scheme);
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XForwardedUri, "/");
 
         var response = await _client.GetAsync($"/auth{query}");
         response.StatusCode.Should().Be(status);
     }
 
     [Fact]
-    public async Task SetHost()
+    private async Task SkipAuthMissingHeaders()
     {
-        var _client = AuthTestsHelpers.GetClient(x => { x.Host = "fakedomain.com"; x.Scheme = "https"; });
+        var _client = AuthTestsHelpers.GetClient();
 
-        var response = await _client.GetAsync("/signin?rd=/health");
-        response.StatusCode.Should().Be(HttpStatusCode.Found);
-
-        var query = QueryHelpers.ParseQuery(response.Headers.Location.Query);
-        var replyUri = new Uri(query["redirect_uri"]);
-        replyUri.Host.Should().Be("fakedomain.com");
-        replyUri.Scheme.Should().Be("https");
+        var response = await _client.GetAsync("/auth?skip-auth=GET,test");
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -578,7 +615,7 @@ public class AuthTests
         {
             x.Cookie.Enable = false;
             x.JWT.JWKSUrl = "https://inmemory.microsoft.com/common/discovery/keys";
-            x.JWT.ValidIssuers = new string[] { FakeJwtIssuer.Issuer };
+            x.JWT.ValidIssuers = [FakeJwtIssuer.Issuer];
         });
 
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(new List<Claim>()));
@@ -588,7 +625,7 @@ public class AuthTests
     }
 
     [Fact]
-    public async Task JwksRetrieverArgs()
+    public async Task JWKSRetrieverArgs()
     {
         var jwk = new JwksRetriever();
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await jwk.GetConfigurationAsync("https://test", null, CancellationToken.None));
@@ -596,7 +633,7 @@ public class AuthTests
     }
 
     [Fact]
-    public async Task JWKSPrependBearer()
+    public async Task JWTPrependBearer()
     {
         var _client = AuthTestsHelpers.GetClient(x => x.JWT.PrependBearer = true);
 
@@ -604,5 +641,75 @@ public class AuthTests
 
         var response = await _client.GetAsync($"/auth");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task RedirectUnauthenticatedSignin()
+    {
+        var _client = AuthTestsHelpers.GetClient(x => x.Cookie.RedirectUnauthenticatedSignin = true);
+
+        var response = await _client.GetAsync($"/auth");
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task RedirectUnauthenticatedSignin2()
+    {
+        var _client = AuthTestsHelpers.GetClient(x => x.Cookie.RedirectUnauthenticatedSignin = true);
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(new List<Claim>()));
+
+        var response = await _client.GetAsync($"/auth?test=2");
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task RedirectUnauthenticatedSignin3()
+    {
+        var _client = AuthTestsHelpers.GetClient(x => x.Cookie.RedirectUnauthenticatedSignin = true);
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XOriginalUrl, "https://redirect/test123");
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(new List<Claim>()));
+
+        var response = await _client.GetAsync($"/auth?test=2");
+        response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+    }
+
+    [Fact]
+    public async Task RedirectUnauthenticatedSigninNginx()
+    {
+        var _client = AuthTestsHelpers.GetClient(x => x.Cookie.RedirectUnauthenticatedSignin = true);
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XOriginalUrl, "https://redirect/test123");
+
+        var response = await _client.GetAsync("/auth");
+        response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+
+        _client.DefaultRequestHeaders.Clear();
+        _client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response.Headers.GetValues("Set-Cookie"));
+
+        var response2 = await _client.GetAsync(response.Headers.Location);
+        response2.StatusCode.Should().Be(HttpStatusCode.Found);
+        response2.Headers.Location.Should().Be("https://redirect/test123");
+    }
+
+    [Fact]
+    public async Task RedirectUnauthenticatedSigninTraefik()
+    {
+        var _client = AuthTestsHelpers.GetClient(x => x.Cookie.RedirectUnauthenticatedSignin = true);
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XForwardedProto, "https");
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XForwardedHost, "redirect");
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XForwardedUri, "/test123");
+
+        var response = await _client.GetAsync("/auth");
+        response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+
+        _client.DefaultRequestHeaders.Clear();
+        _client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response.Headers.GetValues("Set-Cookie"));
+
+        var response2 = await _client.GetAsync(response.Headers.Location);
+        response2.StatusCode.Should().Be(HttpStatusCode.Found);
+        response2.Headers.Location.Should().Be("https://redirect/test123");
     }
 }

@@ -17,13 +17,14 @@ public class CookieAuthSettings
     public bool Enable { get; set; } = true;
     public bool SaveTokensInCookie { get; set; }
     public int CookieValidDays { get; set; } = 7;
-    public SameSiteMode CookieSameSiteMode { get; set; }
+    public SameSiteMode CookieSameSiteMode { get; set; } = SameSiteMode.Unspecified;
     public string ClientId { get; set; } = null!;
     public string ClientSecret { get; set; } = null!;
     public string CookieName { get; set; } = "oidc-guard";
     public string? CookieDomain { get; set; }
-    public string[] Scopes { get; set; }
+    public string[] Scopes { get; set; } = null!;
     public string[]? AllowedRedirectDomains { get; set; }
+    public bool RedirectUnauthenticatedSignin { get; set; }
 }
 
 public class JWTAuthSettings

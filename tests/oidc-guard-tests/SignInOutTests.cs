@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Microsoft.AspNetCore.WebUtilities;
 using oidc_guard_tests.Infra;
 using System.Net;
 using System.Web;
@@ -195,6 +196,20 @@ namespace oidc_guard_tests
             {
                 response3.Headers.Location.Should().Be(query);
             }
+        }
+
+        [Fact]
+        public async Task SetHost()
+        {
+            var _client = AuthTestsHelpers.GetClient(x => { x.Host = "fakedomain.com"; x.Scheme = "https"; });
+
+            var response = await _client.GetAsync("/signin?rd=/health");
+            response.StatusCode.Should().Be(HttpStatusCode.Found);
+
+            var query = QueryHelpers.ParseQuery(response.Headers.Location.Query);
+            var replyUri = new Uri(query["redirect_uri"]);
+            replyUri.Host.Should().Be("fakedomain.com");
+            replyUri.Scheme.Should().Be("https");
         }
     }
 }

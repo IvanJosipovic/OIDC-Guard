@@ -15,11 +15,12 @@ using oidc_guard.Services;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 namespace oidc_guard;
 
-public partial class Program
+public class Program
 {
     public const string AuthenticationScheme = "JWT_OR_COOKIE";
 
@@ -27,17 +28,22 @@ public partial class Program
     {
         var builder = WebApplication.CreateSlimBuilder(args);
 
+        builder.WebHost.UseKestrelHttpsConfiguration();
+
         var settings = builder.Configuration.GetSection("Settings").Get<Settings>()!;
         builder.Services.AddSingleton(settings);
 
-        var resource = ResourceBuilder.CreateDefault().AddService(serviceName: "oidc-guard");
+        builder.Services.ConfigureHttpJsonOptions(options =>
+        {
+            options.SerializerOptions.TypeInfoResolverChain.Add(LocalJsonSerializerContext.Default);
+        });
 
         builder.Services
             .AddOpenTelemetry()
             .WithMetrics(metrics =>
             {
                 metrics
-                    .SetResourceBuilder(resource)
+                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName: "oidc-guard"))
                     .AddRuntimeInstrumentation()
                     .AddAspNetCoreInstrumentation()
                     .AddEventCountersInstrumentation(c =>
@@ -69,7 +75,7 @@ public partial class Program
         builder.Logging.AddFilter("Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware", settings.LogLevel);
         builder.Logging.AddFilter("Microsoft.Extensions.Diagnostics.HealthChecks", LogLevel.Warning);
         builder.Logging.AddFilter("Microsoft.Hosting.Lifetime", LogLevel.Warning);
-        builder.Logging.AddFilter("Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager", LogLevel.Error);
+        builder.Logging.AddFilter("Microsoft.AspNetCore.DataProtection", LogLevel.Error);
 
         var auth = builder.Services.AddAuthentication(o =>
         {
@@ -82,7 +88,7 @@ public partial class Program
             {
                 string? authorization = context.Request.Headers.Authorization;
 
-                return settings.JWT.Enable && !string.IsNullOrEmpty(authorization) && authorization.StartsWith("Bearer ")
+                return settings.JWT.Enable && !string.IsNullOrEmpty(authorization) && authorization.StartsWith(JwtBearerDefaults.AuthenticationScheme + ' ')
                     ? JwtBearerDefaults.AuthenticationScheme
                     : settings.Cookie.Enable
                         ? CookieAuthenticationDefaults.AuthenticationScheme
@@ -94,7 +100,11 @@ public partial class Program
         {
             builder.Services
                 .AddDataProtection()
-                .AddKeyManagementOptions(x => x.XmlRepository = new StaticXmlRepository(settings.Cookie.ClientSecret));
+                .AddKeyManagementOptions(x =>
+                {
+                    x.XmlRepository = new StaticXmlRepository(settings.Cookie.ClientSecret);
+                    x.NewKeyLifetime = TimeSpan.FromDays(365);
+                });
 
             auth.AddCookie(o =>
             {
@@ -165,14 +175,16 @@ public partial class Program
 
         builder.Services.AddHttpLogging(logging =>
         {
-            logging.RequestHeaders.Add("Access-Control-Request-Headers");
-            logging.RequestHeaders.Add("Access-Control-Request-Method");
-            logging.RequestHeaders.Add("X-Forwarded-Host");
-            logging.RequestHeaders.Add("X-Forwarded-Proto");
-            logging.RequestHeaders.Add("X-Forwarded-Scheme");
-            logging.RequestHeaders.Add("X-Original-Method");
-            logging.RequestHeaders.Add("X-Original-Url");
-            logging.RequestHeaders.Add("X-Scheme");
+            logging.RequestHeaders.Add(CustomHeaderNames.XAuthRequestRedirect);
+            logging.RequestHeaders.Add(CustomHeaderNames.XForwardedHost);
+            logging.RequestHeaders.Add(CustomHeaderNames.XForwardedMethod);
+            logging.RequestHeaders.Add(CustomHeaderNames.XForwardedProto);
+            logging.RequestHeaders.Add(CustomHeaderNames.XForwardedUri);
+            logging.RequestHeaders.Add(CustomHeaderNames.XOriginalMethod);
+            logging.RequestHeaders.Add(CustomHeaderNames.XOriginalUrl);
+            logging.RequestHeaders.Add(HeaderNames.AccessControlRequestHeaders);
+            logging.RequestHeaders.Add(HeaderNames.AccessControlRequestMethod);
+            logging.RequestHeaders.Add(HeaderNames.Origin);
         });
 
         builder.Services.AddAuthorization();
@@ -212,12 +224,12 @@ public partial class Program
                     context.Request.Headers.Authorization = JwtBearerDefaults.AuthenticationScheme + ' ' + context.Request.Headers.Authorization;
                 }
 
-                if (settings.JWT.EnableAccessTokenInQueryParameter &&
-                    context.Request.Path.StartsWithSegments("/auth") &&
-                    context.Request.Headers.TryGetValue(CustomHeaderNames.OriginalUrl, out var originalUrlHeader) &&
-                    Uri.TryCreate(originalUrlHeader, UriKind.RelativeOrAbsolute, out var uri))
+                if (settings.JWT.EnableAccessTokenInQueryParameter && context.Request.Path.StartsWithSegments("/auth"))
                 {
-                    if (QueryHelpers.ParseQuery(uri.Query).TryGetValue(QueryParameters.AccessToken, out var token) &&
+                    var originalUrl = GetOriginalUrl(context);
+
+                    if (originalUrl != null && Uri.TryCreate(originalUrl, UriKind.RelativeOrAbsolute, out var uri) &&
+                        QueryHelpers.ParseQuery(uri.Query).TryGetValue(QueryParameters.AccessToken, out var token) &&
                         !context.Request.Headers.ContainsKey(HeaderNames.Authorization))
                     {
                         context.Request.Headers.Authorization = JwtBearerDefaults.AuthenticationScheme + ' ' + token;
@@ -247,7 +259,7 @@ public partial class Program
             meters.SignInCounter.Add(1);
 
             if (settings.SkipAuthPreflight &&
-                httpContext.Request.Headers[CustomHeaderNames.OriginalMethod][0] == HttpMethod.Options.Method &&
+                GetOriginalMethod(httpContext.Request.Headers) == HttpMethod.Options.Method &&
                 !StringValues.IsNullOrEmpty(httpContext.Request.Headers.AccessControlRequestHeaders) &&
                 !StringValues.IsNullOrEmpty(httpContext.Request.Headers.AccessControlRequestMethod) &&
                 !StringValues.IsNullOrEmpty(httpContext.Request.Headers.Origin))
@@ -260,58 +272,61 @@ public partial class Program
                 (httpContext.Request.Query.TryGetValue(QueryParameters.SkipAuth, out var skipEquals) |
                 httpContext.Request.Query.TryGetValue(QueryParameters.SkipAuthNe, out var skipNotEquals)))
             {
-                var originalUrl = httpContext.Request.Headers[CustomHeaderNames.OriginalUrl][0]!;
-                var originalMethod = httpContext.Request.Headers[CustomHeaderNames.OriginalMethod][0];
+                var originalUrl = GetOriginalUrl(httpContext);
+                var originalMethod = GetOriginalMethod(httpContext.Request.Headers);
 
-                if (skipEquals.Count > 0)
+                if (originalUrl != null)
                 {
-                    foreach (var item in skipEquals)
+                    if (skipEquals.Count > 0)
                     {
-                        var commaIndex = item.IndexOf(',');
-                        if (commaIndex != -1)
+                        foreach (var item in skipEquals)
                         {
-                            var method = item[..commaIndex];
-                            var regex = item[(commaIndex + 1)..];
+                            var commaIndex = item.IndexOf(',');
+                            if (commaIndex != -1)
+                            {
+                                var method = item[..commaIndex];
+                                var regex = item[(commaIndex + 1)..];
 
-                            if (method == originalMethod && Regex.IsMatch(originalUrl, regex))
-                            {
-                                meters.AuthorizedCounter.Add(1);
-                                return Results.Ok();
+                                if (method == originalMethod && Regex.IsMatch(originalUrl, regex))
+                                {
+                                    meters.AuthorizedCounter.Add(1);
+                                    return Results.Ok();
+                                }
                             }
-                        }
-                        else
-                        {
-                            if (Regex.IsMatch(originalUrl, item))
+                            else
                             {
-                                meters.AuthorizedCounter.Add(1);
-                                return Results.Ok();
+                                if (Regex.IsMatch(originalUrl, item))
+                                {
+                                    meters.AuthorizedCounter.Add(1);
+                                    return Results.Ok();
+                                }
                             }
                         }
                     }
-                }
 
-                if (skipNotEquals.Count > 0)
-                {
-                    foreach (var item in skipNotEquals)
+                    if (skipNotEquals.Count > 0)
                     {
-                        var commaIndex = item.IndexOf(',');
-                        if (commaIndex != -1)
+                        foreach (var item in skipNotEquals)
                         {
-                            var method = item[..commaIndex];
-                            var regex = item[(commaIndex + 1)..];
+                            var commaIndex = item.IndexOf(',');
+                            if (commaIndex != -1)
+                            {
+                                var method = item[..commaIndex];
+                                var regex = item[(commaIndex + 1)..];
 
-                            if (method != originalMethod && !Regex.IsMatch(originalUrl, regex))
-                            {
-                                meters.AuthorizedCounter.Add(1);
-                                return Results.Ok();
+                                if (method != originalMethod && !Regex.IsMatch(originalUrl, regex))
+                                {
+                                    meters.AuthorizedCounter.Add(1);
+                                    return Results.Ok();
+                                }
                             }
-                        }
-                        else
-                        {
-                            if (!Regex.IsMatch(originalUrl, item))
+                            else
                             {
-                                meters.AuthorizedCounter.Add(1);
-                                return Results.Ok();
+                                if (!Regex.IsMatch(originalUrl, item))
+                                {
+                                    meters.AuthorizedCounter.Add(1);
+                                    return Results.Ok();
+                                }
                             }
                         }
                     }
@@ -321,6 +336,21 @@ public partial class Program
             if (httpContext.User.Identity?.IsAuthenticated == false)
             {
                 meters.UnauthorizedCounter.Add(1);
+
+                if (settings.Cookie.RedirectUnauthenticatedSignin)
+                {
+                    var redirect = GetOriginalUrl(httpContext);
+
+                    if (redirect != null && ValidateRedirect(new Uri(redirect), settings))
+                    {
+                        meters.SignInCounter.Add(1);
+
+                        return Results.Challenge(new AuthenticationProperties { RedirectUri = redirect });
+                    }
+
+                    return Results.Unauthorized();
+                }
+
                 return Results.Unauthorized();
             }
 
@@ -329,12 +359,8 @@ public partial class Program
             {
                 foreach (var item in httpContext.Request.Query)
                 {
-                    if (item.Key.Equals(QueryParameters.SkipAuth, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                    }
-                    else if (item.Key.Equals(QueryParameters.SkipAuthNe, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                    }
+                    if (item.Key.Equals(QueryParameters.SkipAuth, StringComparison.InvariantCultureIgnoreCase)) { }
+                    else if (item.Key.Equals(QueryParameters.SkipAuthNe, StringComparison.InvariantCultureIgnoreCase)) { }
                     else if (item.Key.Equals(QueryParameters.InjectClaim, StringComparison.InvariantCultureIgnoreCase))
                     {
                         foreach (var value in item.Value)
@@ -419,8 +445,24 @@ public partial class Program
                     else if (!httpContext.User.Claims.Any(x => x.Type == item.Key && item.Value.Contains(x.Value)))
                     {
                         meters.UnauthorizedCounter.Add(1);
-                        //return Results.Unauthorized($"Claim {item.Key} does not match!");
-                        return Results.Unauthorized();
+
+                        if (settings.Cookie.RedirectUnauthenticatedSignin)
+                        {
+                            var redirect = GetOriginalUrl(httpContext);
+
+                            if (redirect != null && ValidateRedirect(new Uri(redirect), settings))
+                            {
+                                meters.SignInCounter.Add(1);
+
+                                return Results.Challenge(new AuthenticationProperties { RedirectUri = redirect });
+                            }
+
+                            return Results.Unauthorized();
+                        }
+                        else
+                        {
+                            return Results.Unauthorized();
+                        }
                     }
                 }
             }
@@ -457,6 +499,35 @@ public partial class Program
         app.Run();
     }
 
+    private static string? GetOriginalUrl(HttpContext httpContext)
+    {
+        if (httpContext.Request.Headers.TryGetValue(CustomHeaderNames.XOriginalUrl, out var xOriginalUrl))
+        {
+            return xOriginalUrl!;
+        }
+        else if (httpContext.Request.Headers.TryGetValue(HeaderNames.Host, out var host) &&
+            httpContext.Request.Headers.TryGetValue(CustomHeaderNames.XForwardedUri, out var xForwardedUri))
+        {
+            return $"{httpContext.Request.Scheme}://{host}{xForwardedUri}";
+        }
+
+        return null;
+    }
+
+    private static string? GetOriginalMethod(IHeaderDictionary headers)
+    {
+        if (headers.TryGetValue(CustomHeaderNames.XForwardedMethod, out var xForwardedMethod))
+        {
+            return xForwardedMethod;
+        }
+        else if (headers.TryGetValue(CustomHeaderNames.XOriginalMethod, out var xOriginalMethod))
+        {
+            return xOriginalMethod;
+        }
+
+        return null;
+    }
+
     private static bool ValidateRedirect(Uri rd, Settings settings)
     {
         if (settings.Cookie.AllowedRedirectDomains?.Length > 0 && rd.IsAbsoluteUri)
@@ -475,4 +546,9 @@ public partial class Program
 
         return true;
     }
+}
+
+[JsonSerializable(typeof(Dictionary<string, object>))]
+internal partial class LocalJsonSerializerContext : JsonSerializerContext
+{
 }

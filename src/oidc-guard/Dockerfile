@@ -1,6 +1,7 @@
 ARG BUILDPLATFORM=linux/amd64
 
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-alpine@sha256:11119edddc138c08aa0a5229a4b4fd74ac9fbdcda1c9a655afabe65bc80d9aed AS build
+RUN apk add build-base zlib-dev
 WORKDIR /src
 COPY oidc-guard.csproj .
 RUN dotnet restore "oidc-guard.csproj"
@@ -15,7 +16,7 @@ FROM mcr.microsoft.com/dotnet/runtime-deps:8.0-alpine@sha256:d7eb20c03fe6d013801
 WORKDIR /app
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
-LABEL org.opencontainers.image.description OpenID Connect (OIDC) Proxy Server for securing Kubernetes Ingress
+LABEL org.opencontainers.image.description OpenID Connect (OIDC) API Server for securing Kubernetes Ingress
 
 # renovate: datasource=repology depName=alpine_3_18/ca-certificates-bundle versioning=loose
 ENV CA-CERTIFICATES-BUNDLES_VERSION="20230506-r0"

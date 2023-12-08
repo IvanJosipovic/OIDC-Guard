@@ -15,7 +15,21 @@ namespace oidc_guard_tests
             var _client = AuthTestsHelpers.GetClient(x => { x.SkipAuthPreflight = true; });
 
             _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Origin, "localhost");
-            _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, "OPTIONS");
+            _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XOriginalMethod, "OPTIONS");
+            _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestHeaders, "origin, x-requested-with");
+            _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestMethod, "DELETE");
+
+            var response = await _client.GetAsync("/auth");
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Fact]
+        public async Task SkipAuthPreflight2()
+        {
+            var _client = AuthTestsHelpers.GetClient(x => { x.SkipAuthPreflight = true; });
+
+            _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Origin, "localhost");
+            _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XForwardedMethod, "OPTIONS");
             _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestHeaders, "origin, x-requested-with");
             _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestMethod, "DELETE");
 
@@ -28,7 +42,7 @@ namespace oidc_guard_tests
         {
             var _client = AuthTestsHelpers.GetClient(x => { x.SkipAuthPreflight = false; });
 
-            _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, "OPTIONS");
+            _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XOriginalMethod, "OPTIONS");
             _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestHeaders, "origin, x-requested-with");
             _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestMethod, "DELETE");
 
@@ -42,8 +56,21 @@ namespace oidc_guard_tests
             var _client = AuthTestsHelpers.GetClient(x => { x.SkipAuthPreflight = true; });
 
             _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Origin, "localhost");
-            _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, "OPTIONS");
             _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestHeaders, "origin, x-requested-with");
+            _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestMethod, "DELETE");
+
+            var response = await _client.GetAsync("/auth");
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task SkipAuthPreflightMissingOrigin()
+        {
+            var _client = AuthTestsHelpers.GetClient(x => { x.SkipAuthPreflight = true; });
+
+            _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XForwardedMethod, "OPTIONS");
+            _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestHeaders, "origin, x-requested-with");
+            _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestMethod, "DELETE");
 
             var response = await _client.GetAsync("/auth");
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -55,7 +82,7 @@ namespace oidc_guard_tests
             var _client = AuthTestsHelpers.GetClient(x => { x.SkipAuthPreflight = true; });
 
             _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Origin, "localhost");
-            _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.OriginalMethod, "OPTIONS");
+            _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XOriginalMethod, "OPTIONS");
             _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestMethod, "DELETE");
 
             var response = await _client.GetAsync("/auth");

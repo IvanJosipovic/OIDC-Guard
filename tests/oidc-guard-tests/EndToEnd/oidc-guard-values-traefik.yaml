@@ -49,7 +49,7 @@ settings:
 
     # Configures the /auth endpoint to redirect unauthenticated requests to the /signin endpoint
     # Disable for Nginx ingress and enable for Traefik
-    redirectUnauthenticatedSignin: false
+    redirectUnauthenticatedSignin: true
 
     # Client Id
     clientId: "oidc-guard-mock-client"

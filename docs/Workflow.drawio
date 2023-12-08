@@ -1,251 +1,251 @@
-<mxfile host="Electron" modified="2023-06-19T06:23:09.011Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.2.8 Chrome/112.0.5615.165 Electron/24.2.0 Safari/537.36" etag="jss0zQOKzrS_D9Yu4Dn-" version="21.2.8" type="device" pages="2">
-  <diagram id="cKlHEkC26RG6OROyHV55" name="Diagram">
-    <mxGraphModel dx="1180" dy="682" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
-      <root>
-        <mxCell id="0" />
-        <mxCell id="1" parent="0" />
-        <mxCell id="Vuv3IBSoSBTpxbjDE1F6-1" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="40" y="230" width="360" height="260" as="geometry" />
-        </mxCell>
-        <mxCell id="pD_sEhZKPvsvs7ZCdEyi-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontColor=#000000;startArrow=classic;startFill=1;strokeColor=#82b366;fillColor=#d5e8d4;endArrow=none;endFill=0;" parent="1" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="280" y="268" as="sourcePoint" />
-            <mxPoint x="280" y="390" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="Vuv3IBSoSBTpxbjDE1F6-2" value="Kubernetes" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/containers/Kubernetes_Services.svg;" parent="1" vertex="1">
-          <mxGeometry x="50" y="240" width="45.33" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="Vuv3IBSoSBTpxbjDE1F6-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontColor=#000000;startArrow=none;startFill=0;strokeColor=#82b366;fillColor=#d5e8d4;" parent="1" source="Vuv3IBSoSBTpxbjDE1F6-5" target="Vuv3IBSoSBTpxbjDE1F6-8" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="250" y="320" />
-              <mxPoint x="250" y="320" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="Vuv3IBSoSBTpxbjDE1F6-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontColor=#000000;startArrow=none;startFill=0;strokeColor=#000000;endArrow=classic;endFill=1;" parent="1" source="Vuv3IBSoSBTpxbjDE1F6-5" target="Vuv3IBSoSBTpxbjDE1F6-15" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="130" y="240" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="Vuv3IBSoSBTpxbjDE1F6-5" value="ingress-nginx" style="sketch=0;html=1;dashed=0;whitespace=wrap;fillColor=#2875E2;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon;prIcon=pod;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;align=center;labelBackgroundColor=default;" parent="1" vertex="1">
-          <mxGeometry x="240" y="220" width="50" height="48" as="geometry" />
-        </mxCell>
-        <mxCell id="Vuv3IBSoSBTpxbjDE1F6-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontColor=#000000;strokeColor=#000000;startArrow=none;startFill=0;" parent="1" target="Vuv3IBSoSBTpxbjDE1F6-5" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="240" y="90" as="sourcePoint" />
-            <Array as="points">
-              <mxPoint x="240" y="100" />
-              <mxPoint x="240" y="100" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="Vuv3IBSoSBTpxbjDE1F6-7" value="Actor" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;labelBackgroundColor=default;labelBorderColor=none;" parent="1" vertex="1">
-          <mxGeometry x="250" y="30" width="30" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="Vuv3IBSoSBTpxbjDE1F6-8" value="OIDC-Guard" style="sketch=0;html=1;dashed=0;whitespace=wrap;fillColor=#2875E2;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon;prIcon=pod;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;align=center;" parent="1" vertex="1">
-          <mxGeometry x="240" y="390" width="50" height="48" as="geometry" />
-        </mxCell>
-        <mxCell id="Vuv3IBSoSBTpxbjDE1F6-9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" edge="1">
-          <mxGeometry x="-0.1571" y="20" relative="1" as="geometry">
-            <mxPoint as="offset" />
-            <mxPoint x="520" y="440" as="sourcePoint" />
-            <mxPoint x="290" y="440" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="520" y="440" />
-              <mxPoint x="290" y="440" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="Vuv3IBSoSBTpxbjDE1F6-10" value="Identity&lt;br&gt;Provider" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="515" y="380" width="95" height="70" as="geometry" />
-        </mxCell>
-        <mxCell id="Vuv3IBSoSBTpxbjDE1F6-11" value="1" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="229" y="140" width="20" height="20" as="geometry" />
-        </mxCell>
-        <mxCell id="Vuv3IBSoSBTpxbjDE1F6-12" value="2" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="240" y="326" width="20" height="20" as="geometry" />
-        </mxCell>
-        <mxCell id="Vuv3IBSoSBTpxbjDE1F6-14" value="4" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="120" y="300" width="20" height="20" as="geometry" />
-        </mxCell>
-        <mxCell id="Vuv3IBSoSBTpxbjDE1F6-15" value="Protected API" style="sketch=0;html=1;dashed=0;whitespace=wrap;fillColor=#2875E2;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon;prIcon=pod;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;align=center;" parent="1" vertex="1">
-          <mxGeometry x="127.32999999999998" y="390" width="50" height="48" as="geometry" />
-        </mxCell>
-        <mxCell id="Vuv3IBSoSBTpxbjDE1F6-18" value="0" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="345" y="430" width="20" height="20" as="geometry" />
-        </mxCell>
-        <mxCell id="Vuv3IBSoSBTpxbjDE1F6-19" value="0: On Startup, load Open ID configuration from Idenity Provider&lt;br style=&quot;font-size: 15px;&quot;&gt;1: Actor makes HTTP Request&lt;br style=&quot;font-size: 15px;&quot;&gt;2: Ingress Nginx&amp;nbsp;forwards request for validation&lt;br style=&quot;font-size: 15px;&quot;&gt;3: OIDC-Guard validates request&lt;br&gt;&amp;nbsp; a: If request has Authorization Header, its validated&lt;br&gt;&amp;nbsp; b: If request has Authorization Cookie, its validated&lt;br&gt;&amp;nbsp; c: Otherwise, redirect request to Identity Provider for login&lt;br style=&quot;font-size: 15px;&quot;&gt;4: Nginx Ingress contacts the Protected API&lt;br style=&quot;font-size: 15px;&quot;&gt;5: Protected API response&lt;br style=&quot;font-size: 15px;&quot;&gt;6: Ingress Nginx passes response to Actor" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;labelBackgroundColor=default;labelBorderColor=none;fontColor=#000000;fontSize=15;" parent="1" vertex="1">
-          <mxGeometry x="350" y="10" width="430" height="190" as="geometry" />
-        </mxCell>
-        <mxCell id="vSyUK7ZOrCeiKMsDPUSd-1" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" edge="1">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="290" y="390" as="sourcePoint" />
-            <mxPoint x="520" y="390" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="vSyUK7ZOrCeiKMsDPUSd-4" value="3b" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="345" y="380" width="20" height="20" as="geometry" />
-        </mxCell>
-        <mxCell id="pD_sEhZKPvsvs7ZCdEyi-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontColor=#000000;strokeColor=#000000;startArrow=classic;startFill=1;endArrow=none;endFill=0;fillColor=#f8cecc;" parent="1" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="289" y="90" as="sourcePoint" />
-            <mxPoint x="289.43" y="220" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="289" y="90" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="Vuv3IBSoSBTpxbjDE1F6-17" value="6" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="280" y="140" width="20" height="20" as="geometry" />
-        </mxCell>
-        <mxCell id="pD_sEhZKPvsvs7ZCdEyi-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontColor=#000000;startArrow=classic;startFill=1;strokeColor=#000000;endArrow=none;endFill=0;" parent="1" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="240" y="270" as="sourcePoint" />
-            <mxPoint x="180" y="390" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="240" y="270" />
-              <mxPoint x="180" y="270" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="Vuv3IBSoSBTpxbjDE1F6-16" value="5" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="170" y="300" width="20" height="20" as="geometry" />
-        </mxCell>
-        <mxCell id="Vuv3IBSoSBTpxbjDE1F6-13" value="3" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="270" y="326" width="20" height="20" as="geometry" />
-        </mxCell>
-      </root>
-    </mxGraphModel>
-  </diagram>
-  <diagram name="Workflow" id="UqvO-io_TUXMxVNxv12w">
-    <mxGraphModel dx="1180" dy="682" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
-      <root>
-        <mxCell id="0" />
-        <mxCell id="1" parent="0" />
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="jPFnCCxtQAjBdNzesxnU-1" target="jPFnCCxtQAjBdNzesxnU-2" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-1" value="Actor" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
-          <mxGeometry x="160" y="30" width="30" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="jPFnCCxtQAjBdNzesxnU-2" target="jPFnCCxtQAjBdNzesxnU-4" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-2" value="Navigage to&amp;nbsp;&lt;br&gt;OIDC-Guard protected site" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="115" y="260" width="120" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-7" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="jPFnCCxtQAjBdNzesxnU-4" target="jPFnCCxtQAjBdNzesxnU-8" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="480" y="430" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-15" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="jPFnCCxtQAjBdNzesxnU-4" target="jPFnCCxtQAjBdNzesxnU-14" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-4" value="Does Authorization Header exist?" style="rhombus;strokeColor=default;shadow=0;rounded=0;labelBackgroundColor=none;labelBorderColor=none;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="115" y="370" width="120" height="120" as="geometry" />
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-11" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="jPFnCCxtQAjBdNzesxnU-8" target="jPFnCCxtQAjBdNzesxnU-10" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-13" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="jPFnCCxtQAjBdNzesxnU-8" target="jPFnCCxtQAjBdNzesxnU-12" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="410" y="530" />
-              <mxPoint x="640" y="530" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-8" value="Is JWT&lt;br&gt;Token Valid" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="370" y="390" width="80" height="80" as="geometry" />
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-10" value="Allow to protected site" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="610" y="400" width="110" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-12" value="Access Denied" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="580" y="610" width="120" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-18" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="jPFnCCxtQAjBdNzesxnU-14" target="jPFnCCxtQAjBdNzesxnU-17" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-20" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="jPFnCCxtQAjBdNzesxnU-14" target="jPFnCCxtQAjBdNzesxnU-19" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-14" value="Does OIDC-Guard&lt;br&gt;Cookie exit?" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="110" y="580" width="130" height="120" as="geometry" />
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="jPFnCCxtQAjBdNzesxnU-17" target="jPFnCCxtQAjBdNzesxnU-24" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-17" value="Decrypt Cookie" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="115" y="760" width="120" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-21" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="jPFnCCxtQAjBdNzesxnU-19" target="jPFnCCxtQAjBdNzesxnU-12" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-23" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="jPFnCCxtQAjBdNzesxnU-19" target="jPFnCCxtQAjBdNzesxnU-22" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="430" y="760" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-19" value="Is API&lt;br&gt;request?" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="390" y="600" width="80" height="80" as="geometry" />
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-22" value="Redirect to Signin" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="580" y="730" width="120" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-26" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="jPFnCCxtQAjBdNzesxnU-24" target="jPFnCCxtQAjBdNzesxnU-10" edge="1">
-          <mxGeometry x="-0.4879" relative="1" as="geometry">
-            <mxPoint as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-28" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="jPFnCCxtQAjBdNzesxnU-24" target="jPFnCCxtQAjBdNzesxnU-29" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="175" y="1000" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-24" value="Is JWT&lt;br&gt;Token Valid?" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="135" y="880" width="80" height="80" as="geometry" />
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="jPFnCCxtQAjBdNzesxnU-29" target="jPFnCCxtQAjBdNzesxnU-30" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-29" value="Get new Access Token" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="115" y="1010" width="120" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-33" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="jPFnCCxtQAjBdNzesxnU-30" target="jPFnCCxtQAjBdNzesxnU-19" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-39" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="jPFnCCxtQAjBdNzesxnU-30" target="jPFnCCxtQAjBdNzesxnU-38" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-30" value="Able to get&lt;br&gt;acces token?" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="310" y="988.75" width="105" height="102.5" as="geometry" />
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-37" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="jPFnCCxtQAjBdNzesxnU-34" target="jPFnCCxtQAjBdNzesxnU-10" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="760" y="1040" />
-              <mxPoint x="760" y="430" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-34" value="Encrypt and return Cookie" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="610" y="1010" width="120" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-40" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="jPFnCCxtQAjBdNzesxnU-38" target="jPFnCCxtQAjBdNzesxnU-34" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="jPFnCCxtQAjBdNzesxnU-38" value="Get Refresh Token" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="460" y="1010" width="120" height="60" as="geometry" />
-        </mxCell>
-      </root>
-    </mxGraphModel>
-  </diagram>
+<mxfile host="65bd71144e" pages="2">
+    <diagram id="cKlHEkC26RG6OROyHV55" name="Diagram">
+        <mxGraphModel dx="1048" dy="899" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="#FFFFFF" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="Vuv3IBSoSBTpxbjDE1F6-1" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="230" width="360" height="260" as="geometry"/>
+                </mxCell>
+                <mxCell id="pD_sEhZKPvsvs7ZCdEyi-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontColor=#000000;startArrow=classic;startFill=1;strokeColor=#82b366;fillColor=#d5e8d4;endArrow=none;endFill=0;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="280" y="268" as="sourcePoint"/>
+                        <mxPoint x="280" y="390" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="Vuv3IBSoSBTpxbjDE1F6-2" value="Kubernetes" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/containers/Kubernetes_Services.svg;" parent="1" vertex="1">
+                    <mxGeometry x="50" y="240" width="45.33" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="Vuv3IBSoSBTpxbjDE1F6-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontColor=#000000;startArrow=none;startFill=0;strokeColor=#82b366;fillColor=#d5e8d4;" parent="1" source="Vuv3IBSoSBTpxbjDE1F6-5" target="Vuv3IBSoSBTpxbjDE1F6-8" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="250" y="320"/>
+                            <mxPoint x="250" y="320"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="Vuv3IBSoSBTpxbjDE1F6-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontColor=#000000;startArrow=none;startFill=0;strokeColor=#000000;endArrow=classic;endFill=1;" parent="1" source="Vuv3IBSoSBTpxbjDE1F6-5" target="Vuv3IBSoSBTpxbjDE1F6-15" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="130" y="240"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="Vuv3IBSoSBTpxbjDE1F6-5" value="ingress-nginx" style="sketch=0;html=1;dashed=0;whitespace=wrap;fillColor=#2875E2;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon;prIcon=pod;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;align=center;labelBackgroundColor=default;" parent="1" vertex="1">
+                    <mxGeometry x="240" y="220" width="50" height="48" as="geometry"/>
+                </mxCell>
+                <mxCell id="Vuv3IBSoSBTpxbjDE1F6-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontColor=#000000;strokeColor=#000000;startArrow=none;startFill=0;" parent="1" target="Vuv3IBSoSBTpxbjDE1F6-5" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="240" y="90" as="sourcePoint"/>
+                        <Array as="points">
+                            <mxPoint x="240" y="100"/>
+                            <mxPoint x="240" y="100"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="Vuv3IBSoSBTpxbjDE1F6-7" value="Actor" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;labelBackgroundColor=default;labelBorderColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="250" y="30" width="30" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="Vuv3IBSoSBTpxbjDE1F6-8" value="OIDC-Guard" style="sketch=0;html=1;dashed=0;whitespace=wrap;fillColor=#2875E2;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon;prIcon=pod;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="240" y="390" width="50" height="48" as="geometry"/>
+                </mxCell>
+                <mxCell id="Vuv3IBSoSBTpxbjDE1F6-9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" edge="1">
+                    <mxGeometry x="-0.1571" y="20" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                        <mxPoint x="520" y="440" as="sourcePoint"/>
+                        <mxPoint x="290" y="440" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="520" y="440"/>
+                            <mxPoint x="290" y="440"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="Vuv3IBSoSBTpxbjDE1F6-10" value="Identity&lt;br&gt;Provider" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="515" y="380" width="95" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="Vuv3IBSoSBTpxbjDE1F6-11" value="1" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="229" y="140" width="20" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="Vuv3IBSoSBTpxbjDE1F6-12" value="2" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="240" y="326" width="20" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="Vuv3IBSoSBTpxbjDE1F6-14" value="4" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="120" y="300" width="20" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="Vuv3IBSoSBTpxbjDE1F6-15" value="Protected API" style="sketch=0;html=1;dashed=0;whitespace=wrap;fillColor=#2875E2;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon;prIcon=pod;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="127.32999999999998" y="390" width="50" height="48" as="geometry"/>
+                </mxCell>
+                <mxCell id="Vuv3IBSoSBTpxbjDE1F6-18" value="0" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="345" y="430" width="20" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="Vuv3IBSoSBTpxbjDE1F6-19" value="0: On Startup, load Open ID configuration from Idenity Provider&lt;br style=&quot;font-size: 15px;&quot;&gt;1: Actor makes HTTP Request&lt;br style=&quot;font-size: 15px;&quot;&gt;2: Ingress Nginx&amp;nbsp;forwards request for validation&lt;br style=&quot;font-size: 15px;&quot;&gt;3: OIDC-Guard validates request&lt;br&gt;&amp;nbsp; a: If request has Authorization Header, its validated&lt;br&gt;&amp;nbsp; b: If request has Authorization Cookie, its validated&lt;br&gt;&amp;nbsp; c: Otherwise, redirect request to Identity Provider for login&lt;br style=&quot;font-size: 15px;&quot;&gt;4: Nginx Ingress contacts the Protected API&lt;br style=&quot;font-size: 15px;&quot;&gt;5: Protected API response&lt;br style=&quot;font-size: 15px;&quot;&gt;6: Ingress Nginx passes response to Actor" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;labelBackgroundColor=default;labelBorderColor=none;fontColor=#000000;fontSize=15;" parent="1" vertex="1">
+                    <mxGeometry x="350" y="10" width="430" height="190" as="geometry"/>
+                </mxCell>
+                <mxCell id="vSyUK7ZOrCeiKMsDPUSd-1" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="290" y="390" as="sourcePoint"/>
+                        <mxPoint x="520" y="390" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="vSyUK7ZOrCeiKMsDPUSd-4" value="3c" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="345" y="380" width="20" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="pD_sEhZKPvsvs7ZCdEyi-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontColor=#000000;strokeColor=#000000;startArrow=classic;startFill=1;endArrow=none;endFill=0;fillColor=#f8cecc;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="289" y="90" as="sourcePoint"/>
+                        <mxPoint x="289.43" y="220" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="289" y="90"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="Vuv3IBSoSBTpxbjDE1F6-17" value="6" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="280" y="140" width="20" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="pD_sEhZKPvsvs7ZCdEyi-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontColor=#000000;startArrow=classic;startFill=1;strokeColor=#000000;endArrow=none;endFill=0;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="240" y="270" as="sourcePoint"/>
+                        <mxPoint x="180" y="390" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="240" y="270"/>
+                            <mxPoint x="180" y="270"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="Vuv3IBSoSBTpxbjDE1F6-16" value="5" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="170" y="300" width="20" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="Vuv3IBSoSBTpxbjDE1F6-13" value="3" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="270" y="326" width="20" height="20" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram name="Workflow" id="UqvO-io_TUXMxVNxv12w">
+        <mxGraphModel dx="1048" dy="899" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="jPFnCCxtQAjBdNzesxnU-1" target="jPFnCCxtQAjBdNzesxnU-2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-1" value="Actor" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
+                    <mxGeometry x="160" y="30" width="30" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="jPFnCCxtQAjBdNzesxnU-2" target="jPFnCCxtQAjBdNzesxnU-4" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-2" value="Navigage to&amp;nbsp;&lt;br&gt;OIDC-Guard protected site" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="115" y="260" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-7" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="jPFnCCxtQAjBdNzesxnU-4" target="jPFnCCxtQAjBdNzesxnU-8" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="480" y="430" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-15" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="jPFnCCxtQAjBdNzesxnU-4" target="jPFnCCxtQAjBdNzesxnU-14" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-4" value="Does Authorization Header exist?" style="rhombus;strokeColor=default;shadow=0;rounded=0;labelBackgroundColor=none;labelBorderColor=none;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="115" y="370" width="120" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-11" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="jPFnCCxtQAjBdNzesxnU-8" target="jPFnCCxtQAjBdNzesxnU-10" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-13" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="jPFnCCxtQAjBdNzesxnU-8" target="jPFnCCxtQAjBdNzesxnU-12" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="410" y="530"/>
+                            <mxPoint x="640" y="530"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-8" value="Is JWT&lt;br&gt;Token Valid" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="370" y="390" width="80" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-10" value="Allow to protected site" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="610" y="400" width="110" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-12" value="Access Denied" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="580" y="610" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-18" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="jPFnCCxtQAjBdNzesxnU-14" target="jPFnCCxtQAjBdNzesxnU-17" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-20" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="jPFnCCxtQAjBdNzesxnU-14" target="jPFnCCxtQAjBdNzesxnU-19" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-14" value="Does OIDC-Guard&lt;br&gt;Cookie exit?" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="110" y="580" width="130" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="jPFnCCxtQAjBdNzesxnU-17" target="jPFnCCxtQAjBdNzesxnU-24" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-17" value="Decrypt Cookie" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="115" y="760" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-21" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="jPFnCCxtQAjBdNzesxnU-19" target="jPFnCCxtQAjBdNzesxnU-12" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-23" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="jPFnCCxtQAjBdNzesxnU-19" target="jPFnCCxtQAjBdNzesxnU-22" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="430" y="760"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-19" value="Is API&lt;br&gt;request?" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="390" y="600" width="80" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-22" value="Redirect to Signin" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="580" y="730" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-26" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="jPFnCCxtQAjBdNzesxnU-24" target="jPFnCCxtQAjBdNzesxnU-10" edge="1">
+                    <mxGeometry x="-0.4879" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-28" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="jPFnCCxtQAjBdNzesxnU-24" target="jPFnCCxtQAjBdNzesxnU-29" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="175" y="1000" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-24" value="Is JWT&lt;br&gt;Token Valid?" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="135" y="880" width="80" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="jPFnCCxtQAjBdNzesxnU-29" target="jPFnCCxtQAjBdNzesxnU-30" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-29" value="Get new Access Token" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="115" y="1010" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-33" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="jPFnCCxtQAjBdNzesxnU-30" target="jPFnCCxtQAjBdNzesxnU-19" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-39" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="jPFnCCxtQAjBdNzesxnU-30" target="jPFnCCxtQAjBdNzesxnU-38" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-30" value="Able to get&lt;br&gt;acces token?" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="310" y="988.75" width="105" height="102.5" as="geometry"/>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-37" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="jPFnCCxtQAjBdNzesxnU-34" target="jPFnCCxtQAjBdNzesxnU-10" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="760" y="1040"/>
+                            <mxPoint x="760" y="430"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-34" value="Encrypt and return Cookie" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="610" y="1010" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-40" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="jPFnCCxtQAjBdNzesxnU-38" target="jPFnCCxtQAjBdNzesxnU-34" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="jPFnCCxtQAjBdNzesxnU-38" value="Get Refresh Token" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="460" y="1010" width="120" height="60" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
 </mxfile>

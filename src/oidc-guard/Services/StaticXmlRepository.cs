@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.DataProtection.Repositories;
-using System.Text;
+using System.Security.Cryptography;
 using System.Xml.Linq;
 
 namespace oidc_guard.Services
@@ -9,11 +9,14 @@ namespace oidc_guard.Services
         public StaticXmlRepository(string secret)
         {
             Secret = secret;
+            KeyGenerator = new Rfc2898DeriveBytes(secret, 0, 1, HashAlgorithmName.SHA256);
         }
 
         private string Secret { get; }
 
-        private readonly List<XElement> Keys = new();
+        private Rfc2898DeriveBytes KeyGenerator { get; set; }
+
+        private readonly List<XElement> Keys = [];
 
         IReadOnlyCollection<XElement> IXmlRepository.GetAllElements()
         {
@@ -22,20 +25,13 @@ namespace oidc_guard.Services
 
         void IXmlRepository.StoreElement(XElement element, string friendlyName)
         {
-            var date = new DateTime(2023, 01, 01, 01, 01, 01);
-            var expire = new DateTime(2199, 01, 01, 01, 01, 01);
-
             element.Attribute("id")!.Value = "0c5444df-6cfb-4e21-a23c-fdcf4787c584";
-
-            element.Element("creationDate")!.Value = date.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ");
-            element.Element("activationDate")!.Value = date.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ");
-            element.Element("expirationDate")!.Value = expire.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ");
 
             element.Element("descriptor")!
                    .Element("descriptor")!
                    .Element("masterKey")!
                    .Element("value")!
-                   .Value = Convert.ToBase64String(Encoding.UTF8.GetBytes(Secret));
+                   .Value = Convert.ToBase64String(KeyGenerator.GetBytes(64));
 
             Keys.Add(element);
         }
