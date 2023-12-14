@@ -46,7 +46,7 @@ jobs:
       shell: pwsh
 
     - name: .NET Test
-      run: dotnet test -c Release --collect:"XPlat Code Coverage"
+      run: dotnet test -c Release --collect:"XPlat Code Coverage" /p:DebugSymbols=true /p:DebugType=full
 
     - name: Coverage
       uses: codecov/codecov-action@v3
