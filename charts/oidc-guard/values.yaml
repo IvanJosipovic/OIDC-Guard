@@ -43,6 +43,10 @@ settings:
     # - test.com
     # - .test.com
 
+    # Configures the /auth endpoint to redirect unauthenticated requests to the /signin endpoint
+    # Disable for Nginx ingress and enable for Traefik
+    redirectUnauthenticatedSignin: false
+
     # Client Id
     clientId: ""
 
