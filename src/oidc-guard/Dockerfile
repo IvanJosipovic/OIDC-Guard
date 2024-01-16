@@ -33,9 +33,14 @@ ENV LIBSTDC_VERSION="12.2.1_git20220924-r10"
 # renovate: datasource=repology depName=alpine_3_18/zlib versioning=loose
 ENV ZLIB_VERSION="1.2.13-r1"
 
-RUN apk update && \
-    apk upgrade && \
-    rm -rf /var/cache/apk/*
+RUN apk add --upgrade --no-cache \
+        ca-certificates-bundle:$CA-CERTIFICATES-BUNDLES_VERSION \
+        \
+        # .NET dependencies
+        libgcc:$LIBGCC_VERSION \
+        libssl3:$LIBSSL3_VERSION \
+        libstdc++:$LIBSTDC_VERSION \
+        zlib:$ZLIB_VERSION
 
 USER app
 
