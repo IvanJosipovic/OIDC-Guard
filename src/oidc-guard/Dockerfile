@@ -25,7 +25,7 @@ ENV CA_CERTIFICATES_BUNDLES_VERSION="20230506-r0"
 ENV LIBGCC_VERSION="12.2.1_git20220924-r10"
 
 # renovate: datasource=repology depName=alpine_3_18/libssl3 versioning=loose
-ENV LIBSSL3_VERSION="3.1.4-r3"
+ENV LIBSSL3_VERSION="3.1.4-r4"
 
 # renovate: datasource=repology depName=alpine_3_18/libstdc++ versioning=loose
 ENV LIBSTDC_VERSION="12.2.1_git20220924-r10"
