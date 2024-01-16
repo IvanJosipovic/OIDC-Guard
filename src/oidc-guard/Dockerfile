@@ -34,13 +34,13 @@ ENV LIBSTDC_VERSION="12.2.1_git20220924-r10"
 ENV ZLIB_VERSION="1.2.13-r1"
 
 RUN apk add --upgrade --no-cache \
-        ca-certificates-bundle=$CA_CERTIFICATES_BUNDLES_VERSION \
+        ca-certificates-bundle>$CA_CERTIFICATES_BUNDLES_VERSION \
         \
         # .NET dependencies
-        libgcc=$LIBGCC_VERSION \
-        libssl3=$LIBSSL3_VERSION \
-        libstdc++=$LIBSTDC_VERSION \
-        zlib=$ZLIB_VERSION
+        libgcc>$LIBGCC_VERSION \
+        libssl3>$LIBSSL3_VERSION \
+        libstdc++>$LIBSTDC_VERSION \
+        zlib>$ZLIB_VERSION
 
 USER app
 
