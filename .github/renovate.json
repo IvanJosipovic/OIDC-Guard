@@ -11,10 +11,11 @@
     "**/docs/**",
     "**/charts/**"
   ],
+  "schedule": ["before 4am"],
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch", "digest"],
-      "automerge": false,
+      "automerge": true,
       "semanticCommitType": "fix",
       "matchFileNames": [
         "src/**"
