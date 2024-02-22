@@ -1,6 +1,6 @@
 apiVersion: v2
 name: oidc-guard
-description: OpenID Connect (OIDC) & OAuth 2 API Server used to secure Kubernetes Ingress 
+description: OpenID Connect (OIDC) & OAuth 2 API Server used to secure Kubernetes Ingress
 
 # A chart can be either an 'application' or a 'library' chart.
 #
