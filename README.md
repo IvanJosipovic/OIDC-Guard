@@ -4,7 +4,7 @@
 [![GitHub](https://img.shields.io/github/stars/ivanjosipovic/oidc-guard?style=social)](https://github.com/IvanJosipovic/oidc-guard)
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/oidc-guard)](https://artifacthub.io/packages/helm/oidc-guard/oidc-guard)
 
-OpenID Connect (OIDC) & OAuth 2 API Server for securing Kubernetes Ingress
+OpenID Connect (OIDC) & OAuth 2 API Server used to secure Kubernetes Ingress
 
 ## What is this?
 
