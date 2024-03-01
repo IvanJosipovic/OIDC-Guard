@@ -102,7 +102,7 @@ jobs:
 
     - name: Install Helm
       if: steps.semantic.outputs.new_release_published == 'true'
-      uses: azure/setup-helm@v3
+      uses: azure/setup-helm@v4
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
 
