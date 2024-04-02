@@ -110,7 +110,7 @@ public class EndToEndFixture : IDisposable
                             new()
                             {
                                 Name = ns.Name(),
-                                Image = "ghcr.io/soluto/oidc-server-mock:latest",
+                                Image = "ghcr.io/soluto/oidc-server-mock:0.8.6",
                                 Env = new List<V1EnvVar>()
                                 {
                                     new()
