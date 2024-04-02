@@ -19,7 +19,7 @@ ENV ASPNETCORE_URLS=http://+:8080
 LABEL org.opencontainers.image.description OpenID Connect (OIDC) & OAuth 2 API Server used to secure Kubernetes Ingress
 
 # renovate: datasource=repology depName=alpine_3_18/ca-certificates-bundle versioning=loose
-ENV CA_CERTIFICATES_BUNDLES_VERSION="20230506-r0"
+ENV CA_CERTIFICATES_BUNDLES_VERSION="20240226-r0"
 
 # renovate: datasource=repology depName=alpine_3_18/libgcc versioning=loose
 ENV LIBGCC_VERSION="12.2.1_git20220924-r10"
