@@ -1,6 +1,6 @@
 ARG BUILDPLATFORM=linux/amd64
 
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-alpine@sha256:b141e243684bd341229c0f9cddf185adffda918f423398fbc67a84fd676fd3d8 AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-alpine@sha256:c4273e19738132e5cf1038a273644cadb0aa8ab1932e9fb7ca5491025e0e07fe AS build
 RUN apk add build-base zlib-dev
 WORKDIR /src
 COPY oidc-guard.csproj .
@@ -12,7 +12,7 @@ FROM build AS publish
 ARG VERSION=0.0.1
 RUN dotnet publish "oidc-guard.csproj" -c Release --use-current-runtime -o /app/publish /p:Version=${VERSION}
 
-FROM mcr.microsoft.com/dotnet/runtime-deps:8.0-alpine@sha256:ddda904d7c75a25fd29d757fe6ee39ff85090a96ac7a3d0e3f1d7b74f691e821 AS base
+FROM mcr.microsoft.com/dotnet/runtime-deps:8.0-alpine@sha256:229bc631eb6e351fcbfa15e65be6af2ff6659f1bcec05c96e06f3557d1fb954f AS base
 WORKDIR /app
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
