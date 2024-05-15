@@ -29,6 +29,16 @@
         "tests/**",
         "benchmarks/**"
       ]
+    },
+    {
+      "matchUpdateTypes": ["major", "minor", "patch", "digest"],
+      "automerge": true,
+      "semanticCommitType": "fix",
+      "packageRules": [
+        {
+          "matchPackageNames": ["alpine_3_18/ca-certificates-bundle"]
+        }
+      ]
     }
   ],
   "customManagers": [
