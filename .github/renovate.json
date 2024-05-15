@@ -18,7 +18,8 @@
       "automerge": true,
       "semanticCommitType": "fix",
       "matchFileNames": [
-        "src/**"
+        "src/**",
+        "global.json"
       ]
     },
     {
@@ -26,8 +27,7 @@
       "automerge": true,
       "matchFileNames": [
         "tests/**",
-        "benchmarks/**",
-        "global.json"
+        "benchmarks/**"
       ]
     }
   ],
