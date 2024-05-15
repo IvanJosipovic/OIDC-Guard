@@ -20,7 +20,7 @@
     <PackageReference Include="IdentityModel.OidcClient" Version="6.0.0" />
     <PackageReference Include="KubernetesClient" Version="14.0.2" />
     <PackageReference Include="FluentAssertions" Version="6.12.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.5" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageReference Include="Microsoft.Playwright" Version="1.43.0" />
     <PackageReference Include="Moq" Version="4.20.70" />
@@ -30,7 +30,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="8.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="8.0.5" />
   </ItemGroup>
 
   <ItemGroup>
