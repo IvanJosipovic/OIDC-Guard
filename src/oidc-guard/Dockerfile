@@ -43,7 +43,7 @@ ENV LIBGCC_VERSION="13.2.1_git20231014-r0"
 ENV LIBSSL3_VERSION="3.1.5-r0"
 
 # renovate: datasource=repology depName=alpine_3_19/libstdc++ versioning=loose
-ENV LIBSTDC_VERSION="12.2.1_git20220924-r10"
+ENV LIBSTDC_VERSION="13.2.1_git20231014-r0"
 
 # renovate: datasource=repology depName=alpine_3_19/zlib versioning=loose
 ENV ZLIB_VERSION="1.3.1-r0"
