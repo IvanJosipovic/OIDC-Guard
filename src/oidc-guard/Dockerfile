@@ -46,7 +46,7 @@ ENV LIBSSL3_VERSION="3.1.5-r0"
 ENV LIBSTDC_VERSION="12.2.1_git20220924-r10"
 
 # renovate: datasource=repology depName=alpine_3_19/zlib versioning=loose
-ENV ZLIB_VERSION="1.2.13-r1"
+ENV ZLIB_VERSION="1.3.1-r0"
 
 RUN apk add --upgrade --no-cache \
         ca-certificates-bundle>$CA_CERTIFICATES_BUNDLES_VERSION \
