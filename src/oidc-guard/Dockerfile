@@ -21,6 +21,21 @@ LABEL org.opencontainers.image.description OpenID Connect (OIDC) & OAuth 2 API S
 # renovate: datasource=repology depName=alpine_3_18/ca-certificates-bundle versioning=loose
 ENV CA_CERTIFICATES_BUNDLES_VERSION="20240226-r0"
 
+# renovate: datasource=repology depName=alpine_3_18/busybox versioning=loose
+ENV BUSYBOX_VERSION="1.36.1-r18"
+
+# renovate: datasource=repology depName=alpine_3_18/busybox-binsh versioning=loose
+ENV BUSYBOX_BINSH_VERSION="1.36.1-r18"
+
+# renovate: datasource=repology depName=alpine_3_18/libc-utils versioning=loose
+ENV LIBC_UTILS_VERSION="0.7.2-r5"
+
+# renovate: datasource=repology depName=alpine_3_18/libcrypto3 versioning=loose
+ENV LIBCRYPTO3_VERSION="3.1.5-r0"
+
+# renovate: datasource=repology depName=alpine_3_18/ssl_client versioning=loose
+ENV SSL_VERSION="1.36.1-r18"
+
 # renovate: datasource=repology depName=alpine_3_18/libgcc versioning=loose
 ENV LIBGCC_VERSION="12.2.1_git20220924-r10"
 
@@ -35,6 +50,11 @@ ENV ZLIB_VERSION="1.2.13-r1"
 
 RUN apk add --upgrade --no-cache \
         ca-certificates-bundle>$CA_CERTIFICATES_BUNDLES_VERSION \
+        busybox>$BUSYBOX_BINSH_VERSION \
+        busybox-binsh>$BUSYBOX_BINSH_VERSION \
+        libc-utils>$LIBC_UTILS_VERSION \
+        libcrypto3>$LIBCRYPTO3_VERSION \
+        ssl_client>$SSL_VERSION \
         \
         # .NET dependencies
         libgcc>$LIBGCC_VERSION \
