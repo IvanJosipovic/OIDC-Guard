@@ -37,7 +37,7 @@ ENV LIBCRYPTO3_VERSION="3.1.5-r0"
 ENV SSL_VERSION="1.36.1-r18"
 
 # renovate: datasource=repology depName=alpine_3_19/libgcc versioning=loose
-ENV LIBGCC_VERSION="12.2.1_git20220924-r10"
+ENV LIBGCC_VERSION="13.2.1_git20231014-r0"
 
 # renovate: datasource=repology depName=alpine_3_19/libssl3 versioning=loose
 ENV LIBSSL3_VERSION="3.1.5-r0"
