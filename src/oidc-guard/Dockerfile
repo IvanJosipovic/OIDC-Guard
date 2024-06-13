@@ -25,7 +25,7 @@ ENV CA_CERTIFICATES_BUNDLES_VERSION="20240226-r0"
 ENV BUSYBOX_VERSION="1.36.1-r18"
 
 # renovate: datasource=repology depName=alpine_3_19/busybox-binsh versioning=loose
-ENV BUSYBOX_BINSH_VERSION="1.36.1-r18"
+ENV BUSYBOX_BINSH_VERSION="1.36.1-r19"
 
 # renovate: datasource=repology depName=alpine_3_19/libc-utils versioning=loose
 ENV LIBC_UTILS_VERSION="0.7.2-r5"
