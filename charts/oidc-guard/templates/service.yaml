@@ -11,5 +11,11 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    {{- if .Values.settings.sslCertSecretName }}
+    - port: {{ .Values.service.sslPort }}
+      targetPort: https
+      protocol: TCP
+      name: https
+    {{- end }}
   selector:
     {{- include "oidc-guard.selectorLabels" . | nindent 4 }}

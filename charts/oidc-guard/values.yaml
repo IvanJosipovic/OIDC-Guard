@@ -33,6 +33,10 @@ settings:
   # Log Level(Trace, Debug, Information, Warning, Error, Critical, and None)
   logLevel: Information
 
+  # Set the name of the secrets which contains the SSL certificate used for HTTPS
+  # The secret needs to have keys named tls.crt and tls.key
+  sslCertSecretName: ""
+
   cookie:
     # Enable Cookie based Authentication
     enable: true
@@ -144,6 +148,7 @@ securityContext:
 service:
   type: ClusterIP
   port: 8080
+  sslPort: 8443
 
 ingress:
   enabled: false

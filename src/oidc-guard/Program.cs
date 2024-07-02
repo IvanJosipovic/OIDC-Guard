@@ -14,6 +14,7 @@ using Microsoft.Net.Http.Headers;
 using oidc_guard.Services;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
@@ -32,6 +33,17 @@ public class Program
 
         var settings = builder.Configuration.GetSection("Settings").Get<Settings>()!;
         builder.Services.AddSingleton(settings);
+
+        builder.WebHost.ConfigureKestrel((context, serverOptions) =>
+        {
+            serverOptions.ConfigureHttpsDefaults(listenOptions =>
+            {
+                if (File.Exists("/app/ssl/tls.crt") && File.Exists("/app/ssl/tls.crt"))
+                {
+                    listenOptions.ServerCertificate = new X509Certificate2("/app/ssl/tls.crt", "/app/ssl/tls.key");
+                }
+            });
+        });
 
         builder.Services.ConfigureHttpJsonOptions(options =>
         {

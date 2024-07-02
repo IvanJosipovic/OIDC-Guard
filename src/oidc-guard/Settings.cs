@@ -10,6 +10,7 @@ public class Settings
     public string? Scheme { get; set; }
     public CookieAuthSettings Cookie { get; set; } = new();
     public JWTAuthSettings JWT { get; set; } = new();
+    public string? SslCertSecretName { get; set; }
 }
 
 public class CookieAuthSettings

@@ -41,9 +41,11 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+            {{- if .Values.settings.sslCertSecretName }}
             - name: https
               containerPort: 8443
               protocol: TCP
+            {{- end }}
           livenessProbe:
             httpGet:
               path: /health
@@ -61,12 +63,22 @@ spec:
               mountPath: /app/appsettings.Production.json
               subPath: appsettings.Production.json
               readOnly: true
+            {{- if .Values.settings.sslCertSecretName }}
+            - name: appsettings-ssl
+              mountPath: /app/ssl/
+              readOnly: true
+            {{- end }}
       volumes:
         - name: tmp-volume
           emptyDir: {}
         - name: appsettings-volume
           secret:
             secretName: {{ include "oidc-guard.fullname" . }}
+        {{- if .Values.settings.sslCertSecretName }}
+        - name: appsettings-ssl
+          secret:
+            secretName: "{{ .Values.settings.sslCertSecretName }}"
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

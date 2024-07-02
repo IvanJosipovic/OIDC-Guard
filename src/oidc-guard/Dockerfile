@@ -15,7 +15,8 @@ RUN dotnet publish "oidc-guard.csproj" -c Release --use-current-runtime -o /app/
 FROM mcr.microsoft.com/dotnet/runtime-deps:8.0-alpine@sha256:bcb4aacc08f790b321ab3984127e75a59243c8a1e528a4fa124740290306207e AS base
 WORKDIR /app
 EXPOSE 8080
-ENV ASPNETCORE_URLS=http://+:8080
+EXPOSE 8433
+ENV ASPNETCORE_URLS=http://+:8080;https://+:8433
 LABEL org.opencontainers.image.description OpenID Connect (OIDC) & OAuth 2 API Server used to secure Kubernetes Ingress
 
 # renovate: datasource=repology depName=alpine_3_19/ca-certificates-bundle versioning=loose
