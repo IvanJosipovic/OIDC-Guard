@@ -41,11 +41,9 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
-            {{- if .Values.settings.sslCertSecretName }}
             - name: https
               containerPort: 8443
               protocol: TCP
-            {{- end }}
           livenessProbe:
             httpGet:
               path: /health
