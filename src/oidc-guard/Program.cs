@@ -40,7 +40,7 @@ public class Program
         {
             serverOptions.ConfigureHttpsDefaults(listenOptions =>
             {
-                if (File.Exists("/app/ssl/tls.crt") && File.Exists("/app/ssl/tls.crt"))
+                if (File.Exists("/app/ssl/tls.crt") && File.Exists("/app/ssl/tls.key"))
                 {
                     listenOptions.ServerCertificate = X509Certificate2.CreateFromPemFile("/app/ssl/tls.crt", "/app/ssl/tls.key");
                 }
