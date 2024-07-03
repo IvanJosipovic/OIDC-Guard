@@ -24,16 +24,18 @@ settings:
 
   # Set host for http redirect used in the sign-in process
   # When not set will use the request headers host or X-Forwarded-Host
+  # Used only by Cookie Authentication
   host: ""
 
   # Set scheme for http redirect used in the sign-in process (http or https)
   # When not set, will accept header X-Forwarded-Proto
+  # Used only by Cookie Authentication
   scheme: ""
 
   # Log Level(Trace, Debug, Information, Warning, Error, Critical, and None)
   logLevel: Information
 
-  # Set the name of the secrets which contains the SSL certificate used for HTTPS
+  # Set the name of the secret which contains the SSL certificate used for HTTPS
   # The secret needs to have keys named tls.crt and tls.key
   sslCertSecretName: ""
 
