@@ -53,6 +53,12 @@ settings:
     # Client Secret
     clientSecret: ""
 
+    # Secret containing the Client Secret
+    clientSecretName: ""
+
+    # Key in the Secret that contains the Client Secret
+    clientSecretKey: ""
+
     # Cookie Domain (Defaults to the hostname of this app)
     cookieDomain: "test.com"
 

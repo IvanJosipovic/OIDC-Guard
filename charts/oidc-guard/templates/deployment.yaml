@@ -33,6 +33,13 @@ spec:
           env:
           - name: ASPNETCORE_ENVIRONMENT
             value: Production
+          {{- if .Values.settings.cookie.clientSecretName }}
+          - name: settings__cookie__clientSecret
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.settings.cookie.clientSecretName }}
+                key: {{ .Values.settings.cookie.clientSecretKey }}
+          {{- end }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
