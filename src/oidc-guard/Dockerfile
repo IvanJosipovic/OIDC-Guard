@@ -1,6 +1,6 @@
 ARG BUILDPLATFORM=linux/amd64
 
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-alpine@sha256:b27d134246ce9dab1ee4ec87254df381cec87caace66b6af764c0821a444c641 AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-alpine@sha256:6e8997576d16a6d7b4e6ba7ac0956d3ae46cb7a376581c40eabd20fbc5c28b8d AS build
 RUN apk add build-base zlib-dev
 WORKDIR /src
 COPY oidc-guard.csproj .
@@ -12,7 +12,7 @@ FROM build AS publish
 ARG VERSION=0.0.1
 RUN dotnet publish "oidc-guard.csproj" -c Release --use-current-runtime -o /app/publish /p:Version=${VERSION}
 
-FROM mcr.microsoft.com/dotnet/runtime-deps:8.0-alpine@sha256:47397ca36eaf0c2e417f6a1bc4ed9d9caf552d5fe9c88eadbcc06dc541e73dbd AS base
+FROM mcr.microsoft.com/dotnet/runtime-deps:8.0-alpine@sha256:074436add66234cb406bb1022c381265f8db0d8f578f0b2de578747d8b371d0d AS base
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8433
@@ -32,7 +32,7 @@ ENV BUSYBOX_BINSH_VERSION="1.36.1-r19"
 ENV LIBC_UTILS_VERSION="0.7.2-r5"
 
 # renovate: datasource=repology depName=alpine_3_19/libcrypto3 versioning=loose
-ENV LIBCRYPTO3_VERSION="3.1.6-r0"
+ENV LIBCRYPTO3_VERSION="3.1.6-r2"
 
 # renovate: datasource=repology depName=alpine_3_19/ssl_client versioning=loose
 ENV SSL_VERSION="1.36.1-r19"
@@ -41,7 +41,7 @@ ENV SSL_VERSION="1.36.1-r19"
 ENV LIBGCC_VERSION="13.2.1_git20231014-r0"
 
 # renovate: datasource=repology depName=alpine_3_19/libssl3 versioning=loose
-ENV LIBSSL3_VERSION="3.1.6-r0"
+ENV LIBSSL3_VERSION="3.1.6-r2"
 
 # renovate: datasource=repology depName=alpine_3_19/libstdc++ versioning=loose
 ENV LIBSTDC_VERSION="13.2.1_git20231014-r0"
