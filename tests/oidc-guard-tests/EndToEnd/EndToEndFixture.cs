@@ -21,7 +21,7 @@ public class EndToEndFixture : IDisposable
 
     public string Name { get; set; } = Guid.NewGuid().ToString();
 
-    public string Version { get; set; } = "kindest/node:v1.28.0";
+    public string Version { get; set; } = "kindest/node:v1.30.0";
 
     public Kubernetes Kubernetes { get; set; }
 

@@ -14,6 +14,9 @@ using Microsoft.Net.Http.Headers;
 using oidc_guard.Services;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
+using System.Net;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
@@ -32,6 +35,21 @@ public class Program
 
         var settings = builder.Configuration.GetSection("Settings").Get<Settings>()!;
         builder.Services.AddSingleton(settings);
+
+        builder.WebHost.ConfigureKestrel((context, serverOptions) =>
+        {
+            serverOptions.ConfigureHttpsDefaults(listenOptions =>
+            {
+                if (File.Exists("/app/ssl/tls.crt") && File.Exists("/app/ssl/tls.key"))
+                {
+                    listenOptions.ServerCertificate = X509Certificate2.CreateFromPemFile("/app/ssl/tls.crt", "/app/ssl/tls.key");
+                }
+                else
+                {
+                    listenOptions.ServerCertificate = GenerateSelfSignedServerCertificate();
+                }
+            });
+        });
 
         builder.Services.ConfigureHttpJsonOptions(options =>
         {
@@ -545,6 +563,32 @@ public class Program
         }
 
         return true;
+    }
+
+    private static X509Certificate2 GenerateSelfSignedServerCertificate()
+    {
+        var sanBuilder = new SubjectAlternativeNameBuilder();
+        sanBuilder.AddIpAddress(IPAddress.Loopback);
+        sanBuilder.AddIpAddress(IPAddress.IPv6Loopback);
+        sanBuilder.AddDnsName("localhost");
+        sanBuilder.AddDnsName("oidc-guard");
+
+        var distinguishedName = new X500DistinguishedName($"CN=oidc-guard");
+
+        using var rsa = RSA.Create(2048);
+
+        var request = new CertificateRequest(distinguishedName, rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1)
+        {
+            CertificateExtensions = {
+                new X509KeyUsageExtension(X509KeyUsageFlags.DataEncipherment | X509KeyUsageFlags.KeyEncipherment | X509KeyUsageFlags.DigitalSignature, false),
+                new X509EnhancedKeyUsageExtension([new Oid("1.3.6.1.5.5.7.3.1")], false),
+                sanBuilder.Build()
+            }
+        };
+
+        var certificate = request.CreateSelfSigned(new DateTimeOffset(DateTime.UtcNow.AddDays(-1)), new DateTimeOffset(DateTime.UtcNow.AddDays(3650)));
+
+        return new X509Certificate2(certificate.Export(X509ContentType.Pfx));
     }
 }
 
