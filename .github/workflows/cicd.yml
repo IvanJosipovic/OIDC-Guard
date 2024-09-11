@@ -41,7 +41,7 @@ jobs:
           sudo echo "127.0.0.1 oidc-server.oidc-server" | sudo tee -a /etc/hosts
 
     - name: Install Playwright
-      working-directory: tests/oidc-guard-tests/bin/Release/net8.0
+      working-directory: tests/oidc-guard-tests/bin/Release/net9.0
       run: ./playwright.ps1 install --with-deps
       shell: pwsh
 
