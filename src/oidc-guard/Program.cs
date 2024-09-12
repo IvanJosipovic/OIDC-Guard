@@ -86,13 +86,18 @@ public class Program
         {
             options.ForwardDefaultSelector = context =>
             {
-                string? authorization = context.Request.Headers.Authorization;
+                // If the request contains our cookie, we should prioritize it
+                if (settings.Cookie.Enable)
+                {
+                    string? cookie = context.Request.Headers.Cookie;
 
-                return settings.JWT.Enable && !string.IsNullOrEmpty(authorization) && authorization.StartsWith(JwtBearerDefaults.AuthenticationScheme + ' ')
-                    ? JwtBearerDefaults.AuthenticationScheme
-                    : settings.Cookie.Enable
-                        ? CookieAuthenticationDefaults.AuthenticationScheme
-                        : JwtBearerDefaults.AuthenticationScheme;
+                    if (!string.IsNullOrEmpty(cookie) && cookie.Contains(settings.Cookie.CookieName, StringComparison.Ordinal))
+                    {
+                        return CookieAuthenticationDefaults.AuthenticationScheme;
+                    }
+                }
+
+                return JwtBearerDefaults.AuthenticationScheme;
             };
         });
 
