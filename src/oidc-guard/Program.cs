@@ -86,18 +86,18 @@ public class Program
         {
             options.ForwardDefaultSelector = context =>
             {
-                // If the request contains our cookie, we should prioritize it
                 if (settings.Cookie.Enable)
                 {
                     string? cookie = context.Request.Headers.Cookie;
 
+                    // If the request contains our cookie, we should prioritize it
                     if (!string.IsNullOrEmpty(cookie) && cookie.Contains(settings.Cookie.CookieName, StringComparison.Ordinal))
                     {
                         return CookieAuthenticationDefaults.AuthenticationScheme;
                     }
                 }
 
-                return JwtBearerDefaults.AuthenticationScheme;
+                return settings.JWT.Enable ? JwtBearerDefaults.AuthenticationScheme : CookieAuthenticationDefaults.AuthenticationScheme;
             };
         });
 
