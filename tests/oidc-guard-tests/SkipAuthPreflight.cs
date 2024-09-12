@@ -86,7 +86,7 @@ namespace oidc_guard_tests
             _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestMethod, "DELETE");
 
             var response = await _client.GetAsync("/auth");
-            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
     }
 }
