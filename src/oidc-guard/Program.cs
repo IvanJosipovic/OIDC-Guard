@@ -260,7 +260,6 @@ public class Program
 
             if (settings.SkipAuthPreflight &&
                 GetOriginalMethod(httpContext.Request.Headers) == HttpMethod.Options.Method &&
-                !StringValues.IsNullOrEmpty(httpContext.Request.Headers.AccessControlRequestHeaders) &&
                 !StringValues.IsNullOrEmpty(httpContext.Request.Headers.AccessControlRequestMethod) &&
                 !StringValues.IsNullOrEmpty(httpContext.Request.Headers.Origin))
             {
