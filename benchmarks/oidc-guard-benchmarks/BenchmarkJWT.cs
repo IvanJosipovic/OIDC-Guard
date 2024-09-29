@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Jobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using oidc_guard_tests.Infra;
@@ -7,6 +8,8 @@ using System.Security.Claims;
 namespace oidc_guard_benchmarks;
 
 [MemoryDiagnoser]
+[SimpleJob(RuntimeMoniker.Net90, baseline: true)]
+[SimpleJob(RuntimeMoniker.NativeAot90)]
 public class BenchmarkJWT
 {
     private HttpClient client = default!;
