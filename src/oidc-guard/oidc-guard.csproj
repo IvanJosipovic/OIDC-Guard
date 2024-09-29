@@ -16,6 +16,7 @@
     <PublishIISAssets>false</PublishIISAssets>
     <TrimmerSingleWarn>false</TrimmerSingleWarn>
     <OptimizationPreference>Speed</OptimizationPreference>
+    <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
