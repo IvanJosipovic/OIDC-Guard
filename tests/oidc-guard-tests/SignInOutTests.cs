@@ -55,6 +55,14 @@ namespace oidc_guard_tests
             response.StatusCode.Should().Be(HttpStatusCode.Found);
 
             _client.DefaultRequestHeaders.Clear();
+            if (response.Headers.TryGetValues("Set-Cookie", out var values))
+            {
+                SetCookieHeaderValue.ParseList(values.ToList()).ToList().ForEach(cookie =>
+                {
+                    _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Cookie, new CookieHeaderValue(cookie.Name, cookie.Value).ToString());
+                });
+            }
+
             _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Cookie, response.Headers.GetValues("Set-Cookie"));
             _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, "Bearer fake");
 
@@ -63,7 +71,13 @@ namespace oidc_guard_tests
             response2.Headers.Location.Should().Be("/auth");
 
             _client.DefaultRequestHeaders.Clear();
-            _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Cookie, response2.Headers.GetValues("Set-Cookie"));
+            if (response2.Headers.TryGetValues("Set-Cookie", out var values2))
+            {
+                SetCookieHeaderValue.ParseList(values2.ToList()).ToList().ForEach(cookie =>
+                {
+                    _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Cookie, new CookieHeaderValue(cookie.Name, cookie.Value).ToString());
+                });
+            }
             _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, "Bearer fake");
 
             var response3 = await _client.GetAsync(response2.Headers.Location);
@@ -84,15 +98,23 @@ namespace oidc_guard_tests
             response.StatusCode.Should().Be(HttpStatusCode.Found);
 
             _client.DefaultRequestHeaders.Clear();
-            _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Cookie, response.Headers.GetValues("Set-Cookie"));
+            if (response.Headers.TryGetValues(HeaderNames.SetCookie, out var values))
+            {
+                var setCookie = SetCookieHeaderValue.ParseList(values.ToList());
 
+            }
             var response2 = await _client.GetAsync(response.Headers.Location);
             response2.StatusCode.Should().Be(HttpStatusCode.Found);
             response2.Headers.Location.Should().Be("/auth");
 
             _client.DefaultRequestHeaders.Clear();
-            _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Cookie, response2.Headers.GetValues("Set-Cookie"));
-
+            if (response2.Headers.TryGetValues("Set-Cookie", out var values2))
+            {
+                SetCookieHeaderValue.ParseList(values2.ToList()).ToList().ForEach(cookie =>
+                {
+                    _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Cookie, new CookieHeaderValue(cookie.Name, cookie.Value).ToString());
+                });
+            }
             var response3 = await _client.GetAsync(response2.Headers.Location);
             response3.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -100,8 +122,13 @@ namespace oidc_guard_tests
             response4.StatusCode.Should().Be(HttpStatusCode.Found);
 
             _client.DefaultRequestHeaders.Clear();
-            _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Cookie, response4.Headers.GetValues("Set-Cookie"));
-
+            if (response3.Headers.TryGetValues("Set-Cookie", out var values3))
+            {
+                SetCookieHeaderValue.ParseList(values3.ToList()).ToList().ForEach(cookie =>
+                {
+                    _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Cookie, new CookieHeaderValue(cookie.Name, cookie.Value).ToString());
+                });
+            }
             var response5 = await _client.GetAsync(response4.Headers.Location);
             response5.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
@@ -195,8 +222,13 @@ namespace oidc_guard_tests
             if (status == HttpStatusCode.Found)
             {
                 client.DefaultRequestHeaders.Clear();
-                client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Cookie, response.Headers.GetValues("Set-Cookie"));
-
+                if (response.Headers.TryGetValues("Set-Cookie", out var values))
+                {
+                    SetCookieHeaderValue.ParseList(values.ToList()).ToList().ForEach(cookie =>
+                    {
+                        client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Cookie, new CookieHeaderValue(cookie.Name, cookie.Value).ToString());
+                    });
+                }
                 var response2 = await client.GetAsync(response.Headers.Location);
                 response2.StatusCode.Should().Be(HttpStatusCode.Found);
                 response2.Headers.Location.Should().Be(query);

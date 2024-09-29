@@ -88,10 +88,10 @@ public class Program
             {
                 if (settings.Cookie.Enable)
                 {
-                    string? cookie = context.Request.Headers.Cookie;
+                    var cookies = CookieHeaderValue.ParseList(context.Request.Headers.Cookie);
 
                     // If the request contains our cookie, we should prioritize it
-                    if (!string.IsNullOrEmpty(cookie) && cookie.Contains(settings.Cookie.CookieName, StringComparison.Ordinal))
+                    if (cookies.Count > 0 && cookies.Any(x => x.Name == settings.Cookie.CookieName))
                     {
                         return CookieAuthenticationDefaults.AuthenticationScheme;
                     }
