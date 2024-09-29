@@ -181,12 +181,20 @@ public class Program
         builder.Services.AddHttpLogging(logging =>
         {
             logging.RequestHeaders.Add(CustomHeaderNames.XAuthRequestRedirect);
+            logging.RequestHeaders.Add(CustomHeaderNames.XForwardedFor);
             logging.RequestHeaders.Add(CustomHeaderNames.XForwardedHost);
             logging.RequestHeaders.Add(CustomHeaderNames.XForwardedMethod);
+            logging.RequestHeaders.Add(CustomHeaderNames.XForwardedPort);
             logging.RequestHeaders.Add(CustomHeaderNames.XForwardedProto);
+            logging.RequestHeaders.Add(CustomHeaderNames.XForwardedScheme);
             logging.RequestHeaders.Add(CustomHeaderNames.XForwardedUri);
+            logging.RequestHeaders.Add(CustomHeaderNames.XOriginalForwardedFor);
             logging.RequestHeaders.Add(CustomHeaderNames.XOriginalMethod);
             logging.RequestHeaders.Add(CustomHeaderNames.XOriginalUrl);
+            logging.RequestHeaders.Add(CustomHeaderNames.XRealIP);
+            logging.RequestHeaders.Add(CustomHeaderNames.XRequestID);
+            logging.RequestHeaders.Add(CustomHeaderNames.XScheme);
+            logging.RequestHeaders.Add(CustomHeaderNames.XSentFrom);
             logging.RequestHeaders.Add(HeaderNames.AccessControlRequestHeaders);
             logging.RequestHeaders.Add(HeaderNames.AccessControlRequestMethod);
             logging.RequestHeaders.Add(HeaderNames.Origin);
