@@ -1,6 +1,6 @@
 ARG BUILDPLATFORM=linux/amd64
 
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-alpine@sha256:0062dac82deeedd731b8b709c4e7fc6ce1060d376b00edabcb937fa27c2add1e AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0-alpine@sha256:06735caeda36e5026cdd89e47700b3c9d70fd6b558f71f835b4f0d1d3f3581d8 AS build
 RUN apk add build-base zlib-dev
 WORKDIR /src
 COPY oidc-guard.csproj .
@@ -12,7 +12,7 @@ FROM build AS publish
 ARG VERSION=0.0.1
 RUN dotnet publish "oidc-guard.csproj" -c Release --use-current-runtime -o /app/publish /p:Version=${VERSION}
 
-FROM mcr.microsoft.com/dotnet/runtime-deps:8.0-alpine@sha256:90659eefcb847ac52d993f70f65e48db955af435d555d22c5af2368fa94989cd AS base
+FROM mcr.microsoft.com/dotnet/runtime-deps:9.0-alpine@sha256:737dcd8ab926449aac55db5bae0e1d9e6b2ae789befed5cba492b5981e1ebc48 AS base
 WORKDIR /app
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
@@ -45,9 +45,6 @@ ENV LIBSSL3_VERSION="3.1.7-r0"
 # renovate: datasource=repology depName=alpine_3_19/libstdc++ versioning=loose
 ENV LIBSTDC_VERSION="13.2.1_git20231014-r0"
 
-# renovate: datasource=repology depName=alpine_3_19/zlib versioning=loose
-ENV ZLIB_VERSION="1.3.1-r0"
-
 RUN apk add --upgrade --no-cache \
         ca-certificates-bundle>$CA_CERTIFICATES_BUNDLES_VERSION \
         busybox>$BUSYBOX_BINSH_VERSION \
@@ -59,8 +56,7 @@ RUN apk add --upgrade --no-cache \
         # .NET dependencies
         libgcc>$LIBGCC_VERSION \
         libssl3>$LIBSSL3_VERSION \
-        libstdc++>$LIBSTDC_VERSION \
-        zlib>$ZLIB_VERSION
+        libstdc++>$LIBSTDC_VERSION
 
 USER app
 
