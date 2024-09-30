@@ -195,9 +195,10 @@ public class Program
             logging.RequestHeaders.Add(CustomHeaderNames.XRequestID);
             logging.RequestHeaders.Add(CustomHeaderNames.XScheme);
             logging.RequestHeaders.Add(CustomHeaderNames.XSentFrom);
-            logging.RequestHeaders.Add(HeaderNames.AccessControlRequestHeaders);
-            logging.RequestHeaders.Add(HeaderNames.AccessControlRequestMethod);
+            logging.RequestHeaders.Add(HeaderNames.Referer);
             logging.RequestHeaders.Add(HeaderNames.Origin);
+            logging.RequestHeaders.Add(HeaderNames.AccessControlRequestMethod);
+            logging.RequestHeaders.Add(HeaderNames.AccessControlRequestHeaders);
         });
 
         builder.Services.AddAuthorization();
