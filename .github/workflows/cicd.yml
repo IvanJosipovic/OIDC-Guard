@@ -55,9 +55,6 @@ jobs:
         file: coverage.cobertura.xml
         fail_ci_if_error: true
 
-    - name: Benchmark
-      working-directory: benchmarks/oidc-guard-benchmarks
-      run: dotnet run -c Release
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
@@ -69,11 +66,20 @@ jobs:
         vuln-type: 'os,library'
         severity: 'CRITICAL,HIGH'
 
+  benchmark:
+    name: Create Release
+    runs-on: windows-latest
+    needs: build-test
+    steps:
+    - name: Benchmark
+      working-directory: benchmarks/oidc-guard-benchmarks
+      run: dotnet run -c Release
+
   create-release:
     if: ${{ github.event_name != 'pull_request' }}
     name: Create Release
     runs-on: ubuntu-latest
-    needs: build-test
+    needs: [build-test, benchmark]
     steps:
     - uses: actions/checkout@v4
 
