@@ -36,7 +36,7 @@
       "semanticCommitType": "fix",
       "packageRules": [
         {
-          "matchPackageNames": ["alpine_3_19/ca-certificates-bundle"]
+          "matchPackageNames": ["alpine_*/ca-certificates-bundle"]
         }
       ]
     }
