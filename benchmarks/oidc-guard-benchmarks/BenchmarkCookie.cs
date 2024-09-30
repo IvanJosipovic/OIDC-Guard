@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Jobs;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using oidc_guard_tests.Infra;
@@ -6,7 +7,10 @@ using System.Net;
 
 namespace oidc_guard_benchmarks;
 
+[JsonExporterAttribute.FullCompressed]
 [MemoryDiagnoser]
+[SimpleJob(RuntimeMoniker.Net90, baseline: true)]
+[SimpleJob(RuntimeMoniker.NativeAot90)]
 public class BenchmarkCookie
 {
     private HttpClient client = default!;

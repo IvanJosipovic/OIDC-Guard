@@ -98,7 +98,7 @@ namespace oidc_guard_tests
         }
 
         //[Fact]
-        public async Task OIDC()
+        private async Task OIDC()
         {
             using var playwright = await Playwright.CreateAsync();
 

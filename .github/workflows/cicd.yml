@@ -12,6 +12,12 @@ on:
     types: [opened, reopened, synchronize]
   merge_group:
 
+permissions:
+  # deployments permission to deploy GitHub pages website
+  deployments: write
+  # contents permission to update benchmark contents in gh-pages branch
+  contents: write
+
 jobs:
   build-test:
     name: Build & Test
@@ -55,9 +61,32 @@ jobs:
         file: coverage.cobertura.xml
         fail_ci_if_error: true
 
-    - name: Benchmark
+    - name: Publish Benchmark
       working-directory: benchmarks/oidc-guard-benchmarks
-      run: dotnet run -c Release
+      run: dotnet publish -c Release -o bin/publish
+
+    - name: Chmod Benchmark
+      working-directory: benchmarks/oidc-guard-benchmarks/bin/publish
+      run: chmod +x oidc-guard-benchmarks
+
+    - name: Run Benchmark
+      working-directory: benchmarks/oidc-guard-benchmarks/bin/publish
+      run: ./oidc-guard-benchmarks
+
+    - name: Store benchmark result
+      if: github.ref == 'refs/heads/main'
+      uses: benchmark-action/github-action-benchmark@v1
+      with:
+        name: Benchmark.Net Benchmark
+        tool: 'benchmarkdotnet'
+        output-file-path: benchmarks/oidc-guard-benchmarks/bin/publish/BenchmarkDotNet.Artifacts/results/Sample.Benchmarks-report-full-compressed.json
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        auto-push: true
+        # Show alert with commit comment on detecting possible performance regression
+        alert-threshold: '120%'
+        comment-on-alert: true
+        fail-on-alert: false
+        alert-comment-cc-users: '@IvanJosipovic'
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
@@ -73,7 +102,7 @@ jobs:
     if: ${{ github.event_name != 'pull_request' }}
     name: Create Release
     runs-on: ubuntu-latest
-    needs: build-test
+    needs: [build-test]
     steps:
     - uses: actions/checkout@v4
 

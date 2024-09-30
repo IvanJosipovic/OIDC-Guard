@@ -2,20 +2,22 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-    <Nullable>enable</Nullable>
+    <EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
+    <EnableRequestDelegateGenerator>true</EnableRequestDelegateGenerator>
     <ImplicitUsings>enable</ImplicitUsings>
     <InvariantGlobalization>true</InvariantGlobalization>
-    <RootNamespace>oidc_guard</RootNamespace>
-    <UserSecretsId>a70c2d04-572e-41af-8710-66bacf303453</UserSecretsId>
-    <PublishReadyToRun>true</PublishReadyToRun>
-    <EnableRequestDelegateGenerator>true</EnableRequestDelegateGenerator>
-    <EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
     <IsAotCompatible>true</IsAotCompatible>
-    <PublishAot>true</PublishAot>
     <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
-    <PublishIISAssets>false</PublishIISAssets>
-    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <Nullable>enable</Nullable>
     <OptimizationPreference>Speed</OptimizationPreference>
+    <PublishAot>false</PublishAot>
+    <PublishIISAssets>false</PublishIISAssets>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <RootNamespace>oidc_guard</RootNamespace>
+    <SelfContained>true</SelfContained>
+    <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <UserSecretsId>a70c2d04-572e-41af-8710-66bacf303453</UserSecretsId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
