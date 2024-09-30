@@ -71,7 +71,7 @@ jobs:
 
     - name: Run Benchmark
       working-directory: benchmarks/oidc-guard-benchmarks/bin/publish
-      run: oidc-guard-benchmarks
+      run: ./oidc-guard-benchmarks
 
     - name: Store benchmark result
       if: github.ref == 'refs/heads/main'
