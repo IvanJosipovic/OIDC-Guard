@@ -27,9 +27,6 @@ ENV BUSYBOX_VERSION="1.36.1-r29"
 # renovate: datasource=repology depName=alpine_3_20/busybox-binsh versioning=loose
 ENV BUSYBOX_BINSH_VERSION="1.36.1-r29"
 
-# renovate: datasource=repology depName=alpine_3_20/libc-utils versioning=loose
-ENV LIBC_UTILS_VERSION="0.7.2-r5"
-
 # renovate: datasource=repology depName=alpine_3_20/libcrypto3 versioning=loose
 ENV LIBCRYPTO3_VERSION="3.3.2-r0"
 
@@ -49,7 +46,6 @@ RUN apk add --upgrade --no-cache \
         ca-certificates-bundle>$CA_CERTIFICATES_BUNDLES_VERSION \
         busybox>$BUSYBOX_BINSH_VERSION \
         busybox-binsh>$BUSYBOX_BINSH_VERSION \
-        libc-utils>$LIBC_UTILS_VERSION \
         libcrypto3>$LIBCRYPTO3_VERSION \
         ssl_client>$SSL_VERSION \
         \
