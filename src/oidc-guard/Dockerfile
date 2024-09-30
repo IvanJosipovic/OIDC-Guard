@@ -18,31 +18,31 @@ EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
 LABEL org.opencontainers.image.description OpenID Connect (OIDC) & OAuth 2 API Server used to secure Kubernetes Ingress
 
-# renovate: datasource=repology depName=alpine_3_19/ca-certificates-bundle versioning=loose
+# renovate: datasource=repology depName=alpine_3_20/ca-certificates-bundle versioning=loose
 ENV CA_CERTIFICATES_BUNDLES_VERSION="20240226-r0"
 
-# renovate: datasource=repology depName=alpine_3_19/busybox versioning=loose
+# renovate: datasource=repology depName=alpine_3_20/busybox versioning=loose
 ENV BUSYBOX_VERSION="1.36.1-r19"
 
-# renovate: datasource=repology depName=alpine_3_19/busybox-binsh versioning=loose
+# renovate: datasource=repology depName=alpine_3_20/busybox-binsh versioning=loose
 ENV BUSYBOX_BINSH_VERSION="1.36.1-r19"
 
-# renovate: datasource=repology depName=alpine_3_19/libc-utils versioning=loose
+# renovate: datasource=repology depName=alpine_3_20/libc-utils versioning=loose
 ENV LIBC_UTILS_VERSION="0.7.2-r5"
 
-# renovate: datasource=repology depName=alpine_3_19/libcrypto3 versioning=loose
+# renovate: datasource=repology depName=alpine_3_20/libcrypto3 versioning=loose
 ENV LIBCRYPTO3_VERSION="3.1.7-r0"
 
-# renovate: datasource=repology depName=alpine_3_19/ssl_client versioning=loose
+# renovate: datasource=repology depName=alpine_3_20/ssl_client versioning=loose
 ENV SSL_VERSION="1.36.1-r19"
 
-# renovate: datasource=repology depName=alpine_3_19/libgcc versioning=loose
+# renovate: datasource=repology depName=alpine_3_20/libgcc versioning=loose
 ENV LIBGCC_VERSION="13.2.1_git20231014-r0"
 
-# renovate: datasource=repology depName=alpine_3_19/libssl3 versioning=loose
+# renovate: datasource=repology depName=alpine_3_20/libssl3 versioning=loose
 ENV LIBSSL3_VERSION="3.1.7-r0"
 
-# renovate: datasource=repology depName=alpine_3_19/libstdc++ versioning=loose
+# renovate: datasource=repology depName=alpine_3_20/libstdc++ versioning=loose
 ENV LIBSTDC_VERSION="13.2.1_git20231014-r0"
 
 RUN apk add --upgrade --no-cache \
