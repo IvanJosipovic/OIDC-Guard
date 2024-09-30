@@ -55,6 +55,27 @@ jobs:
         file: coverage.cobertura.xml
         fail_ci_if_error: true
 
+    - name: Publish Benchmark
+      working-directory: benchmarks/oidc-guard-benchmarks
+      run: dotnet publish -c Release -o bin/publish
+
+    - name: Run Benchmark
+      working-directory: benchmarks/oidc-guard-benchmarks/bin/publish
+      run: oidc-guard-benchmarks
+
+    - name: Store benchmark result
+      uses: benchmark-action/github-action-benchmark@v1
+      with:
+        name: Benchmark.Net Benchmark
+        tool: 'benchmarkdotnet'
+        output-file-path: benchmarks/oidc-guard-benchmarks/bin/publish/BenchmarkDotNet.Artifacts/results/Sample.Benchmarks-report-full-compressed.json
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        auto-push: true
+        # Show alert with commit comment on detecting possible performance regression
+        alert-threshold: '200%'
+        comment-on-alert: true
+        fail-on-alert: false
+        alert-comment-cc-users: '@IvanJosipovic'
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
@@ -65,22 +86,6 @@ jobs:
         ignore-unfixed: true
         vuln-type: 'os,library'
         severity: 'CRITICAL,HIGH'
-
-  benchmark:
-    name: Benchmark
-    runs-on: windows-latest
-    needs: build-test
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v4
-      with:
-        global-json-file: global.json
-
-    - name: Benchmark
-      working-directory: benchmarks/oidc-guard-benchmarks
-      run: dotnet run -c Release
 
   create-release:
     if: ${{ github.event_name != 'pull_request' }}
