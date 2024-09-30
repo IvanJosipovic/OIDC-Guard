@@ -12,12 +12,6 @@ on:
     types: [opened, reopened, synchronize]
   merge_group:
 
-permissions:
-  # deployments permission to deploy GitHub pages website
-  deployments: write
-  # contents permission to update benchmark contents in gh-pages branch
-  contents: write
-
 jobs:
   build-test:
     name: Build & Test
