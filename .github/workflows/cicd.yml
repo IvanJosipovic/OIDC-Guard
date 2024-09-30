@@ -67,7 +67,7 @@ jobs:
         severity: 'CRITICAL,HIGH'
 
   benchmark:
-    name: Create Release
+    name: Benchmark
     runs-on: windows-latest
     needs: build-test
     steps:
