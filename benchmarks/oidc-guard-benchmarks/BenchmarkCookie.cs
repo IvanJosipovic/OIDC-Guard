@@ -7,7 +7,6 @@ using System.Net;
 
 namespace oidc_guard_benchmarks;
 
-[JsonExporterAttribute.Full]
 [JsonExporterAttribute.FullCompressed]
 [MemoryDiagnoser]
 [SimpleJob(RuntimeMoniker.Net90, baseline: true)]

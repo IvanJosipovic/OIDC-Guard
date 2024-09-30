@@ -12,6 +12,12 @@ on:
     types: [opened, reopened, synchronize]
   merge_group:
 
+permissions:
+  # deployments permission to deploy GitHub pages website
+  deployments: write
+  # contents permission to update benchmark contents in gh-pages branch
+  contents: write
+
 jobs:
   build-test:
     name: Build & Test
@@ -59,15 +65,16 @@ jobs:
       working-directory: benchmarks/oidc-guard-benchmarks
       run: dotnet publish -c Release -o bin/publish
 
-    - name: Run Benchmark
+    - name: Chmod Benchmark
       working-directory: benchmarks/oidc-guard-benchmarks/bin/publish
-      run: ls
+      run: chmod +x oidc-guard-benchmarks
 
     - name: Run Benchmark
       working-directory: benchmarks/oidc-guard-benchmarks/bin/publish
       run: oidc-guard-benchmarks
 
     - name: Store benchmark result
+      if: github.ref == 'refs/heads/main'
       uses: benchmark-action/github-action-benchmark@v1
       with:
         name: Benchmark.Net Benchmark
@@ -76,7 +83,7 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         auto-push: true
         # Show alert with commit comment on detecting possible performance regression
-        alert-threshold: '200%'
+        alert-threshold: '120%'
         comment-on-alert: true
         fail-on-alert: false
         alert-comment-cc-users: '@IvanJosipovic'
