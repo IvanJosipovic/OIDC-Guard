@@ -71,6 +71,13 @@ jobs:
     runs-on: windows-latest
     needs: build-test
     steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        global-json-file: global.json
+
     - name: Benchmark
       working-directory: benchmarks/oidc-guard-benchmarks
       run: dotnet run -c Release
