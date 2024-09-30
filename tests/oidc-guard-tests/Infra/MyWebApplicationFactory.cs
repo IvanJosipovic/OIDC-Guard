@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using oidc_guard;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace oidc_guard_tests.Infra;
 
@@ -20,10 +21,20 @@ internal class MyWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TEnt
     {
         builder.ConfigureHostConfiguration(config =>
         {
-            var data = new { Settings = settings };
+            var data = new SettingsObject { Settings = settings };
 
-            config.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(data))));
+            config.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(data, typeof(SettingsObject), FactoryJsonSerializerContext.Default))));
         });
         return base.CreateHost(builder);
     }
+}
+
+public class SettingsObject
+{
+    public Settings Settings { get; set; }
+}
+
+[JsonSerializable(typeof(SettingsObject))]
+internal partial class FactoryJsonSerializerContext : JsonSerializerContext
+{
 }

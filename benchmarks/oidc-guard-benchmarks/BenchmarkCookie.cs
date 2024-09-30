@@ -7,7 +7,7 @@ using System.Net;
 
 namespace oidc_guard_benchmarks;
 
-[MemoryDiagnoser()]
+[MemoryDiagnoser]
 [SimpleJob(RuntimeMoniker.Net90, baseline: true)]
 [SimpleJob(RuntimeMoniker.NativeAot90)]
 public class BenchmarkCookie

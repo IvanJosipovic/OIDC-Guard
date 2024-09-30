@@ -11,12 +11,14 @@
     <EnableRequestDelegateGenerator>true</EnableRequestDelegateGenerator>
     <EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
     <IsAotCompatible>true</IsAotCompatible>
-    <PublishAot>true</PublishAot>
+    <PublishAot>false</PublishAot>
+    <SelfContained>true</SelfContained>
     <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
     <PublishIISAssets>false</PublishIISAssets>
     <TrimmerSingleWarn>false</TrimmerSingleWarn>
     <OptimizationPreference>Speed</OptimizationPreference>
     <IsAotCompatible>true</IsAotCompatible>
+    <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
