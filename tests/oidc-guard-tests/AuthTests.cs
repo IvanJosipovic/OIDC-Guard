@@ -5,6 +5,7 @@ using oidc_guard;
 using oidc_guard.Services;
 using oidc_guard_tests.Infra;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json;
@@ -86,7 +87,11 @@ public class AuthTests
             {
                 "?tid=11111111-1111-1111-1111-111111111111",
                 new List<Claim>(),
-                HttpStatusCode.Unauthorized
+                HttpStatusCode.Unauthorized,
+                new List<KeyValuePair<string, string>>()
+                {
+                    new(HeaderNames.WWWAuthenticate, "Bearer error=\"invalid_token\", error_description=\"Missing Claim [tid, 11111111-1111-1111-1111-111111111111]\"")
+                }
             },
             new object[]
             {
@@ -95,13 +100,21 @@ public class AuthTests
                 {
                     new Claim("tid", "22222222-2222-2222-2222-222222222222")
                 },
-                HttpStatusCode.Unauthorized
+                HttpStatusCode.Unauthorized,
+                new List<KeyValuePair<string, string>>()
+                {
+                    new(HeaderNames.WWWAuthenticate, "Bearer error=\"invalid_token\", error_description=\"Missing Claim [tid, 11111111-1111-1111-1111-111111111111]\"")
+                }
             },
             new object[]
             {
                 "?tid=11111111-1111-1111-1111-111111111111&aud=22222222-2222-2222-2222-222222222222&aud=33333333-3333-3333-3333-333333333333",
                 new List<Claim>(),
-                HttpStatusCode.Unauthorized
+                HttpStatusCode.Unauthorized,
+                new List<KeyValuePair<string, string>>()
+                {
+                    new(HeaderNames.WWWAuthenticate, "Bearer error=\"invalid_token\", error_description=\"Missing Claim [tid, 11111111-1111-1111-1111-111111111111]\"")
+                }
             },
             new object[]
             {
@@ -110,7 +123,11 @@ public class AuthTests
                 {
                     new Claim("tid", "")
                 },
-                HttpStatusCode.Unauthorized
+                HttpStatusCode.Unauthorized,
+                new List<KeyValuePair<string, string>>()
+                {
+                    new(HeaderNames.WWWAuthenticate, "Bearer error=\"invalid_token\", error_description=\"Missing Claim [tid, 11111111-1111-1111-1111-111111111111]\"")
+                }
             },
         };
     }
@@ -124,9 +141,9 @@ public class AuthTests
                 "?groups=foo",
                 new List<Claim>
                 {
-                    new Claim("groups", "foo"),
-                    new Claim("groups", "bar"),
-                    new Claim("groups", "baz"),
+                    new("groups", "foo"),
+                    new("groups", "bar"),
+                    new("groups", "baz"),
                 },
                 HttpStatusCode.OK
             },
@@ -136,9 +153,9 @@ public class AuthTests
                 "?groups=bar",
                 new List<Claim>
                 {
-                    new Claim("groups", "foo"),
-                    new Claim("groups", "bar"),
-                    new Claim("groups", "baz"),
+                    new("groups", "foo"),
+                    new("groups", "bar"),
+                    new("groups", "baz"),
                 },
                 HttpStatusCode.OK
             },
@@ -148,9 +165,9 @@ public class AuthTests
                 "?groups=baz",
                 new List<Claim>
                 {
-                    new Claim("groups", "foo"),
-                    new Claim("groups", "bar"),
-                    new Claim("groups", "baz"),
+                    new("groups", "foo"),
+                    new("groups", "bar"),
+                    new("groups", "baz"),
                 },
                 HttpStatusCode.OK
             },
@@ -160,8 +177,8 @@ public class AuthTests
                 "?groups=baz",
                 new List<Claim>
                 {
-                    new Claim("groups", "foo"),
-                    new Claim("groups", "bar"),
+                    new("groups", "foo"),
+                    new("groups", "bar"),
                 },
                 HttpStatusCode.Unauthorized
             },
@@ -177,12 +194,12 @@ public class AuthTests
                 "?tid=11111111-1111-1111-1111-111111111111&inject-claim=tid",
                 new List<Claim>
                 {
-                    new Claim("tid", "11111111-1111-1111-1111-111111111111")
+                    new("tid", "11111111-1111-1111-1111-111111111111")
                 },
                 HttpStatusCode.OK,
-                new List<Claim>
+                new List<KeyValuePair<string,string>>
                 {
-                    new Claim("tid", "11111111-1111-1111-1111-111111111111")
+                    new("tid", "11111111-1111-1111-1111-111111111111")
                 }
             },
 
@@ -191,14 +208,14 @@ public class AuthTests
                 "?tid=11111111-1111-1111-1111-111111111111&inject-claim=tid&inject-claim=aud2",
                 new List<Claim>
                 {
-                    new Claim("tid", "11111111-1111-1111-1111-111111111111"),
-                    new Claim("aud2", "22222222-2222-2222-2222-222222222222"),
+                    new("tid", "11111111-1111-1111-1111-111111111111"),
+                    new("aud2", "22222222-2222-2222-2222-222222222222"),
                 },
                 HttpStatusCode.OK,
-                new List<Claim>
+                new List<KeyValuePair<string,string>>
                 {
-                    new Claim("tid", "11111111-1111-1111-1111-111111111111"),
-                    new Claim("aud2", "22222222-2222-2222-2222-222222222222"),
+                    new("tid", "11111111-1111-1111-1111-111111111111"),
+                    new("aud2", "22222222-2222-2222-2222-222222222222"),
                 }
             },
 
@@ -207,13 +224,13 @@ public class AuthTests
                 "?tid=11111111-1111-1111-1111-111111111111&inject-claim=tid,tenant",
                 new List<Claim>
                 {
-                    new Claim("tid", "11111111-1111-1111-1111-111111111111"),
-                    new Claim("aud", "22222222-2222-2222-2222-222222222222"),
+                    new("tid", "11111111-1111-1111-1111-111111111111"),
+                    new("aud", "22222222-2222-2222-2222-222222222222"),
                 },
                 HttpStatusCode.OK,
-                new List<Claim>
+                new List<KeyValuePair<string,string>>
                 {
-                    new Claim("tenant", "11111111-1111-1111-1111-111111111111")
+                    new("tenant", "11111111-1111-1111-1111-111111111111")
                 }
             },
 
@@ -222,14 +239,14 @@ public class AuthTests
                 "?tid=11111111-1111-1111-1111-111111111111&inject-claim=tid,tenant&inject-claim=aud2,audiance",
                 new List<Claim>
                 {
-                    new Claim("tid", "11111111-1111-1111-1111-111111111111"),
-                    new Claim("aud2", "22222222-2222-2222-2222-222222222222"),
+                    new("tid", "11111111-1111-1111-1111-111111111111"),
+                    new("aud2", "22222222-2222-2222-2222-222222222222"),
                 },
                 HttpStatusCode.OK,
-                new List<Claim>
+                new List<KeyValuePair<string,string>>
                 {
-                    new Claim("tenant", "11111111-1111-1111-1111-111111111111"),
-                    new Claim("audiance", "22222222-2222-2222-2222-222222222222"),
+                    new("tenant", "11111111-1111-1111-1111-111111111111"),
+                    new("audiance", "22222222-2222-2222-2222-222222222222"),
                 }
             },
 
@@ -238,15 +255,15 @@ public class AuthTests
                 "?tid=11111111-1111-1111-1111-111111111111&inject-claim=groups",
                 new List<Claim>
                 {
-                    new Claim("tid", "11111111-1111-1111-1111-111111111111"),
-                    new Claim("aud", "22222222-2222-2222-2222-222222222222"),
-                    new Claim("groups", "admin"),
-                    new Claim("groups", "viewer"),
+                    new("tid", "11111111-1111-1111-1111-111111111111"),
+                    new("aud", "22222222-2222-2222-2222-222222222222"),
+                    new("groups", "admin"),
+                    new("groups", "viewer"),
                 },
                 HttpStatusCode.OK,
-                new List<Claim>
+                new List<KeyValuePair<string,string>>
                 {
-                    new Claim("groups", "admin, viewer"),
+                    new("groups", "admin, viewer"),
                 }
             },
 
@@ -255,7 +272,7 @@ public class AuthTests
                 "?tid=11111111-1111-1111-1111-111111111111&inject-claim=group",
                 new List<Claim>
                 {
-                    new Claim("tid", "11111111-1111-1111-1111-111111111111")
+                    new("tid", "11111111-1111-1111-1111-111111111111")
                 },
                 HttpStatusCode.OK
             },
@@ -265,8 +282,8 @@ public class AuthTests
                 "?tid=11111111-1111-1111-1111-111111111111&inject-claim=group,group",
                 new List<Claim>
                 {
-                    new Claim("tid", "11111111-1111-1111-1111-111111111111"),
-                    new Claim("aud", "22222222-2222-2222-2222-222222222222"),
+                    new("tid", "11111111-1111-1111-1111-111111111111"),
+                    new("aud", "22222222-2222-2222-2222-222222222222"),
                 },
                 HttpStatusCode.OK
             },
@@ -276,13 +293,13 @@ public class AuthTests
                 "?tid=11111111-1111-1111-1111-111111111111&inject-json-claim=role,gcip,$.firebase.sign_in_attributes.role",
                 new List<Claim>
                 {
-                    new Claim("tid", "11111111-1111-1111-1111-111111111111"),
-                    new Claim("gcip", "{\"auth_time\":1553219869,\"email\":\"demo_user@gmail.com\",\"email_verified\":true,\"firebase\":{\"identities\":{\"email\":[\"demo_user@gmail.com\"],\"saml.myProvider\":[\"demo_user@gmail.com\"]},\"sign_in_attributes\":{\"firstname\":\"John\",\"group\":\"test group\",\"role\":\"admin\",\"lastname\":\"Doe\"},\"sign_in_provider\":\"saml.myProvider\",\"tenant\":\"my_tenant_id\"},\"sub\":\"gZG0yELPypZElTmAT9I55prjHg63\"}")
+                    new("tid", "11111111-1111-1111-1111-111111111111"),
+                    new("gcip", "{\"auth_time\":1553219869,\"email\":\"demo_user@gmail.com\",\"email_verified\":true,\"firebase\":{\"identities\":{\"email\":[\"demo_user@gmail.com\"],\"saml.myProvider\":[\"demo_user@gmail.com\"]},\"sign_in_attributes\":{\"firstname\":\"John\",\"group\":\"test group\",\"role\":\"admin\",\"lastname\":\"Doe\"},\"sign_in_provider\":\"saml.myProvider\",\"tenant\":\"my_tenant_id\"},\"sub\":\"gZG0yELPypZElTmAT9I55prjHg63\"}")
                 },
                 HttpStatusCode.OK,
-                new List<Claim>
+                new List<KeyValuePair<string,string>>
                 {
-                    new Claim("role", "admin"),
+                    new("role", "admin"),
                 }
             },
             new object[]
@@ -290,8 +307,8 @@ public class AuthTests
                 "?tid=11111111-1111-1111-1111-111111111111&inject-json-claim=role,gcip,$.firebase.sign_in_attributes.role2",
                 new List<Claim>
                 {
-                    new Claim("tid", "11111111-1111-1111-1111-111111111111"),
-                    new Claim("gcip", "{\"auth_time\":1553219869,\"email\":\"demo_user@gmail.com\",\"email_verified\":true,\"firebase\":{\"identities\":{\"email\":[\"demo_user@gmail.com\"],\"saml.myProvider\":[\"demo_user@gmail.com\"]},\"sign_in_attributes\":{\"firstname\":\"John\",\"group\":\"test group\",\"role\":\"admin\",\"lastname\":\"Doe\"},\"sign_in_provider\":\"saml.myProvider\",\"tenant\":\"my_tenant_id\"},\"sub\":\"gZG0yELPypZElTmAT9I55prjHg63\"}")
+                    new("tid", "11111111-1111-1111-1111-111111111111"),
+                    new("gcip", "{\"auth_time\":1553219869,\"email\":\"demo_user@gmail.com\",\"email_verified\":true,\"firebase\":{\"identities\":{\"email\":[\"demo_user@gmail.com\"],\"saml.myProvider\":[\"demo_user@gmail.com\"]},\"sign_in_attributes\":{\"firstname\":\"John\",\"group\":\"test group\",\"role\":\"admin\",\"lastname\":\"Doe\"},\"sign_in_provider\":\"saml.myProvider\",\"tenant\":\"my_tenant_id\"},\"sub\":\"gZG0yELPypZElTmAT9I55prjHg63\"}")
                 },
                 HttpStatusCode.OK
             },
@@ -300,13 +317,13 @@ public class AuthTests
                 "?tid=11111111-1111-1111-1111-111111111111&inject-json-claim=email,gcip,$.firebase.identities.email",
                 new List<Claim>
                 {
-                    new Claim("tid", "11111111-1111-1111-1111-111111111111"),
-                    new Claim("gcip", "{\"auth_time\":1553219869,\"email\":\"demo_user@gmail.com\",\"email_verified\":true,\"firebase\":{\"identities\":{\"email\":[\"demo_user@gmail.com\",\"demo_user2@gmail.com\"],\"saml.myProvider\":[\"demo_user@gmail.com\"]},\"sign_in_attributes\":{\"firstname\":\"John\",\"group\":\"test group\",\"role\":\"admin\",\"lastname\":\"Doe\"},\"sign_in_provider\":\"saml.myProvider\",\"tenant\":\"my_tenant_id\"},\"sub\":\"gZG0yELPypZElTmAT9I55prjHg63\"}")
+                    new("tid", "11111111-1111-1111-1111-111111111111"),
+                    new("gcip", "{\"auth_time\":1553219869,\"email\":\"demo_user@gmail.com\",\"email_verified\":true,\"firebase\":{\"identities\":{\"email\":[\"demo_user@gmail.com\",\"demo_user2@gmail.com\"],\"saml.myProvider\":[\"demo_user@gmail.com\"]},\"sign_in_attributes\":{\"firstname\":\"John\",\"group\":\"test group\",\"role\":\"admin\",\"lastname\":\"Doe\"},\"sign_in_provider\":\"saml.myProvider\",\"tenant\":\"my_tenant_id\"},\"sub\":\"gZG0yELPypZElTmAT9I55prjHg63\"}")
                 },
                 HttpStatusCode.OK,
-                new List<Claim>
+                new List<KeyValuePair<string,string>>
                 {
-                    new Claim("email", "demo_user@gmail.com, demo_user2@gmail.com")
+                    new("email", "demo_user@gmail.com, demo_user2@gmail.com")
                 }
             },
             new object[]
@@ -314,8 +331,8 @@ public class AuthTests
                 "?tid=11111111-1111-1111-1111-111111111111&inject-json-claim=email,gcip,$.firebase.identities.email",
                 new List<Claim>
                 {
-                    new Claim("tid", "11111111-1111-1111-1111-111111111111"),
-                    new Claim("gcip", "{\"auth_time\":1553219869,\"email\":\"demo_user@gmail.com\",\"email_verified\":true,\"firebase\":{\"identities\":{\"email\":[],\"saml.myProvider\":[\"demo_user@gmail.com\"]},\"sign_in_attributes\":{\"firstname\":\"John\",\"group\":\"test group\",\"role\":\"admin\",\"lastname\":\"Doe\"},\"sign_in_provider\":\"saml.myProvider\",\"tenant\":\"my_tenant_id\"},\"sub\":\"gZG0yELPypZElTmAT9I55prjHg63\"}")
+                    new("tid", "11111111-1111-1111-1111-111111111111"),
+                    new("gcip", "{\"auth_time\":1553219869,\"email\":\"demo_user@gmail.com\",\"email_verified\":true,\"firebase\":{\"identities\":{\"email\":[],\"saml.myProvider\":[\"demo_user@gmail.com\"]},\"sign_in_attributes\":{\"firstname\":\"John\",\"group\":\"test group\",\"role\":\"admin\",\"lastname\":\"Doe\"},\"sign_in_provider\":\"saml.myProvider\",\"tenant\":\"my_tenant_id\"},\"sub\":\"gZG0yELPypZElTmAT9I55prjHg63\"}")
                 },
                 HttpStatusCode.OK
             },
@@ -324,8 +341,8 @@ public class AuthTests
                 "?tid=11111111-1111-1111-1111-111111111111&inject-json-claim=email,gcip,$.firebase.identities.email",
                 new List<Claim>
                 {
-                    new Claim("tid", "11111111-1111-1111-1111-111111111111"),
-                    new Claim("gcip", "{\"auth_time\":1553219869,\"email\":\"demo_user@gmail.com\",\"email_verified\":true,\"firebase\":{\"identities\":{\"email\":null,\"saml.myProvider\":[\"demo_user@gmail.com\"]},\"sign_in_attributes\":{\"firstname\":\"John\",\"group\":\"test group\",\"role\":\"admin\",\"lastname\":\"Doe\"},\"sign_in_provider\":\"saml.myProvider\",\"tenant\":\"my_tenant_id\"},\"sub\":\"gZG0yELPypZElTmAT9I55prjHg63\"}")
+                    new("tid", "11111111-1111-1111-1111-111111111111"),
+                    new("gcip", "{\"auth_time\":1553219869,\"email\":\"demo_user@gmail.com\",\"email_verified\":true,\"firebase\":{\"identities\":{\"email\":null,\"saml.myProvider\":[\"demo_user@gmail.com\"]},\"sign_in_attributes\":{\"firstname\":\"John\",\"group\":\"test group\",\"role\":\"admin\",\"lastname\":\"Doe\"},\"sign_in_provider\":\"saml.myProvider\",\"tenant\":\"my_tenant_id\"},\"sub\":\"gZG0yELPypZElTmAT9I55prjHg63\"}")
                 },
                 HttpStatusCode.OK
             },
@@ -334,13 +351,13 @@ public class AuthTests
                 "?tid=11111111-1111-1111-1111-111111111111&inject-json-claim=email,gcip,$.firebase.identities.email",
                 new List<Claim>
                 {
-                    new Claim("tid", "11111111-1111-1111-1111-111111111111"),
-                    new Claim("gcip", "{\"auth_time\":1553219869,\"email\":\"demo_user@gmail.com\",\"email_verified\":true,\"firebase\":{\"identities\":{\"email\":[\"demo_user@gmail.com\",null],\"saml.myProvider\":[\"demo_user@gmail.com\"]},\"sign_in_attributes\":{\"firstname\":\"John\",\"group\":\"test group\",\"role\":\"admin\",\"lastname\":\"Doe\"},\"sign_in_provider\":\"saml.myProvider\",\"tenant\":\"my_tenant_id\"},\"sub\":\"gZG0yELPypZElTmAT9I55prjHg63\"}")
+                    new("tid", "11111111-1111-1111-1111-111111111111"),
+                    new("gcip", "{\"auth_time\":1553219869,\"email\":\"demo_user@gmail.com\",\"email_verified\":true,\"firebase\":{\"identities\":{\"email\":[\"demo_user@gmail.com\",null],\"saml.myProvider\":[\"demo_user@gmail.com\"]},\"sign_in_attributes\":{\"firstname\":\"John\",\"group\":\"test group\",\"role\":\"admin\",\"lastname\":\"Doe\"},\"sign_in_provider\":\"saml.myProvider\",\"tenant\":\"my_tenant_id\"},\"sub\":\"gZG0yELPypZElTmAT9I55prjHg63\"}")
                 },
                 HttpStatusCode.OK,
-                new List<Claim>
+                new List<KeyValuePair<string,string>>
                 {
-                    new Claim("email", "demo_user@gmail.com")
+                    new("email", "demo_user@gmail.com")
                 }
             },
         };
@@ -350,9 +367,9 @@ public class AuthTests
     [MemberData(nameof(GetTests))]
     [MemberData(nameof(GetArrayTests))]
     [MemberData(nameof(GetInjectClaimsTests))]
-    public async Task Auth(string query, List<Claim> claims, HttpStatusCode status, List<Claim>? expectedHeaders = null)
+    public async Task Auth(string query, List<Claim> claims, HttpStatusCode status, List<KeyValuePair<string, string>>? expectedHeaders = null)
     {
-        var _client = AuthTestsHelpers.GetClient();
+        var _client = AuthTestsHelpers.GetClient(x => { x.Cookie.Enable = false; });
 
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(claims));
 
@@ -363,8 +380,11 @@ public class AuthTests
         {
             foreach (var expectedHeader in expectedHeaders)
             {
-                var found = response.Headers.Where(x => x.Key == expectedHeader.Type).SelectMany(x => x.Value).Any(x => x == expectedHeader.Value);
-                found.Should().BeTrue();
+                var found = response.Headers.FirstOrDefault(x => x.Key == expectedHeader.Key);
+                found.Should().NotBeNull("Header is missing: " + expectedHeader.Key);
+
+                found.Value.Count().Should().Be(1);
+                found.Value.First().Should().Be(expectedHeader.Value);
             }
         }
     }
@@ -444,7 +464,7 @@ public class AuthTests
                 HttpStatusCode.OK,
                 new Dictionary<string, string>()
                 {
-                    {CustomHeaderNames.XOriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken(new List<Claim>{new Claim("tid", "11111111-1111-1111-1111-111111111111")})}" }
+                    {CustomHeaderNames.XOriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken(new List<Claim>{new("tid", "11111111-1111-1111-1111-111111111111")})}" }
                 },
             },
             new object[] // Token in Query String with Bad Claim
@@ -454,7 +474,7 @@ public class AuthTests
                 HttpStatusCode.Unauthorized,
                 new Dictionary<string, string>()
                 {
-                    {CustomHeaderNames.XOriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken(new List<Claim>{new Claim("tid", "22222222-2222-2222-2222-222222222222")})}" }
+                    {CustomHeaderNames.XOriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken(new List<Claim>{new("tid", "22222222-2222-2222-2222-222222222222")})}" }
                 },
             },
 
@@ -520,7 +540,7 @@ public class AuthTests
 
         var claims = new List<Claim>()
         {
-            new Claim("username", "test")
+            new("username", "test")
         };
 
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(claims));
@@ -539,9 +559,9 @@ public class AuthTests
 
         var claims = new List<Claim>()
         {
-            new Claim("username", "test"),
-            new Claim("multi", "one"),
-            new Claim("multi", "two")
+            new("username", "test"),
+            new("multi", "one"),
+            new("multi", "two")
         };
 
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(claims));
@@ -711,5 +731,21 @@ public class AuthTests
         var response2 = await _client.GetAsync(response.Headers.Location);
         response2.StatusCode.Should().Be(HttpStatusCode.Found);
         response2.Headers.Location.Should().Be("https://redirect/test123");
+    }
+
+    [Fact]
+    public async Task AppendToWWWAuthenticateHeader()
+    {
+        var _client = AuthTestsHelpers.GetClient(x =>
+        {
+            x.JWT.AppendToWWWAuthenticateHeader = "test=true";
+        });
+
+        var response = await _client.GetAsync("/auth");
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+
+        response.Headers.TryGetValues(HeaderNames.WWWAuthenticate, out var values);
+
+        values.First().Should().Be("Bearer test=true, error=\"invalid_token\"");
     }
 }

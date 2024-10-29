@@ -119,6 +119,11 @@ settings:
     # - https://login.microsoftonline.com/{TenantId}/v2.0
     # - https://sts.windows.net/{TenantId}/
 
+    # Appends data to the WWW-Authenticate Header
+    # example: key=value, key2=value2
+    # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/WWW-Authenticate
+    appendToWWWAuthenticateHeader: ""
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true

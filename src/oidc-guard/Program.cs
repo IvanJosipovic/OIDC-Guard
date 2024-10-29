@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
@@ -14,6 +15,7 @@ using Microsoft.Net.Http.Headers;
 using oidc_guard.Services;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
+using System.Text;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
@@ -176,6 +178,17 @@ public class Program
                 o.TokenValidationParameters.ValidIssuers = settings.JWT.ValidIssuers;
                 o.MapInboundClaims = false;
             });
+
+            if (!string.IsNullOrEmpty(settings.JWT.AppendToWWWAuthenticateHeader))
+            {
+                builder.Services.Configure<JwtBearerOptions>(x =>
+                {
+                    // Only add a comma after the first param, if any
+                    var spacing = x.Challenge.IndexOf(' ') > 0 ? ", " : " ";
+
+                    x.Challenge = x.Challenge + spacing + settings.JWT.AppendToWWWAuthenticateHeader;
+                });
+            }
         }
 
         builder.Services.AddHttpLogging(logging =>
@@ -199,6 +212,8 @@ public class Program
             logging.RequestHeaders.Add(HeaderNames.Origin);
             logging.RequestHeaders.Add(HeaderNames.AccessControlRequestMethod);
             logging.RequestHeaders.Add(HeaderNames.AccessControlRequestHeaders);
+
+            logging.ResponseHeaders.Add(HeaderNames.WWWAuthenticate);
         });
 
         builder.Services.AddAuthorization();
@@ -268,7 +283,7 @@ public class Program
         app.MapGet("/userinfo", (HttpContext httpContext) => httpContext.User.Claims.GroupBy(x => x.Type).ToDictionary(x => x.Key, y => y.Count() > 1 ? (object)y.Select(x => x.Value) : y.First().Value))
             .RequireAuthorization();
 
-        app.MapGet("/auth", ([FromServices] Settings settings, [FromServices] Instrumentation meters, HttpContext httpContext) =>
+        app.MapGet("/auth", ([FromServices] Settings settings, [FromServices] Instrumentation meters, [FromServices] IOptionsMonitor<JwtBearerOptions> options, HttpContext httpContext) =>
         {
             meters.SignInCounter.Add(1);
 
@@ -360,11 +375,9 @@ public class Program
 
                         return Results.Challenge(new AuthenticationProperties { RedirectUri = redirect });
                     }
-
-                    return Results.Unauthorized();
                 }
 
-                return Results.Unauthorized();
+                return UnauthorizedResults(httpContext, options);
             }
 
             // Validate based on rules
@@ -469,13 +482,9 @@ public class Program
 
                                 return Results.Challenge(new AuthenticationProperties { RedirectUri = redirect });
                             }
+                        }
 
-                            return Results.Unauthorized();
-                        }
-                        else
-                        {
-                            return Results.Unauthorized();
-                        }
+                        return UnauthorizedResults(httpContext, options, "Missing Claim " + item.ToString());
                     }
                 }
             }
@@ -510,6 +519,32 @@ public class Program
             .RequireAuthorization();
 
         app.Run();
+    }
+
+    private static IResult UnauthorizedResults(HttpContext context, IOptionsMonitor<JwtBearerOptions> options, string? errorDescription = null)
+    {
+        // https://tools.ietf.org/html/rfc6750#section-3.1
+        // WWW-Authenticate: Bearer error="invalid_token", error_description="The access token expired"
+        var builder = new StringBuilder(options.CurrentValue.Challenge);
+
+        if (options.CurrentValue.Challenge.IndexOf(' ') > 0)
+        {
+            // Only add a comma after the first param, if any
+            builder.Append(',');
+        }
+
+        builder.Append(" error=\"invalid_token\"");
+
+        if (!string.IsNullOrEmpty(errorDescription))
+        {
+            builder.Append(", error_description=\"");
+            builder.Append(errorDescription);
+            builder.Append('\"');
+        }
+
+        context.Response.Headers.Append(HeaderNames.WWWAuthenticate, builder.ToString());
+
+        return Results.Unauthorized();
     }
 
     private static string? GetOriginalUrl(HttpContext httpContext)

@@ -38,4 +38,5 @@ public class JWTAuthSettings
     public string[]? ValidIssuers { get; set; }
     public string? JWKSUrl { get; set; }
     public bool PrependBearer { get; set; }
+    public string? AppendToWWWAuthenticateHeader { get; set; }
 }
