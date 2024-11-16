@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.14.1-nightly.20241107.194" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.14.1-nightly.20241115.196" />
   </ItemGroup>
 
   <ItemGroup>
