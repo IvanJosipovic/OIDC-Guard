@@ -115,8 +115,6 @@ jobs:
     - name: Install Helm
       if: steps.semantic.outputs.new_release_published == 'true'
       uses: azure/setup-helm@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Update Helm Version
       if: steps.semantic.outputs.new_release_published == 'true'
