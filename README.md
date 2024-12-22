@@ -3,6 +3,7 @@
 [![codecov](https://codecov.io/gh/IvanJosipovic/OIDC-Guard/branch/main/graph/badge.svg?token=M16OFqam3T)](https://codecov.io/gh/IvanJosipovic/OIDC-Guard)
 [![GitHub](https://img.shields.io/github/stars/ivanjosipovic/oidc-guard?style=social)](https://github.com/IvanJosipovic/oidc-guard)
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/oidc-guard)](https://artifacthub.io/packages/helm/oidc-guard/oidc-guard)
+![Downloads](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fipitio%2Fbackage%2Frefs%2Fheads%2Findex%2FIvanJosipovic%2FOIDC-Guard%2Foidc-guard%25252Foidc-guard.json&query=%24.downloads&label=downloads)
 
 OpenID Connect (OIDC) & OAuth 2 API Server used to secure Kubernetes Ingress
 
