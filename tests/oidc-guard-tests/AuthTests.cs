@@ -5,7 +5,6 @@ using oidc_guard;
 using oidc_guard.Services;
 using oidc_guard_tests.Infra;
 using System.Net;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json;

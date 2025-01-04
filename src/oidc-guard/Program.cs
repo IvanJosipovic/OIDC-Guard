@@ -318,6 +318,11 @@ public class Program
                     {
                         foreach (var item in skipEquals)
                         {
+                            if (item == null)
+                            {
+                                continue;
+                            }
+
                             var commaIndex = item.IndexOf(',');
                             if (commaIndex != -1)
                             {
@@ -345,6 +350,11 @@ public class Program
                     {
                         foreach (var item in skipNotEquals)
                         {
+                            if (item == null)
+                            {
+                                continue;
+                            }
+
                             var commaIndex = item.IndexOf(',');
                             if (commaIndex != -1)
                             {
