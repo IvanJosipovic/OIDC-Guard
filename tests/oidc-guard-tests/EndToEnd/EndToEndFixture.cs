@@ -21,8 +21,6 @@ public class EndToEndFixture : IDisposable
 
     public string Name { get; set; } = Guid.NewGuid().ToString();
 
-    public string Version { get; set; } = "kindest/node:v1.28.0";
-
     public Kubernetes Kubernetes { get; set; }
 
     public HttpClient HttpClient { get; set; }
@@ -51,7 +49,7 @@ public class EndToEndFixture : IDisposable
 
         // Start Kind
         Kind.DownloadClient().Wait();
-        Kind.CreateCluster(Name, Version, Path.Combine("EndToEnd", "kind-config.yaml")).Wait();
+        Kind.CreateCluster(Name, null, Path.Combine("EndToEnd", "kind-config.yaml")).Wait();
         Kubernetes = Kind.GetKubernetesClient(Name).Result;
 
         DeployOIDCServer().Wait();
