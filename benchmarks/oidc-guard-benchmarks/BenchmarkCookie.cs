@@ -9,8 +9,6 @@ namespace oidc_guard_benchmarks;
 
 [JsonExporterAttribute.FullCompressed]
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net90, baseline: true)]
-[SimpleJob(RuntimeMoniker.NativeAot90)]
 public class BenchmarkCookie
 {
     private HttpClient client = default!;
