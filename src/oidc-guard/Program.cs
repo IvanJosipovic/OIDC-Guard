@@ -72,6 +72,15 @@ public class Program
 
         builder.Services.AddSingleton<Instrumentation>();
 
+        if (settings.LogFormat == LogFormat.JSON)
+        {
+            builder.Logging.AddJsonConsole(options =>
+            {
+                options.IncludeScopes = false;
+                options.TimestampFormat = "HH:mm:ss";
+            });
+        }
+
         builder.Logging.AddFilter("Default", settings.LogLevel);
         builder.Logging.AddFilter("Microsoft.AspNetCore", LogLevel.Warning);
         builder.Logging.AddFilter("Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware", settings.LogLevel);
@@ -309,6 +318,11 @@ public class Program
                     {
                         foreach (var item in skipEquals)
                         {
+                            if (item == null)
+                            {
+                                continue;
+                            }
+
                             var commaIndex = item.IndexOf(',');
                             if (commaIndex != -1)
                             {
@@ -336,6 +350,11 @@ public class Program
                     {
                         foreach (var item in skipNotEquals)
                         {
+                            if (item == null)
+                            {
+                                continue;
+                            }
+
                             var commaIndex = item.IndexOf(',');
                             if (commaIndex != -1)
                             {

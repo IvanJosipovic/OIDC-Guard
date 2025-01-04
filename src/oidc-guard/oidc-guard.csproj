@@ -18,6 +18,7 @@
     <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
     <TrimmerSingleWarn>false</TrimmerSingleWarn>
     <UserSecretsId>a70c2d04-572e-41af-8710-66bacf303453</UserSecretsId>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
