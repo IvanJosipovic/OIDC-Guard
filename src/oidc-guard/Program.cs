@@ -72,6 +72,15 @@ public class Program
 
         builder.Services.AddSingleton<Instrumentation>();
 
+        if (settings.LogFormat == LogFormat.JSON)
+        {
+            builder.Logging.AddJsonConsole(options =>
+            {
+                options.IncludeScopes = false;
+                options.TimestampFormat = "HH:mm:ss";
+            });
+        }
+
         builder.Logging.AddFilter("Default", settings.LogLevel);
         builder.Logging.AddFilter("Microsoft.AspNetCore", LogLevel.Warning);
         builder.Logging.AddFilter("Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware", settings.LogLevel);
