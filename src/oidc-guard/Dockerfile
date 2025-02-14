@@ -31,7 +31,7 @@ ENV BUSYBOX_BINSH_VERSION="1.37.0-r12"
 ENV LIBCRYPTO3_VERSION="3.3.3-r0"
 
 # renovate: datasource=repology depName=alpine_3_21/ssl_client versioning=loose
-ENV SSL_VERSION="1.36.1-r29"
+ENV SSL_VERSION="1.37.0-r12"
 
 # renovate: datasource=repology depName=alpine_3_21/libgcc versioning=loose
 ENV LIBGCC_VERSION="13.2.1_git20240309-r0"
