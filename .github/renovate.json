@@ -52,9 +52,12 @@
         "digest"
       ],
       "automerge": true,
+      "groupName": "Dockerfile Dependecies",
+      "groupSlug": "dockerfile-dependecies",
       "semanticCommitType": "fix",
+      "separateMajorMinor": false,
       "matchPackageNames": [
-        "alpine_*/ca-certificates-bundle"
+        "alpine_*"
       ]
     }
   ],
