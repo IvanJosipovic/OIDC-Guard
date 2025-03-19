@@ -5,6 +5,29 @@ entries:
       artifacthub.io/category: security
       artifacthub.io/license: MIT
     apiVersion: v2
+    appVersion: 2.10.25
+    created: "2025-03-19T17:17:17.37923057Z"
+    description: OpenID Connect (OIDC) & OAuth 2 API Server used to secure Kubernetes
+      Ingress
+    digest: 5c7c6507b3f3c3685a789ecc1d47f30acd4580f40681245cf57ca1c28ed2c6a8
+    home: https://github.com/IvanJosipovic/oidc-guard
+    keywords:
+    - ingress
+    - nginx
+    - jwt
+    - oidc
+    - cookie
+    name: oidc-guard
+    sources:
+    - https://github.com/IvanJosipovic/oidc-guard
+    type: application
+    urls:
+    - https://github.com/IvanJosipovic/OIDC-Guard/releases/download/oidc-guard-2.10.25/oidc-guard-2.10.25.tgz
+    version: 2.10.25
+  - annotations:
+      artifacthub.io/category: security
+      artifacthub.io/license: MIT
+    apiVersion: v2
     appVersion: 2.10.24
     created: "2025-03-13T10:29:04.877298049Z"
     description: OpenID Connect (OIDC) & OAuth 2 API Server used to secure Kubernetes
@@ -3583,4 +3606,4 @@ entries:
     urls:
     - https://github.com/IvanJosipovic/OIDC-Guard/releases/download/oidc-guard-1.0.0/oidc-guard-1.0.0.tgz
     version: 1.0.0
-generated: "2025-03-13T10:29:04.877661116Z"
+generated: "2025-03-19T17:17:17.379627101Z"
