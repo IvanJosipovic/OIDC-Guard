@@ -256,14 +256,14 @@ public class Program
 
         app.Use((context, next) =>
         {
-            if (!string.IsNullOrEmpty(settings.Scheme))
+            if (!string.IsNullOrEmpty(settings.Cookie.Scheme))
             {
-                context.Request.Scheme = settings.Scheme;
+                context.Request.Scheme = settings.Cookie.Scheme;
             }
 
-            if (!string.IsNullOrEmpty(settings.Host))
+            if (!string.IsNullOrEmpty(settings.Cookie.Host))
             {
-                context.Request.Host = new HostString(settings.Host);
+                context.Request.Host = new HostString(settings.Cookie.Host);
             }
 
             if (settings.JWT.Enable)

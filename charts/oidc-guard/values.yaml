@@ -22,16 +22,6 @@ settings:
   # https://developer.mozilla.org/en-US/docs/Glossary/Preflight_request
   skipAuthPreflight: false
 
-  # Set host for http redirect used in the sign-in process
-  # When not set will use the request headers host or X-Forwarded-Host
-  # Used only by Cookie Authentication
-  host: ""
-
-  # Set scheme for http redirect used in the sign-in process (http or https)
-  # When not set, will accept header X-Forwarded-Proto
-  # Used only by Cookie Authentication
-  scheme: ""
-
   # Log Level(Trace, Debug, Information, Warning, Error, Critical, and None)
   logLevel: Information
 
@@ -45,6 +35,14 @@ settings:
   cookie:
     # Enable Cookie based Authentication
     enable: true
+
+    # Set host for http redirect used in the sign-in process
+    # When not set will use the request headers host or X-Forwarded-Host
+    host: ""
+
+    # Set scheme for http redirect used in the sign-in process (http or https)
+    # When not set, will accept header X-Forwarded-Proto
+    scheme: ""
 
     # Domains which the sign-in process will be allowed to redirect to
     # Use a dot before the domain to allow subdomains (ie .test.com)
@@ -163,8 +161,8 @@ securityContext:
 
 service:
   type: ClusterIP
-  port: 8080
-  sslPort: 8443
+  port: 80
+  sslPort: 443
 
 ingress:
   enabled: false

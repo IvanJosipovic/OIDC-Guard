@@ -7,7 +7,6 @@ public class Settings
     public LogFormat LogFormat { get; set; }
     public string OpenIdProviderConfigurationUrl { get; set; } = null!;
     public bool RequireHttpsMetadata { get; set; } = true;
-    public string? Host { get; set; }
     public string? Scheme { get; set; }
     public CookieAuthSettings Cookie { get; set; } = new();
     public JWTAuthSettings JWT { get; set; } = new();
@@ -17,6 +16,8 @@ public class Settings
 public class CookieAuthSettings
 {
     public bool Enable { get; set; } = true;
+    public string? Host { get; set; }
+    public string? Scheme { get; set; }
     public bool SaveTokensInCookie { get; set; }
     public int CookieValidDays { get; set; } = 7;
     public SameSiteMode CookieSameSiteMode { get; set; } = SameSiteMode.Unspecified;
