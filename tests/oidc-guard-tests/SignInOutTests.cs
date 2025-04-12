@@ -231,7 +231,7 @@ public class SingInOutTests
     [Fact]
     public async Task SetHost()
     {
-        var _client = AuthTestsHelpers.GetClient(x => { x.Cookie.Host = "fakedomain.com"; x.Scheme = "https"; });
+        var _client = AuthTestsHelpers.GetClient(x => { x.Cookie.Host = "fakedomain.com"; x.Cookie.Scheme = "https"; });
 
         var response = await _client.GetAsync("/signin?rd=/health");
         response.StatusCode.Should().Be(HttpStatusCode.Found);

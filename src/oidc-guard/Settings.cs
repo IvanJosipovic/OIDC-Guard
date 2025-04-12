@@ -7,7 +7,6 @@ public class Settings
     public LogFormat LogFormat { get; set; }
     public string OpenIdProviderConfigurationUrl { get; set; } = null!;
     public bool RequireHttpsMetadata { get; set; } = true;
-    public string? Scheme { get; set; }
     public CookieAuthSettings Cookie { get; set; } = new();
     public JWTAuthSettings JWT { get; set; } = new();
     public string? SslCertSecretName { get; set; }
