@@ -4,6 +4,7 @@ public class Settings
 {
     public bool SkipAuthPreflight { get; set; }
     public LogLevel LogLevel { get; set; }
+    public LogFormat LogFormat { get; set; }
     public string OpenIdProviderConfigurationUrl { get; set; } = null!;
     public bool RequireHttpsMetadata { get; set; } = true;
     public string? Host { get; set; }
@@ -39,4 +40,11 @@ public class JWTAuthSettings
     public string[]? ValidIssuers { get; set; }
     public string? JWKSUrl { get; set; }
     public bool PrependBearer { get; set; }
+    public string? AppendToWWWAuthenticateHeader { get; set; }
+}
+
+public enum LogFormat
+{
+    Simple,
+    JSON,
 }

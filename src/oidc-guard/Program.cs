@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
@@ -17,6 +18,7 @@ using OpenTelemetry.Resources;
 using System.Net;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
@@ -88,6 +90,15 @@ public class Program
 
         builder.Services.AddSingleton<Instrumentation>();
 
+        if (settings.LogFormat == LogFormat.JSON)
+        {
+            builder.Logging.AddJsonConsole(options =>
+            {
+                options.IncludeScopes = false;
+                options.TimestampFormat = "HH:mm:ss";
+            });
+        }
+
         builder.Logging.AddFilter("Default", settings.LogLevel);
         builder.Logging.AddFilter("Microsoft.AspNetCore", LogLevel.Warning);
         builder.Logging.AddFilter("Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware", settings.LogLevel);
@@ -104,13 +115,18 @@ public class Program
         {
             options.ForwardDefaultSelector = context =>
             {
-                string? authorization = context.Request.Headers.Authorization;
+                if (settings.Cookie.Enable)
+                {
+                    string? cookie = context.Request.Headers.Cookie;
 
-                return settings.JWT.Enable && !string.IsNullOrEmpty(authorization) && authorization.StartsWith(JwtBearerDefaults.AuthenticationScheme + ' ')
-                    ? JwtBearerDefaults.AuthenticationScheme
-                    : settings.Cookie.Enable
-                        ? CookieAuthenticationDefaults.AuthenticationScheme
-                        : JwtBearerDefaults.AuthenticationScheme;
+                    // If the request contains our cookie, we should prioritize it
+                    if (!string.IsNullOrEmpty(cookie) && cookie.Contains(settings.Cookie.CookieName, StringComparison.Ordinal))
+                    {
+                        return CookieAuthenticationDefaults.AuthenticationScheme;
+                    }
+                }
+
+                return settings.JWT.Enable ? JwtBearerDefaults.AuthenticationScheme : CookieAuthenticationDefaults.AuthenticationScheme;
             };
         });
 
@@ -189,20 +205,42 @@ public class Program
                 o.TokenValidationParameters.ValidIssuers = settings.JWT.ValidIssuers;
                 o.MapInboundClaims = false;
             });
+
+            if (!string.IsNullOrEmpty(settings.JWT.AppendToWWWAuthenticateHeader))
+            {
+                builder.Services.Configure<JwtBearerOptions>(x =>
+                {
+                    // Only add a comma after the first param, if any
+                    var spacing = x.Challenge.IndexOf(' ') > 0 ? ", " : " ";
+
+                    x.Challenge = x.Challenge + spacing + settings.JWT.AppendToWWWAuthenticateHeader;
+                });
+            }
         }
 
         builder.Services.AddHttpLogging(logging =>
         {
             logging.RequestHeaders.Add(CustomHeaderNames.XAuthRequestRedirect);
+            logging.RequestHeaders.Add(CustomHeaderNames.XForwardedFor);
             logging.RequestHeaders.Add(CustomHeaderNames.XForwardedHost);
             logging.RequestHeaders.Add(CustomHeaderNames.XForwardedMethod);
+            logging.RequestHeaders.Add(CustomHeaderNames.XForwardedPort);
             logging.RequestHeaders.Add(CustomHeaderNames.XForwardedProto);
+            logging.RequestHeaders.Add(CustomHeaderNames.XForwardedScheme);
             logging.RequestHeaders.Add(CustomHeaderNames.XForwardedUri);
+            logging.RequestHeaders.Add(CustomHeaderNames.XOriginalForwardedFor);
             logging.RequestHeaders.Add(CustomHeaderNames.XOriginalMethod);
             logging.RequestHeaders.Add(CustomHeaderNames.XOriginalUrl);
-            logging.RequestHeaders.Add(HeaderNames.AccessControlRequestHeaders);
-            logging.RequestHeaders.Add(HeaderNames.AccessControlRequestMethod);
+            logging.RequestHeaders.Add(CustomHeaderNames.XRealIP);
+            logging.RequestHeaders.Add(CustomHeaderNames.XRequestID);
+            logging.RequestHeaders.Add(CustomHeaderNames.XScheme);
+            logging.RequestHeaders.Add(CustomHeaderNames.XSentFrom);
+            logging.RequestHeaders.Add(HeaderNames.Referer);
             logging.RequestHeaders.Add(HeaderNames.Origin);
+            logging.RequestHeaders.Add(HeaderNames.AccessControlRequestMethod);
+            logging.RequestHeaders.Add(HeaderNames.AccessControlRequestHeaders);
+
+            logging.ResponseHeaders.Add(HeaderNames.WWWAuthenticate);
         });
 
         builder.Services.AddAuthorization();
@@ -272,13 +310,12 @@ public class Program
         app.MapGet("/userinfo", (HttpContext httpContext) => httpContext.User.Claims.GroupBy(x => x.Type).ToDictionary(x => x.Key, y => y.Count() > 1 ? (object)y.Select(x => x.Value) : y.First().Value))
             .RequireAuthorization();
 
-        app.MapGet("/auth", ([FromServices] Settings settings, [FromServices] Instrumentation meters, HttpContext httpContext) =>
+        app.MapGet("/auth", ([FromServices] Settings settings, [FromServices] Instrumentation meters, [FromServices] IOptionsMonitor<JwtBearerOptions> options, HttpContext httpContext) =>
         {
             meters.SignInCounter.Add(1);
 
             if (settings.SkipAuthPreflight &&
                 GetOriginalMethod(httpContext.Request.Headers) == HttpMethod.Options.Method &&
-                !StringValues.IsNullOrEmpty(httpContext.Request.Headers.AccessControlRequestHeaders) &&
                 !StringValues.IsNullOrEmpty(httpContext.Request.Headers.AccessControlRequestMethod) &&
                 !StringValues.IsNullOrEmpty(httpContext.Request.Headers.Origin))
             {
@@ -299,6 +336,11 @@ public class Program
                     {
                         foreach (var item in skipEquals)
                         {
+                            if (item == null)
+                            {
+                                continue;
+                            }
+
                             var commaIndex = item.IndexOf(',');
                             if (commaIndex != -1)
                             {
@@ -326,6 +368,11 @@ public class Program
                     {
                         foreach (var item in skipNotEquals)
                         {
+                            if (item == null)
+                            {
+                                continue;
+                            }
+
                             var commaIndex = item.IndexOf(',');
                             if (commaIndex != -1)
                             {
@@ -365,11 +412,9 @@ public class Program
 
                         return Results.Challenge(new AuthenticationProperties { RedirectUri = redirect });
                     }
-
-                    return Results.Unauthorized();
                 }
 
-                return Results.Unauthorized();
+                return UnauthorizedResults(httpContext, options);
             }
 
             // Validate based on rules
@@ -474,13 +519,9 @@ public class Program
 
                                 return Results.Challenge(new AuthenticationProperties { RedirectUri = redirect });
                             }
+                        }
 
-                            return Results.Unauthorized();
-                        }
-                        else
-                        {
-                            return Results.Unauthorized();
-                        }
+                        return UnauthorizedResults(httpContext, options, "Missing Claim " + item.ToString());
                     }
                 }
             }
@@ -515,6 +556,32 @@ public class Program
             .RequireAuthorization();
 
         app.Run();
+    }
+
+    private static IResult UnauthorizedResults(HttpContext context, IOptionsMonitor<JwtBearerOptions> options, string? errorDescription = null)
+    {
+        // https://tools.ietf.org/html/rfc6750#section-3.1
+        // WWW-Authenticate: Bearer error="invalid_token", error_description="The access token expired"
+        var builder = new StringBuilder(options.CurrentValue.Challenge);
+
+        if (options.CurrentValue.Challenge.IndexOf(' ') > 0)
+        {
+            // Only add a comma after the first param, if any
+            builder.Append(',');
+        }
+
+        builder.Append(" error=\"invalid_token\"");
+
+        if (!string.IsNullOrEmpty(errorDescription))
+        {
+            builder.Append(", error_description=\"");
+            builder.Append(errorDescription);
+            builder.Append('\"');
+        }
+
+        context.Response.Headers.Append(HeaderNames.WWWAuthenticate, builder.ToString());
+
+        return Results.Unauthorized();
     }
 
     private static string? GetOriginalUrl(HttpContext httpContext)
@@ -588,7 +655,7 @@ public class Program
 
         var certificate = request.CreateSelfSigned(new DateTimeOffset(DateTime.UtcNow.AddDays(-1)), new DateTimeOffset(DateTime.UtcNow.AddDays(3650)));
 
-        return new X509Certificate2(certificate.Export(X509ContentType.Pfx));
+        return X509CertificateLoader.LoadPkcs12(certificate.Export(X509ContentType.Pfx), null);
     }
 }
 

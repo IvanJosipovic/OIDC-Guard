@@ -30,9 +30,13 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
+    - name: Docker Build
+      working-directory: src/oidc-guard
+      run: docker build -t test.loc/oidc-guard .
+
     - name: Docker Buildx
       working-directory: src/oidc-guard
-      run: docker buildx build --platform linux/amd64,linux/arm64 -t oidc-guard .
+      run: docker buildx build --platform linux/amd64,linux/arm64 -t test.loc/oidc-guard .
 
     - name: Add hosts to /etc/hosts
       run: |
@@ -41,7 +45,7 @@ jobs:
           sudo echo "127.0.0.1 oidc-server.oidc-server" | sudo tee -a /etc/hosts
 
     - name: Install Playwright
-      working-directory: tests/oidc-guard-tests/bin/Release/net8.0
+      working-directory: tests/oidc-guard-tests/bin/Release/net9.0
       run: ./playwright.ps1 install --with-deps
       shell: pwsh
 
@@ -49,20 +53,28 @@ jobs:
       run: dotnet test -c Release --collect:"XPlat Code Coverage" /p:DebugSymbols=true /p:DebugType=full
 
     - name: Coverage
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: coverage.cobertura.xml
         fail_ci_if_error: true
 
-    - name: Benchmark
+    - name: Publish Benchmark
       working-directory: benchmarks/oidc-guard-benchmarks
-      run: dotnet run -c Release
+      run: dotnet publish -c Release -o bin/publish
+
+    - name: Chmod Benchmark
+      working-directory: benchmarks/oidc-guard-benchmarks/bin/publish
+      run: chmod +x oidc-guard-benchmarks
+
+    - name: Run Benchmark
+      working-directory: benchmarks/oidc-guard-benchmarks/bin/publish
+      run: ./oidc-guard-benchmarks
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: 'oidc-guard'
+        image-ref: 'test.loc/oidc-guard'
         format: 'table'
         exit-code: '1'
         ignore-unfixed: true
@@ -73,7 +85,7 @@ jobs:
     if: ${{ github.event_name != 'pull_request' }}
     name: Create Release
     runs-on: ubuntu-latest
-    needs: build-test
+    needs: [build-test]
     steps:
     - uses: actions/checkout@v4
 
@@ -87,6 +99,9 @@ jobs:
       id: semantic
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        extra_plugins: |
+          conventional-changelog-conventionalcommits
 
     - name: Set up Docker Buildx
       if: steps.semantic.outputs.new_release_published == 'true'
@@ -103,8 +118,6 @@ jobs:
     - name: Install Helm
       if: steps.semantic.outputs.new_release_published == 'true'
       uses: azure/setup-helm@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Update Helm Version
       if: steps.semantic.outputs.new_release_published == 'true'

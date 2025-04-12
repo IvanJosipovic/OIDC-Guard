@@ -35,6 +35,9 @@ settings:
   # Log Level(Trace, Debug, Information, Warning, Error, Critical, and None)
   logLevel: Information
 
+  # Log Format (Simple or JSON)
+  logFormat: Simple
+
   # Set the name of the secret which contains the SSL certificate used for HTTPS
   # The secret needs to have keys named tls.crt and tls.key
   sslCertSecretName: ""
@@ -124,6 +127,11 @@ settings:
     validIssuers: []
     # - https://login.microsoftonline.com/{TenantId}/v2.0
     # - https://sts.windows.net/{TenantId}/
+
+    # Appends data to the WWW-Authenticate Header
+    # example: key=value, key2=value2
+    # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/WWW-Authenticate
+    appendToWWWAuthenticateHeader: ""
 
 serviceAccount:
   # Specifies whether a service account should be created

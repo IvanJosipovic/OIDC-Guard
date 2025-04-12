@@ -4,17 +4,27 @@
   "timezone": "America/Vancouver",
   "dependencyDashboard": true,
   "semanticCommits": "enabled",
-  "assignees": ["@ivanjosipovic"],
-  "extends": [ "config:recommended" ],
+  "assignees": [
+    "@ivanjosipovic"
+  ],
+  "extends": [
+    "config:recommended"
+  ],
   "platformAutomerge": true,
   "ignorePaths": [
     "**/docs/**",
     "**/charts/**"
   ],
-  "schedule": ["before 4am"],
+  "schedule": [
+    "before 4am"
+  ],
   "packageRules": [
     {
-      "matchUpdateTypes": ["minor", "patch", "digest"],
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "digest"
+      ],
       "automerge": true,
       "semanticCommitType": "fix",
       "matchFileNames": [
@@ -23,7 +33,11 @@
       ]
     },
     {
-      "matchUpdateTypes": [ "minor", "patch", "digest" ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "digest"
+      ],
       "automerge": true,
       "matchFileNames": [
         "tests/**",
@@ -31,20 +45,27 @@
       ]
     },
     {
-      "matchUpdateTypes": ["major", "minor", "patch", "digest"],
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "patch",
+        "digest"
+      ],
       "automerge": true,
+      "groupName": "Dockerfile Dependecies",
+      "groupSlug": "dockerfile-dependecies",
       "semanticCommitType": "fix",
-      "packageRules": [
-        {
-          "matchPackageNames": ["alpine_3_19/ca-certificates-bundle"]
-        }
+      "matchPackageNames": [
+        "alpine_*"
       ]
     }
   ],
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": ["Dockerfile$"],
+      "fileMatch": [
+        "Dockerfile$"
+      ],
       "matchStrings": [
         "#\\s*renovate:\\s*datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sENV .*?_VERSION=\"(?<currentValue>.*)\"\\s"
       ],
