@@ -274,8 +274,8 @@ public class Program
                 }
 
                 if (settings.JWT.PrependBearer &&
-                    context.Request.Headers.ContainsKey(HeaderNames.Authorization) &&
-                    !context.Request.Headers.Authorization[0]!.StartsWith(JwtBearerDefaults.AuthenticationScheme + ' '))
+                    context.Request.Headers.TryGetValue(HeaderNames.Authorization, out var val) &&
+                    !val[0]!.StartsWith(JwtBearerDefaults.AuthenticationScheme + ' '))
                 {
                     context.Request.Headers.Authorization = JwtBearerDefaults.AuthenticationScheme + ' ' + context.Request.Headers.Authorization;
                 }
