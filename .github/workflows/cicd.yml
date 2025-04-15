@@ -56,7 +56,7 @@ jobs:
       uses: dorny/test-reporter@v2
       if: success() || failure()
       with:
-        name: KubeUI Tests
+        name: OIDC-Guard Tests
         path: tests/oidc-guard-tests/TestResults/test-results.trx
         reporter: dotnet-trx
 
