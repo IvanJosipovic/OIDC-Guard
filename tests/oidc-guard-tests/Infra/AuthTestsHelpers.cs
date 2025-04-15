@@ -20,6 +20,7 @@ public static class AuthTestsHelpers
         {
             Cookie = new()
             {
+                Enable = true,
                 ClientId = FakeJwtIssuer.Audience,
                 ClientSecret = "secret",
                 Scopes = new[] { "openid", "profile" }
