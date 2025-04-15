@@ -33,6 +33,12 @@ spec:
           env:
           - name: ASPNETCORE_ENVIRONMENT
             value: Production
+          {{- if .Values.settings.sslCertSecretName }}
+          - name: Certificates__Default__Path
+            value: /app/ssl/tls.crt
+          - name: Certificates__Default__KeyPath
+            value: /app/ssl/tls.key
+          {{- end }}
           {{- if .Values.settings.cookie.clientSecretName }}
           - name: settings__cookie__clientSecret
             valueFrom:
