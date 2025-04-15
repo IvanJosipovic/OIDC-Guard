@@ -310,7 +310,7 @@ public class EndToEndFixture : IDisposable
                 NamespaceProperty = ns.Name(),
                 Annotations = new Dictionary<string, string>()
                 {
-                    { "nginx.ingress.kubernetes.io/auth-url", "http://oidc-guard.oidc-guard.svc.cluster.local/auth?inject-json-claim=role%2Cjson_claim%2C%24.firebase.sign_in_attributes.role" },
+                    { "nginx.ingress.kubernetes.io/auth-url", "http://oidc-guard.oidc-guard.svc.cluster.local:8080/auth?inject-json-claim=role%2Cjson_claim%2C%24.firebase.sign_in_attributes.role" },
                     { "nginx.ingress.kubernetes.io/auth-signin", "https://oidc-guard.test.loc:32443/signin" },
                     { "traefik.ingress.kubernetes.io/router.middlewares", "demo-app-test-auth@kubernetescrd" }
                 }

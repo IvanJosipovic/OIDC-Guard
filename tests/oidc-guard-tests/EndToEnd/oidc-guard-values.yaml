@@ -150,7 +150,7 @@ securityContext:
 
 service:
   type: ClusterIP
-  port: 80
+  port: 8080
   sslPort: 443
 
 ingress:
