@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "oidc-guard.fullname" . }}:{{ .Values.service.port }}']
+      args: ['http://{{ include "oidc-guard.fullname" . }}:{{ .Values.service.port }}/health']
   restartPolicy: Never

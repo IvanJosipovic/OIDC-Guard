@@ -20,13 +20,6 @@
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:8443;http://localhost:8080"
     },
-    "Docker": {
-      "commandName": "Docker",
-      "launchBrowser": true,
-      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/health",
-      "publishAllPorts": true,
-      "useSSL": true
-    },
     "WSL": {
       "commandName": "WSL2",
       "launchBrowser": true,
