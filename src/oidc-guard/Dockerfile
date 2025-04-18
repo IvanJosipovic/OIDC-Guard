@@ -41,7 +41,7 @@ ENV LIBGCC_VERSION="13.2.1_git20240309-r0"
 ENV LIBSSL3_VERSION="3.3.3-r0"
 
 # renovate: datasource=repology depName=alpine_3_21/libstdc++ versioning=loose
-ENV LIBSTDC_VERSION="13.2.1_git20240309-r0"
+ENV LIBSTDC_VERSION="14.2.0-r4"
 
 RUN apk add --upgrade --no-cache \
         ca-certificates-bundle>$CA_CERTIFICATES_BUNDLES_VERSION \
