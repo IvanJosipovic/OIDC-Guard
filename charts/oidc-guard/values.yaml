@@ -166,6 +166,7 @@ service:
 
 ingress:
   enabled: false
+  sslBackendPort: false # When true Ingress backend will be .Values.service.sslPort
   className: ""
   annotations: {}
     # kubernetes.io/ingress.class: nginx
