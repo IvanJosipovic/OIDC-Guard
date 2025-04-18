@@ -16,8 +16,9 @@ FROM mcr.microsoft.com/dotnet/runtime-deps:9.0-alpine3.21@sha256:77eda1f77b7a8d3
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8433
-ENV ASPNETCORE_URLS=http://+:8080;https://+:8433
-LABEL org.opencontainers.image.description OpenID Connect (OIDC) & OAuth 2 API Server used to secure Kubernetes Ingress
+ENV ASPNETCORE_HTTP_PORTS=8080
+ENV ASPNETCORE_HTTPS_PORTS=8443
+LABEL org.opencontainers.image.description="OpenID Connect (OIDC) & OAuth 2 API Server used to secure Kubernetes Ingress"
 
 # renovate: datasource=repology depName=alpine_3_21/ca-certificates-bundle versioning=loose
 ENV CA_CERTIFICATES_BUNDLES_VERSION="20241121-r1"
