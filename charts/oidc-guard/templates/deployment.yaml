@@ -33,6 +33,12 @@ spec:
           env:
           - name: ASPNETCORE_ENVIRONMENT
             value: Production
+          {{- if .Values.settings.sslCertSecretName }}
+          - name: Certificates__Default__Path
+            value: /app/ssl/tls.crt
+          - name: Certificates__Default__KeyPath
+            value: /app/ssl/tls.key
+          {{- end }}
           {{- if .Values.settings.cookie.clientSecretName }}
           - name: settings__cookie__clientSecret
             valueFrom:
@@ -40,6 +46,14 @@ spec:
                 name: {{ .Values.settings.cookie.clientSecretName }}
                 key: {{ .Values.settings.cookie.clientSecretKey }}
           {{- end }}
+          - name: settings__name
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: settings__namespace
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -68,12 +82,22 @@ spec:
               mountPath: /app/appsettings.Production.json
               subPath: appsettings.Production.json
               readOnly: true
+            {{- if .Values.settings.sslCertSecretName }}
+            - name: appsettings-ssl
+              mountPath: /app/ssl/
+              readOnly: true
+            {{- end }}
       volumes:
         - name: tmp-volume
           emptyDir: {}
         - name: appsettings-volume
           secret:
             secretName: {{ include "oidc-guard.fullname" . }}
+        {{- if .Values.settings.sslCertSecretName }}
+        - name: appsettings-ssl
+          secret:
+            secretName: "{{ .Values.settings.sslCertSecretName }}"
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
