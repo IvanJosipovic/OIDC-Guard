@@ -42,7 +42,7 @@ public class Program
         {
             serverOptions.ConfigureHttpsDefaults(listenOptions =>
             {
-                listenOptions.ServerCertificate ??= GenerateSelfSignedServerCertificate();
+                listenOptions.ServerCertificate ??= GenerateSelfSignedServerCertificate(settings);
             });
         });
 
@@ -625,15 +625,18 @@ public class Program
         return true;
     }
 
-    private static X509Certificate2 GenerateSelfSignedServerCertificate()
+    private static X509Certificate2 GenerateSelfSignedServerCertificate(Settings settings)
     {
         var sanBuilder = new SubjectAlternativeNameBuilder();
         sanBuilder.AddIpAddress(IPAddress.Loopback);
         sanBuilder.AddIpAddress(IPAddress.IPv6Loopback);
         sanBuilder.AddDnsName("localhost");
-        sanBuilder.AddDnsName("oidc-guard");
 
-        var distinguishedName = new X500DistinguishedName($"CN=oidc-guard");
+        sanBuilder.AddDnsName($"{settings.Name}.{settings.Namespace}");
+        sanBuilder.AddDnsName($"{settings.Name}.{settings.Namespace}.svc");
+        sanBuilder.AddDnsName($"{settings.Name}.{settings.Namespace}.svc.cluster.local");
+
+        var distinguishedName = new X500DistinguishedName($"CN={settings.Name}.{settings.Namespace}.svc.cluster.local, O=OIDC-Guard, C=CA");
 
         using var rsa = RSA.Create(2048);
 
@@ -646,7 +649,7 @@ public class Program
             }
         };
 
-        var certificate = request.CreateSelfSigned(new DateTimeOffset(DateTime.UtcNow.AddDays(-1)), new DateTimeOffset(DateTime.UtcNow.AddDays(3650)));
+        var certificate = request.CreateSelfSigned(new DateTimeOffset(DateTime.UtcNow.AddSeconds(-30)), new DateTimeOffset(DateTime.UtcNow.AddYears(10)));
 
         return X509CertificateLoader.LoadPkcs12(certificate.Export(X509ContentType.Pfx), null);
     }
