@@ -30,10 +30,14 @@ public class Program
     {
         var builder = WebApplication.CreateSlimBuilder(args);
 
-        builder.WebHost.UseKestrelHttpsConfiguration();
-
         var settings = builder.Configuration.GetSection("Settings").Get<Settings>()!;
         builder.Services.AddSingleton(settings);
+
+        if (!string.IsNullOrEmpty(settings.SslCertSecretName))
+        {
+            builder.WebHost.UseKestrelHttpsConfiguration();
+
+        }
 
         builder.Services.ConfigureHttpJsonOptions(options =>
         {
