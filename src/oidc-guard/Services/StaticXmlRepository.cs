@@ -8,11 +8,8 @@ public class StaticXmlRepository : IXmlRepository
 {
     public StaticXmlRepository(string secret)
     {
-        Secret = secret;
         KeyGenerator = new Rfc2898DeriveBytes(secret, 0, 1, HashAlgorithmName.SHA256);
     }
-
-    private string Secret { get; }
 
     private Rfc2898DeriveBytes KeyGenerator { get; set; }
 

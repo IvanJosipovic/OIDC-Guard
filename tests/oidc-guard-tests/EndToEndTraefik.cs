@@ -36,7 +36,7 @@ public class EndToEndTraefik
                 },
                 Spec = new {
                     ForwardAuth = new {
-                        Address = "http://oidc-guard.oidc-guard.svc.cluster.local:8080/auth?inject-json-claim=role%2Cjson_claim%2C%24.firebase.sign_in_attributes.role",
+                        Address = "http://oidc-guard.oidc-guard.svc.cluster.local/auth?inject-json-claim=role%2Cjson_claim%2C%24.firebase.sign_in_attributes.role",
                     }
                 }
             };

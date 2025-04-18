@@ -8,7 +8,7 @@ namespace oidc_guard_tests.EndToEnd;
 
 public class Helm
 {
-    private const string Version = "3.13.1";
+    private const string Version = "3.17.3";
 
     public static string FileName { get; } = "helm" + (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : "");
 

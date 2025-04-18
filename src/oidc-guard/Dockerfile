@@ -1,6 +1,6 @@
 ARG BUILDPLATFORM=linux/amd64
 
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0-alpine3.21@sha256:2303ad5956875eb82d3c6195e43f0e8e1378a6252869f2d4d200e067130ff5b5 AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0-alpine3.21@sha256:33be1326b4a2602d08e145cf7e4a8db4b243db3cac3bdec42e91aef930656080 AS build
 RUN apk add build-base zlib-dev
 WORKDIR /src
 COPY oidc-guard.csproj .
@@ -12,11 +12,12 @@ FROM build AS publish
 ARG VERSION=0.0.1
 RUN dotnet publish "oidc-guard.csproj" -c Release --use-current-runtime -o /app/publish /p:Version=${VERSION}
 
-FROM mcr.microsoft.com/dotnet/runtime-deps:9.0-alpine3.21@sha256:4514e51ede7f0ce0dd3a726fb6e6831a590be05ae83d5c529f73f6b9e0523b68 AS base
+FROM mcr.microsoft.com/dotnet/runtime-deps:9.0-alpine3.21@sha256:77eda1f77b7a8d36d137a93ca6d32a2f948e63804993738a33f23dfb066ba15d AS base
 WORKDIR /app
 EXPOSE 8080
-ENV ASPNETCORE_URLS=http://+:8080
-LABEL org.opencontainers.image.description="OpenID Connect (OIDC) & OAuth 2 API Server used to secure Kubernetes Ingress"
+EXPOSE 8433
+ENV ASPNETCORE_URLS=http://+:8080;https://+:8433
+LABEL org.opencontainers.image.description OpenID Connect (OIDC) & OAuth 2 API Server used to secure Kubernetes Ingress
 
 # renovate: datasource=repology depName=alpine_3_21/ca-certificates-bundle versioning=loose
 ENV CA_CERTIFICATES_BUNDLES_VERSION="20241121-r1"
