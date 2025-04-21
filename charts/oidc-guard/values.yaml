@@ -30,6 +30,7 @@ settings:
 
   # Set the name of the secret which contains the SSL certificate used for HTTPS
   # The secret needs to have keys named tls.crt and tls.key
+  # If no secret is specified, a self-signed certificate will be generated
   sslCertSecretName: ""
 
   cookie:
