@@ -233,6 +233,8 @@ public class Program
             logging.RequestHeaders.Add(HeaderNames.AccessControlRequestMethod);
             logging.RequestHeaders.Add(HeaderNames.AccessControlRequestHeaders);
 
+            logging.ResponseHeaders.Add(CustomHeaderNames.XOriginalUrl);
+            logging.ResponseHeaders.Add(CustomHeaderNames.XRequestID);
             logging.ResponseHeaders.Add(HeaderNames.WWWAuthenticate);
         });
 
