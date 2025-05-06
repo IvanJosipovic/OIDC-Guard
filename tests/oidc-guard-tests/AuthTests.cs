@@ -747,4 +747,22 @@ public class AuthTests
 
         values.First().Should().Be("Bearer test=true, error=\"invalid_token\"");
     }
+
+    [Fact]
+    public async Task AddHeadersToUnauthenticated()
+    {
+        var _client = AuthTestsHelpers.GetClient();
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XRequestID, "my-request-id");
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XOriginalUrl, "https://my-request-url");
+
+        var response = await _client.GetAsync("/auth");
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+
+        response.Headers.TryGetValues(CustomHeaderNames.XRequestID, out var values);
+        values.First().Should().Be("my-request-id");
+
+        response.Headers.TryGetValues(CustomHeaderNames.XOriginalUrl, out var values2);
+        values2.First().Should().Be("https://my-request-url");
+    }
 }

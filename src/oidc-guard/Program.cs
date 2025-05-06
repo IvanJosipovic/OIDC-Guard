@@ -574,6 +574,16 @@ public class Program
 
         context.Response.Headers.Append(HeaderNames.WWWAuthenticate, builder.ToString());
 
+        if (context.Request.Headers.TryGetValue(CustomHeaderNames.XRequestID, out var value))
+        {
+            context.Response.Headers[CustomHeaderNames.XRequestID] = value;
+        }
+
+        if (context.Request.Headers.TryGetValue(CustomHeaderNames.XOriginalUrl, out var value2))
+        {
+            context.Response.Headers[CustomHeaderNames.XOriginalUrl] = value2;
+        }
+
         return Results.Unauthorized();
     }
 
