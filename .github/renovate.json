@@ -20,6 +20,12 @@
   ],
   "packageRules": [
     {
+      "matchManagers": ["nuget"],
+      "matchPackageNames": ["OpenTelemetry.Exporter.Prometheus.AspNetCore", "OpenTelemetry.Instrumentation.EventCounters"],
+      "allowUnstable": true,
+      "respectLatest": false
+    },
+    {
       "matchUpdateTypes": [
         "minor",
         "patch",
