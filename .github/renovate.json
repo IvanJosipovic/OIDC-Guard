@@ -22,7 +22,7 @@
     {
       "matchManagers": ["nuget"],
       "matchPackageNames": ["OpenTelemetry.Exporter.Prometheus.AspNetCore", "OpenTelemetry.Instrumentation.EventCounters"],
-      "allowUnstable": true,
+      "ignoreUnstable": false,
       "respectLatest": false
     },
     {
