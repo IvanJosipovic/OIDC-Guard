@@ -67,17 +67,9 @@ jobs:
         file: coverage.cobertura.xml
         fail_ci_if_error: true
 
-    - name: Publish Benchmark
-      working-directory: benchmarks/oidc-guard-benchmarks
-      run: dotnet publish -c Release -o bin/publish
-
-    - name: Chmod Benchmark
-      working-directory: benchmarks/oidc-guard-benchmarks/bin/publish
-      run: chmod +x oidc-guard-benchmarks
-
     - name: Run Benchmark
-      working-directory: benchmarks/oidc-guard-benchmarks/bin/publish
-      run: ./oidc-guard-benchmarks
+      working-directory: benchmarks/oidc-guard-benchmarks
+      run: dotnet run -c Release
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
