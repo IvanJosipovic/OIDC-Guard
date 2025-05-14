@@ -32,6 +32,17 @@
         "digest"
       ],
       "automerge": true,
+      "matchFileNames": [
+        "global.json"
+      ]
+    },
+    {
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "digest"
+      ],
+      "automerge": true,
       "semanticCommitType": "fix",
       "matchFileNames": [
         "src/**",
