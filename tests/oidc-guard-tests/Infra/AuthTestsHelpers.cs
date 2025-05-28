@@ -53,6 +53,18 @@ public static class AuthTestsHelpers
                                 );
                             });
                         }
+                        else
+                        {
+                            services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
+                            {
+                                options.MetadataAddress = null;
+                                options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+                                    settings.OpenIdProviderConfigurationUrl,
+                                    new OpenIdConnectConfigurationRetriever(),
+                                    new TestServerDocumentRetriever()
+                                );
+                            });
+                        }
                     }
 
                     if (settings.Cookie.Enable)
