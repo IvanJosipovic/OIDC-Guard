@@ -30,17 +30,11 @@ public class MultiJwksRetriever : IConfigurationRetriever<OpenIdConnectConfigura
         {
             try
             {
-                if (LogHelper.IsEnabled(EventLogLevel.Verbose))
-                {
-                    LogHelper.LogVerbose("Retrieving json web keys from: '{0}'.", url);
-                }
+                LogHelper.LogVerbose("Retrieving json web keys from: '{0}'.", url);
 
                 var doc = await retriever.GetDocumentAsync(url, cancel).ConfigureAwait(false);
 
-                if (LogHelper.IsEnabled(EventLogLevel.Verbose))
-                {
-                    LogHelper.LogVerbose("Recieved json document", doc);
-                }
+                LogHelper.LogVerbose("Recieved json document", doc);
 
                 var JsonWebKeySet = new JsonWebKeySet(doc);
 

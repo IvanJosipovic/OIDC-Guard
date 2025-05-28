@@ -669,7 +669,8 @@ public class AuthTests
     public async Task JWKSRetrieverArgs()
     {
         var jwk = new MultiJwksRetriever(["http://tttt"]);
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await jwk.GetConfigurationAsync("https://test", null, CancellationToken.None));
+        var results = await jwk.GetConfigurationAsync("http://tttt", new TestServerDocumentRetriever(), CancellationToken.None);
+        results.SigningKeys.Count.Should().Be(0);
     }
 
     [Fact]
