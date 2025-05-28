@@ -26,8 +26,8 @@ public class AuthTests
 
     public static IEnumerable<object[]> GetTests()
     {
-        return new List<object[]>
-        {
+        return
+        [
             new object[]
             {
                 "",
@@ -129,13 +129,13 @@ public class AuthTests
                     new(HeaderNames.WWWAuthenticate, "Bearer error=\"invalid_token\", error_description=\"Missing Claim [tid, 11111111-1111-1111-1111-111111111111]\"")
                 }
             },
-        };
+        ];
     }
 
     public static IEnumerable<object[]> GetArrayTests()
     {
-        return new List<object[]>
-        {
+        return
+        [
             new object[]
             {
                 "?groups=foo",
@@ -182,13 +182,13 @@ public class AuthTests
                 },
                 HttpStatusCode.Unauthorized
             },
-        };
+        ];
     }
 
     public static IEnumerable<object[]> GetInjectClaimsTests()
     {
-        return new List<object[]>
-        {
+        return
+        [
             new object[]
             {
                 "?tid=11111111-1111-1111-1111-111111111111&inject-claim=tid",
@@ -360,7 +360,7 @@ public class AuthTests
                     new("email", "demo_user@gmail.com")
                 }
             },
-        };
+        ];
     }
 
     [Theory]
@@ -394,7 +394,7 @@ public class AuthTests
     {
         var _client = AuthTestsHelpers.GetClient(x => x.JWT.Enable = false);
 
-        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(new List<Claim>()));
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken());
 
         var response = await _client.GetAsync($"/auth");
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -405,7 +405,7 @@ public class AuthTests
     {
         var _client = AuthTestsHelpers.GetClient(x => x.JWT.AuthorizationHeader = "TestHeader");
 
-        _client.DefaultRequestHeaders.TryAddWithoutValidation("TestHeader", FakeJwtIssuer.GenerateBearerJwtToken(new List<Claim>()));
+        _client.DefaultRequestHeaders.TryAddWithoutValidation("TestHeader", FakeJwtIssuer.GenerateBearerJwtToken());
 
         var response = await _client.GetAsync($"/auth");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -413,8 +413,8 @@ public class AuthTests
 
     public static IEnumerable<object[]> GetTokenAsQueryParameterTests()
     {
-        return new List<object[]>
-        {
+        return
+        [
             new object[] // Token Only in Query String
             {
                 "",
@@ -464,7 +464,7 @@ public class AuthTests
                 HttpStatusCode.OK,
                 new Dictionary<string, string>()
                 {
-                    {CustomHeaderNames.XOriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken(new List<Claim>{new("tid", "11111111-1111-1111-1111-111111111111")})}" }
+                    {CustomHeaderNames.XOriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken([new("tid", "11111111-1111-1111-1111-111111111111")])}" }
                 },
             },
             new object[] // Token in Query String with Bad Claim
@@ -474,7 +474,7 @@ public class AuthTests
                 HttpStatusCode.Unauthorized,
                 new Dictionary<string, string>()
                 {
-                    {CustomHeaderNames.XOriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken(new List<Claim>{new("tid", "22222222-2222-2222-2222-222222222222")})}" }
+                    {CustomHeaderNames.XOriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken([new("tid", "22222222-2222-2222-2222-222222222222")])}" }
                 },
             },
 
@@ -500,7 +500,7 @@ public class AuthTests
                 {
                 }
             },
-        };
+        ];
     }
 
     [Theory]
@@ -634,11 +634,11 @@ public class AuthTests
         var _client = AuthTestsHelpers.GetClient(x =>
         {
             x.Cookie.Enable = false;
-            x.JWT.JWKSUrl = "https://inmemory.microsoft.com/common/discovery/keys";
-            x.JWT.ValidIssuers = [FakeJwtIssuer.Issuer];
+            x.JWT.JWKSUrl = "https://inmemory.microsoft.com/common/discovery/keys2";
+            x.JWT.ValidIssuers = [FakeJwtIssuer2.Issuer];
         });
 
-        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(new List<Claim>()));
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer2.GenerateBearerJwtToken());
 
         var response = await _client.GetAsync($"/auth");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -654,12 +654,12 @@ public class AuthTests
             x.JWT.ValidIssuers = [FakeJwtIssuer.Issuer, FakeJwtIssuer2.Issuer];
         });
 
-        _client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(FakeJwtIssuer.GenerateBearerJwtToken(new List<Claim>()));
+        _client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(FakeJwtIssuer.GenerateBearerJwtToken());
 
         var response = await _client.GetAsync($"/auth");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        _client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(FakeJwtIssuer2.GenerateBearerJwtToken(new List<Claim>()));
+        _client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(FakeJwtIssuer2.GenerateBearerJwtToken());
 
         var response2 = await _client.GetAsync($"/auth");
         response2.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -677,7 +677,7 @@ public class AuthTests
     {
         var _client = AuthTestsHelpers.GetClient(x => x.JWT.PrependBearer = true);
 
-        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateJwtToken(new List<Claim>()));
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateJwtToken([]));
 
         var response = await _client.GetAsync($"/auth");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -697,7 +697,7 @@ public class AuthTests
     {
         var _client = AuthTestsHelpers.GetClient(x => x.Cookie.RedirectUnauthenticatedSignin = true);
 
-        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(new List<Claim>()));
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken());
 
         var response = await _client.GetAsync($"/auth?test=2");
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -709,7 +709,7 @@ public class AuthTests
         var _client = AuthTestsHelpers.GetClient(x => x.Cookie.RedirectUnauthenticatedSignin = true);
 
         _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XOriginalUrl, "https://redirect/test123");
-        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(new List<Claim>()));
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken());
 
         var response = await _client.GetAsync($"/auth?test=2");
         response.StatusCode.Should().Be(HttpStatusCode.Redirect);

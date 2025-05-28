@@ -24,11 +24,6 @@ public class MultiJwksRetriever : IConfigurationRetriever<OpenIdConnectConfigura
     /// <returns></returns>
     public async Task<OpenIdConnectConfiguration> GetConfigurationAsync(string address, IDocumentRetriever retriever, CancellationToken cancel)
     {
-        if (retriever == null)
-        {
-            throw LogHelper.LogArgumentNullException(nameof(retriever));
-        }
-
         var openIdConnectConfiguration = new OpenIdConnectConfiguration();
 
         foreach (var url in urls)

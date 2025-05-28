@@ -14,7 +14,6 @@ public static class FakeJwtIssuer
 
     public static SecurityKey SecurityKey { get; }
     public static SigningCredentials SigningCredentials { get; }
-
     public static JsonWebKey JsonWebKey { get; }
 
     private static readonly JwtSecurityTokenHandler s_tokenHandler = new();
@@ -34,13 +33,17 @@ public static class FakeJwtIssuer
         JsonWebKey = JsonWebKeyConverter.ConvertFromSecurityKey(SecurityKey);
     }
 
-    public static string GenerateBearerJwtToken(IEnumerable<Claim> claims)
+    public static string GenerateBearerJwtToken(IEnumerable<Claim>? claims = null)
     {
+        claims = claims ?? [];
+
         return "Bearer " + GenerateJwtToken(claims);
     }
 
-    public static string GenerateJwtToken(IEnumerable<Claim> claims)
+    public static string GenerateJwtToken(IEnumerable<Claim>? claims = null)
     {
+        claims = claims ?? [];
+
         return s_tokenHandler.WriteToken(new JwtSecurityToken(Issuer, Audience, claims, DateTime.UtcNow, DateTime.UtcNow.AddMinutes(20), SigningCredentials));
     }
 }
@@ -52,7 +55,6 @@ public static class FakeJwtIssuer2
 
     public static SecurityKey SecurityKey { get; }
     public static SigningCredentials SigningCredentials { get; }
-
     public static JsonWebKey JsonWebKey { get; }
 
     private static readonly JwtSecurityTokenHandler s_tokenHandler = new();
@@ -72,13 +74,17 @@ public static class FakeJwtIssuer2
         JsonWebKey = JsonWebKeyConverter.ConvertFromSecurityKey(SecurityKey);
     }
 
-    public static string GenerateBearerJwtToken(IEnumerable<Claim> claims)
+    public static string GenerateBearerJwtToken(IEnumerable<Claim>? claims = null)
     {
+        claims = claims ?? [];
+
         return "Bearer " + GenerateJwtToken(claims);
     }
 
-    public static string GenerateJwtToken(IEnumerable<Claim> claims)
+    public static string GenerateJwtToken(IEnumerable<Claim>? claims = null)
     {
+        claims = claims ?? [];
+
         return s_tokenHandler.WriteToken(new JwtSecurityToken(Issuer, Audience, claims, DateTime.UtcNow, DateTime.UtcNow.AddMinutes(20), SigningCredentials));
     }
 }

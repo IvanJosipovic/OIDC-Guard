@@ -172,7 +172,7 @@ public class Program
 
                 //todo remove in next major
 #pragma warning disable CS0612 // Type or member is obsolete
-                var jwksUrls = settings.JWT.JWKSUrls ?? (!string.IsNullOrEmpty(settings.JWT.JWKSUrl) ? [settings.JWT.JWKSUrl] : null);
+                var jwksUrls = !string.IsNullOrEmpty(settings.JWT.JWKSUrl) ? [settings.JWT.JWKSUrl] : settings.JWT.JWKSUrls;
 #pragma warning restore CS0612 // Type or member is obsolete
 
                 if (jwksUrls != null && jwksUrls.Length != 0)
