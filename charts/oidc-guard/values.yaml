@@ -94,8 +94,12 @@ settings:
     enable: true
 
     # Sets the JSON Web Key Set and ignores the openIdProviderConfigurationUrl
+    # Accepts a list of URLs
     # Make sure to set the validIssuers property
-    JWKSUrl: ""
+    JWKSUrls: []
+    # - "https://example.com/.well-known/jwks.json"
+    # - "https://another.com/jwks"
+    # JWKSUrl: "" # Deprecated, use JWKSUrls instead
 
     # Sets Authorization header name, if not set "Authorization" will be used
     authorizationHeader: ""

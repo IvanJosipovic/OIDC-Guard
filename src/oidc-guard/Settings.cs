@@ -40,7 +40,10 @@ public class JWTAuthSettings
     public bool ValidateIssuer { get; set; } = true;
     public string[]? ValidAudiences { get; set; }
     public string[]? ValidIssuers { get; set; }
+
+    [Obsolete]
     public string? JWKSUrl { get; set; }
+    public string[]? JWKSUrls { get; set; }
     public bool PrependBearer { get; set; }
     public string? AppendToWWWAuthenticateHeader { get; set; }
 }

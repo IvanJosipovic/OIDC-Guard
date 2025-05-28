@@ -39,26 +39,16 @@ public static class AuthTestsHelpers
 
                     if (settings.JWT.Enable)
                     {
-                        if (string.IsNullOrEmpty(settings.JWT.JWKSUrl))
+                        var jwksUrls = settings.JWT.JWKSUrls ?? (settings.JWT.JWKSUrl != null ? [settings.JWT.JWKSUrl] : null);
+
+                        if (jwksUrls != null && jwksUrls.Length > 0)
                         {
                             services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
                             {
                                 options.MetadataAddress = null;
                                 options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                                    settings.OpenIdProviderConfigurationUrl,
-                                    new OpenIdConnectConfigurationRetriever(),
-                                    new TestServerDocumentRetriever()
-                                );
-                            });
-                        }
-                        else
-                        {
-                            services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
-                            {
-                                options.MetadataAddress = null;
-                                options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                                    settings.JWT.JWKSUrl,
-                                    new JwksRetriever(),
+                                    jwksUrls[0],
+                                    new MultiJwksRetriever(jwksUrls),
                                     new TestServerDocumentRetriever()
                                 );
                             });

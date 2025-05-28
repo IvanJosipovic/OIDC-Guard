@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Protocols;
@@ -169,7 +170,12 @@ public class Program
             {
                 o.RequireHttpsMetadata = settings.RequireHttpsMetadata;
 
-                if (!string.IsNullOrEmpty(settings.JWT.JWKSUrl))
+                //todo remove in next major
+#pragma warning disable CS0612 // Type or member is obsolete
+                var jwksUrls = settings.JWT.JWKSUrls ?? (!string.IsNullOrEmpty(settings.JWT.JWKSUrl) ? [settings.JWT.JWKSUrl] : null);
+#pragma warning restore CS0612 // Type or member is obsolete
+
+                if (jwksUrls != null && jwksUrls.Length != 0)
                 {
                     var httpClient = new HttpClient(o.BackchannelHttpHandler ?? new HttpClientHandler())
                     {
@@ -178,8 +184,8 @@ public class Program
                     };
 
                     o.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                        settings.JWT.JWKSUrl,
-                        new JwksRetriever(),
+                        jwksUrls[0],
+                        new MultiJwksRetriever(jwksUrls),
                         new HttpDocumentRetriever(httpClient) { RequireHttps = o.RequireHttpsMetadata }
                     )
                     {

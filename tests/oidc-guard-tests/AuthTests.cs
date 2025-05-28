@@ -633,7 +633,7 @@ public class AuthTests
         var _client = AuthTestsHelpers.GetClient(x =>
         {
             x.Cookie.Enable = false;
-            x.JWT.JWKSUrl = "https://inmemory.microsoft.com/common/discovery/keys";
+            x.JWT.JWKSUrls = ["https://inmemory.microsoft.com/common/discovery/keys"];
             x.JWT.ValidIssuers = [FakeJwtIssuer.Issuer];
         });
 
@@ -646,7 +646,7 @@ public class AuthTests
     [Fact]
     public async Task JWKSRetrieverArgs()
     {
-        var jwk = new JwksRetriever();
+        var jwk = new MultiJwksRetriever(["http://tttt"]);
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await jwk.GetConfigurationAsync("https://test", null, CancellationToken.None));
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await jwk.GetConfigurationAsync(null, new HttpDocumentRetriever(), CancellationToken.None));
     }
