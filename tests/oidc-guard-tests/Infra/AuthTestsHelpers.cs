@@ -21,8 +21,7 @@ public static class AuthTestsHelpers
             Cookie = new()
             {
                 ClientId = FakeJwtIssuer.Audience,
-                ClientSecret = "secret",
-                Scopes = ["openid", "profile"]
+                ClientSecret = "secret"
             },
             OpenIdProviderConfigurationUrl = "https://inmemory.microsoft.com/common/.well-known/openid-configuration",
         };
@@ -45,7 +44,7 @@ public static class AuthTestsHelpers
                         {
                             services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
                             {
-                                options.MetadataAddress = null;
+                                options.MetadataAddress = default!;
                                 options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
                                     jwksUrls[0],
                                     new MultiJwksRetriever(jwksUrls),
@@ -57,7 +56,7 @@ public static class AuthTestsHelpers
                         {
                             services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
                             {
-                                options.MetadataAddress = null;
+                                options.MetadataAddress = default!;
                                 options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
                                     settings.OpenIdProviderConfigurationUrl,
                                     new OpenIdConnectConfigurationRetriever(),
