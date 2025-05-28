@@ -48,6 +48,24 @@ public class TestServerDocumentRetriever : IDocumentRetriever
             return Task.FromResult(keys);
         }
 
+        if (address.Equals("https://inmemory.microsoft.com/common/discovery/keys2"))
+        {
+            //https://datatracker.ietf.org/doc/html/rfc7517
+            var keys = $$"""
+                    {
+                      "keys": [{
+                          "kty": "RSA",
+                          "kid": "{{FakeJwtIssuer2.JsonWebKey.Kid}}",
+                          "x5t": "{{FakeJwtIssuer2.JsonWebKey.X5t}}",
+                          "x5c": ["{{FakeJwtIssuer2.JsonWebKey.X5c.First()}}"]
+                        }
+                      ]
+                    }
+                    """;
+
+            return Task.FromResult(keys);
+        }
+
         throw new NotImplementedException();
     }
 }

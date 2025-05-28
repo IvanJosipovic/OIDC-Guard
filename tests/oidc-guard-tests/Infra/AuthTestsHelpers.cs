@@ -22,7 +22,7 @@ public static class AuthTestsHelpers
             {
                 ClientId = FakeJwtIssuer.Audience,
                 ClientSecret = "secret",
-                Scopes = new[] { "openid", "profile" }
+                Scopes = ["openid", "profile"]
             },
             OpenIdProviderConfigurationUrl = "https://inmemory.microsoft.com/common/.well-known/openid-configuration",
         };

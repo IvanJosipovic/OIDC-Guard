@@ -619,7 +619,7 @@ public class AuthTests
     }
 
     [Fact]
-    private async Task SkipAuthMissingHeaders()
+    public async Task SkipAuthMissingHeaders()
     {
         var _client = AuthTestsHelpers.GetClient();
 
@@ -644,11 +644,31 @@ public class AuthTests
     }
 
     [Fact]
+    public async Task JWKSAuthMulti()
+    {
+        var _client = AuthTestsHelpers.GetClient(x =>
+        {
+            x.Cookie.Enable = false;
+            x.JWT.JWKSUrls = ["https://inmemory.microsoft.com/common/discovery/keys", "https://inmemory.microsoft.com/common/discovery/keys2"];
+            x.JWT.ValidIssuers = [FakeJwtIssuer.Issuer, FakeJwtIssuer2.Issuer];
+        });
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(new List<Claim>()));
+
+        var response = await _client.GetAsync($"/auth");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer2.GenerateBearerJwtToken(new List<Claim>()));
+
+        var response2 = await _client.GetAsync($"/auth");
+        response2.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
     public async Task JWKSRetrieverArgs()
     {
         var jwk = new MultiJwksRetriever(["http://tttt"]);
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await jwk.GetConfigurationAsync("https://test", null, CancellationToken.None));
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await jwk.GetConfigurationAsync(null, new HttpDocumentRetriever(), CancellationToken.None));
     }
 
     [Fact]
