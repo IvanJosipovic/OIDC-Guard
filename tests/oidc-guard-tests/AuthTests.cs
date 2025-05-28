@@ -5,6 +5,7 @@ using oidc_guard;
 using oidc_guard.Services;
 using oidc_guard_tests.Infra;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json;
@@ -633,7 +634,7 @@ public class AuthTests
         var _client = AuthTestsHelpers.GetClient(x =>
         {
             x.Cookie.Enable = false;
-            x.JWT.JWKSUrls = ["https://inmemory.microsoft.com/common/discovery/keys"];
+            x.JWT.JWKSUrl = "https://inmemory.microsoft.com/common/discovery/keys";
             x.JWT.ValidIssuers = [FakeJwtIssuer.Issuer];
         });
 
@@ -653,12 +654,12 @@ public class AuthTests
             x.JWT.ValidIssuers = [FakeJwtIssuer.Issuer, FakeJwtIssuer2.Issuer];
         });
 
-        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(new List<Claim>()));
+        _client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(FakeJwtIssuer.GenerateBearerJwtToken(new List<Claim>()));
 
         var response = await _client.GetAsync($"/auth");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer2.GenerateBearerJwtToken(new List<Claim>()));
+        _client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(FakeJwtIssuer2.GenerateBearerJwtToken(new List<Claim>()));
 
         var response2 = await _client.GetAsync($"/auth");
         response2.StatusCode.Should().Be(HttpStatusCode.OK);
