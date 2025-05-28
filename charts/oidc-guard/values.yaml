@@ -99,7 +99,7 @@ settings:
     JWKSUrls: []
     # - "https://example.com/.well-known/jwks.json"
     # - "https://another.com/jwks"
-    # JWKSUrl: "" # Deprecated, use JWKSUrls instead
+    JWKSUrl: "" # Deprecated, use JWKSUrls instead
 
     # Sets Authorization header name, if not set "Authorization" will be used
     authorizationHeader: ""

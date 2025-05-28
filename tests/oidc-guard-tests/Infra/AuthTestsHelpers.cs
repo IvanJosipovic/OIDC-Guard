@@ -39,7 +39,7 @@ public static class AuthTestsHelpers
 
                     if (settings.JWT.Enable)
                     {
-                        var jwksUrls = settings.JWT.JWKSUrls ?? (settings.JWT.JWKSUrl != null ? [settings.JWT.JWKSUrl] : null);
+                        var jwksUrls = settings.JWT.JWKSUrls ?? (!string.IsNullOrEmpty(settings.JWT.JWKSUrl) ? [settings.JWT.JWKSUrl] : null);
 
                         if (jwksUrls != null && jwksUrls.Length > 0)
                         {
