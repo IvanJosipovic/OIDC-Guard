@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Net.Http.Headers;
@@ -251,7 +251,11 @@ public class Program
 
         builder.Services.AddHostedService<HostedService>();
 
+        builder.Services.AddSingleton<IdentityLogger>();
+
         var app = builder.Build();
+
+        LogHelper.Logger = app.Services.GetRequiredService<IdentityLogger>();
 
         app.UseForwardedHeaders();
 
