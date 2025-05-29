@@ -14,10 +14,9 @@ public static class FakeJwtIssuer
 
     public static SecurityKey SecurityKey { get; }
     public static SigningCredentials SigningCredentials { get; }
-
     public static JsonWebKey JsonWebKey { get; }
 
-    private static readonly JwtSecurityTokenHandler s_tokenHandler = new JwtSecurityTokenHandler();
+    private static readonly JwtSecurityTokenHandler s_tokenHandler = new();
 
     static FakeJwtIssuer()
     {
@@ -34,13 +33,58 @@ public static class FakeJwtIssuer
         JsonWebKey = JsonWebKeyConverter.ConvertFromSecurityKey(SecurityKey);
     }
 
-    public static string GenerateBearerJwtToken(IEnumerable<Claim> claims)
+    public static string GenerateBearerJwtToken(IEnumerable<Claim>? claims = null)
     {
+        claims ??= [];
+
         return "Bearer " + GenerateJwtToken(claims);
     }
 
-    public static string GenerateJwtToken(IEnumerable<Claim> claims)
+    public static string GenerateJwtToken(IEnumerable<Claim>? claims = null)
     {
+        claims ??= [];
+
+        return s_tokenHandler.WriteToken(new JwtSecurityToken(Issuer, Audience, claims, DateTime.UtcNow, DateTime.UtcNow.AddMinutes(20), SigningCredentials));
+    }
+}
+
+public static class FakeJwtIssuer2
+{
+    public static string Issuer { get; } = "179e1bd0-b886-49b0-b2ec-55e600429e02";
+    public static string Audience { get; } = "386a4651-7206-464d-a8ae-5be813a2fdca";
+
+    public static SecurityKey SecurityKey { get; }
+    public static SigningCredentials SigningCredentials { get; }
+    public static JsonWebKey JsonWebKey { get; }
+
+    private static readonly JwtSecurityTokenHandler s_tokenHandler = new();
+
+    static FakeJwtIssuer2()
+    {
+        RSA rsa = new RSACryptoServiceProvider(2048);
+
+        var certificateRequest = new CertificateRequest("CN=MyCertificate", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+
+        var certificate = certificateRequest.CreateSelfSigned(DateTimeOffset.Now, DateTimeOffset.Now.AddYears(1));
+
+        SecurityKey = new X509SecurityKey(certificate);
+
+        SigningCredentials = new SigningCredentials(SecurityKey, SecurityAlgorithms.RsaSha256Signature);
+
+        JsonWebKey = JsonWebKeyConverter.ConvertFromSecurityKey(SecurityKey);
+    }
+
+    public static string GenerateBearerJwtToken(IEnumerable<Claim>? claims = null)
+    {
+        claims = claims ?? [];
+
+        return "Bearer " + GenerateJwtToken(claims);
+    }
+
+    public static string GenerateJwtToken(IEnumerable<Claim>? claims = null)
+    {
+        claims = claims ?? [];
+
         return s_tokenHandler.WriteToken(new JwtSecurityToken(Issuer, Audience, claims, DateTime.UtcNow, DateTime.UtcNow.AddMinutes(20), SigningCredentials));
     }
 }

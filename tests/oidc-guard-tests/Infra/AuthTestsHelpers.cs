@@ -21,8 +21,7 @@ public static class AuthTestsHelpers
             Cookie = new()
             {
                 ClientId = FakeJwtIssuer.Audience,
-                ClientSecret = "secret",
-                Scopes = new[] { "openid", "profile" }
+                ClientSecret = "secret"
             },
             OpenIdProviderConfigurationUrl = "https://inmemory.microsoft.com/common/.well-known/openid-configuration",
         };
@@ -39,14 +38,16 @@ public static class AuthTestsHelpers
 
                     if (settings.JWT.Enable)
                     {
-                        if (string.IsNullOrEmpty(settings.JWT.JWKSUrl))
+                        var jwksUrls = !string.IsNullOrEmpty(settings.JWT.JWKSUrl) ? [settings.JWT.JWKSUrl] : settings.JWT.JWKSUrls;
+
+                        if (jwksUrls != null && jwksUrls.Length > 0)
                         {
                             services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
                             {
-                                options.MetadataAddress = null;
+                                options.MetadataAddress = default!;
                                 options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                                    settings.OpenIdProviderConfigurationUrl,
-                                    new OpenIdConnectConfigurationRetriever(),
+                                    jwksUrls[0],
+                                    new MultiJwksRetriever(jwksUrls),
                                     new TestServerDocumentRetriever()
                                 );
                             });
@@ -55,10 +56,10 @@ public static class AuthTestsHelpers
                         {
                             services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
                             {
-                                options.MetadataAddress = null;
+                                options.MetadataAddress = default!;
                                 options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                                    settings.JWT.JWKSUrl,
-                                    new JwksRetriever(),
+                                    settings.OpenIdProviderConfigurationUrl,
+                                    new OpenIdConnectConfigurationRetriever(),
                                     new TestServerDocumentRetriever()
                                 );
                             });
