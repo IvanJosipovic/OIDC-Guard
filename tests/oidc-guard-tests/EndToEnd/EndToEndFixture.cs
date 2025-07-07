@@ -4,7 +4,7 @@ using k8s;
 using k8s.Models;
 using KubeUI.Core.Tests;
 using Xunit;
-using Denude.IdentityModel.Client;
+using Duende.IdentityModel.Client;
 
 namespace oidc_guard_tests.EndToEnd;
 
