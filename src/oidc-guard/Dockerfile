@@ -24,7 +24,7 @@ LABEL org.opencontainers.image.description="OpenID Connect (OIDC) & OAuth 2 API 
 ENV CA_CERTIFICATES_BUNDLES_VERSION="20241121-r1"
 
 # renovate: datasource=repology depName=alpine_3_21/busybox versioning=loose
-ENV BUSYBOX_VERSION="1.37.0-r12"
+ENV BUSYBOX_VERSION="1.37.0-r13"
 
 # renovate: datasource=repology depName=alpine_3_21/busybox-binsh versioning=loose
 ENV BUSYBOX_BINSH_VERSION="1.37.0-r12"
