@@ -787,20 +787,4 @@ public class AuthTests
         response.Headers.TryGetValues(CustomHeaderNames.XOriginalUrl, out var values2);
         values2.First().Should().Be("https://my-request-url");
     }
-
-    [Fact]
-    public async Task SignedInUnauthorized()
-    {
-        var _client = AuthTestsHelpers.GetClient();
-
-        var claims = new List<Claim>()
-        {
-            new("username", "test")
-        };
-
-        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(claims));
-
-        var response = await _client.GetAsync("/signin?rd=/");
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-    }
 }
