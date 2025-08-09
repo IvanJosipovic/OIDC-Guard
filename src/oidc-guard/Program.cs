@@ -548,7 +548,7 @@ public class Program
 
             if (httpContext.User.Identity?.IsAuthenticated == true)
             {
-                // If we're here is because a user has failed a auth constraint and this means they are Unauthorized
+                // If we're here its because a user has failed a auth constraint
                 // Return Unauthorized in order to prevent a signin loop
                 return UnauthorizedResults(httpContext, options, "User missing expected Claims");
             }
