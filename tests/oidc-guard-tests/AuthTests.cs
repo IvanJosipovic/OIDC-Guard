@@ -495,7 +495,7 @@ public class AuthTests
             {
                 "",
                 new List<Claim>(),
-                HttpStatusCode.Forbidden,
+                HttpStatusCode.Unauthorized,
                 new Dictionary<string, string>()
                 {
                 }
