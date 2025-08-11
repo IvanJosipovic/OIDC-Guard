@@ -614,49 +614,38 @@ public class Program
                   <meta charset="utf-8" />
                   <title>403 Forbidden</title>
                   <meta name="viewport" content="width=device-width, initial-scale=1" />
-                  <meta name="robots" content="noindex" />
                   <style>
-                    :root { --bg:#0b0c10; --card:#151820; --text:#e6e6e6; --muted:#99a3ad; }
-                    @media (prefers-color-scheme: light) {
-                      :root { --bg:#f6f7f9; --card:#ffffff; --text:#0b0c10; --muted:#6b7280; }
+                    html, body {
+                      height: 100%;
+                      margin: 0;
+                      font-family: system-ui, sans-serif;
+                      background: #f8f9fa;
+                      color: #333;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      text-align: center;
                     }
-                    html, body { height:100%; }
-                    body {
-                      margin:0;
-                      background:var(--bg);
-                      color:var(--text);
-                      display:grid;
-                      place-items:center;
-                      font-family:system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, sans-serif;
-                      line-height:1.5;
+                    main {
+                      max-width: 400px;
                     }
-                    .wrap {
-                      width:min(560px, 92vw);
-                      background:var(--card);
-                      padding:32px 28px;
-                      border-radius:16px;
-                      box-shadow:0 10px 30px rgba(0,0,0,.25);
-                      text-align:center;
+                    h1 {
+                      font-size: 3em;
+                      margin: 0 0 10px;
                     }
-                    .code {
-                      font-size:56px;
-                      font-weight:800;
-                      letter-spacing:2px;
-                      margin:6px 0 2px;
+                    p {
+                      font-size: 1.1em;
+                      margin: 0;
                     }
-                    h1 { font-size:22px; margin:0 0 8px; }
-                    p { margin:0; color:var(--muted); }
                   </style>
                 </head>
                 <body>
-                  <main class="wrap" role="main" aria-labelledby="t">
-                    <div class="code" aria-hidden="true">403</div>
-                    <h1 id="t">Access forbidden</h1>
-                    <p>You are signed in but your account does not have permission to view this resource.</p>
+                  <main>
+                    <h1>403 Forbidden</h1>
+                    <p>You are signed in but your account does not have permission to access this resource.</p>
                   </main>
                 </body>
                 </html>
-
                 """,
                 contentType: "text/html",
                 statusCode: (int?)HttpStatusCode.Forbidden);
