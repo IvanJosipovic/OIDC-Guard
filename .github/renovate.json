@@ -61,12 +61,6 @@
       ]
     },
     {
-      "matchUpdateTypes": [
-        "major",
-        "minor",
-        "patch",
-        "digest"
-      ],
       "automerge": true,
       "groupName": "Dockerfile Dependecies",
       "groupSlug": "dockerfile-dependecies",
