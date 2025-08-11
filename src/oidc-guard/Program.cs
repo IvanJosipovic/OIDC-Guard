@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -535,7 +536,7 @@ public class Program
             return Results.Ok();
         });
 
-        app.MapGet("/signin", ([FromServices] Settings settings, [FromServices] Instrumentation meters, [FromQuery] Uri rd) =>
+        app.MapGet("/signin", ([FromServices] Settings settings, [FromServices] Instrumentation meters, [FromQuery] Uri rd, HttpContext httpContext, IOptionsMonitor<JwtBearerOptions> options) =>
         {
             if (!ValidateRedirect(rd, settings))
             {
@@ -543,6 +544,14 @@ public class Program
             }
 
             meters.SignInCounter.Add(1);
+
+
+            if (httpContext.User.Identity?.IsAuthenticated == true)
+            {
+                // If we're here its because a user has failed a auth constraint
+                // Return Unauthorized in order to prevent a signin loop
+                return UnauthorizedResults(httpContext, options, "User missing expected Claims");
+            }
 
             return Results.Challenge(new AuthenticationProperties { RedirectUri = rd.ToString() });
         });

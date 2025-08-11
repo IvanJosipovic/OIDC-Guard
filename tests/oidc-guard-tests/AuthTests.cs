@@ -634,7 +634,7 @@ public class AuthTests
         var _client = AuthTestsHelpers.GetClient(x =>
         {
             x.Cookie.Enable = false;
-            x.JWT.JWKSUrl = "https://inmemory.microsoft.com/common/discovery/keys2";
+            x.JWT.JWKSUrls = ["https://inmemory.microsoft.com/common/discovery/keys2"];
             x.JWT.ValidIssuers = [FakeJwtIssuer2.Issuer];
         });
 

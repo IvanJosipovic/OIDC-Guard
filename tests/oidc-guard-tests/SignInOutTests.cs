@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
 using oidc_guard_tests.Infra;
 using System.Net;
+using System.Security.Claims;
 using System.Web;
 using Xunit;
 
@@ -240,5 +241,21 @@ public class SingInOutTests
         var replyUri = new Uri(query["redirect_uri"]);
         replyUri.Host.Should().Be("fakedomain.com");
         replyUri.Scheme.Should().Be("https");
+    }
+
+    [Fact]
+    public async Task SignedInUnauthorized()
+    {
+        var _client = AuthTestsHelpers.GetClient();
+
+        var claims = new List<Claim>()
+        {
+            new("username", "test")
+        };
+
+        _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(claims));
+
+        var response = await _client.GetAsync("/signin?rd=/");
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 }
