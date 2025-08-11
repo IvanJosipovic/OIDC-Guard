@@ -420,7 +420,7 @@ public class Program
                     }
                 }
 
-                return UnauthorizedResults(httpContext, options);
+                return CustomResults(httpContext, options);
             }
 
             // Validate based on rules
@@ -527,7 +527,7 @@ public class Program
                             }
                         }
 
-                        return UnauthorizedResults(httpContext, options, "Missing Claim " + item.ToString());
+                        return CustomResults(httpContext, options, "Missing Claim " + item.ToString(), true);
                     }
                 }
             }
@@ -550,7 +550,7 @@ public class Program
             {
                 // If we're here its because a user has failed a auth constraint
                 // Return Unauthorized in order to prevent a signin loop
-                return UnauthorizedResults(httpContext, options, "User missing expected Claims");
+                return CustomResults(httpContext, options, "User missing expected Claims", true);
             }
 
             return Results.Challenge(new AuthenticationProperties { RedirectUri = rd.ToString() });
@@ -572,7 +572,7 @@ public class Program
         app.Run();
     }
 
-    private static IResult UnauthorizedResults(HttpContext context, IOptionsMonitor<JwtBearerOptions> options, string? errorDescription = null)
+    private static IResult CustomResults(HttpContext context, IOptionsMonitor<JwtBearerOptions> options, string? errorDescription = null, bool forbidden = false)
     {
         // https://tools.ietf.org/html/rfc6750#section-3.1
         // WWW-Authenticate: Bearer error="invalid_token", error_description="The access token expired"
@@ -603,6 +603,63 @@ public class Program
         if (context.Request.Headers.TryGetValue(CustomHeaderNames.XOriginalUrl, out var value2))
         {
             context.Response.Headers[CustomHeaderNames.XOriginalUrl] = value2;
+        }
+
+        if (forbidden)
+        {
+            return Results.Text(content: $$"""
+                <!doctype html>
+                <html lang="en">
+                <head>
+                  <meta charset="utf-8" />
+                  <title>403 Forbidden</title>
+                  <meta name="viewport" content="width=device-width, initial-scale=1" />
+                  <meta name="robots" content="noindex" />
+                  <style>
+                    :root { --bg:#0b0c10; --card:#151820; --text:#e6e6e6; --muted:#99a3ad; }
+                    @media (prefers-color-scheme: light) {
+                      :root { --bg:#f6f7f9; --card:#ffffff; --text:#0b0c10; --muted:#6b7280; }
+                    }
+                    html, body { height:100%; }
+                    body {
+                      margin:0;
+                      background:var(--bg);
+                      color:var(--text);
+                      display:grid;
+                      place-items:center;
+                      font-family:system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, sans-serif;
+                      line-height:1.5;
+                    }
+                    .wrap {
+                      width:min(560px, 92vw);
+                      background:var(--card);
+                      padding:32px 28px;
+                      border-radius:16px;
+                      box-shadow:0 10px 30px rgba(0,0,0,.25);
+                      text-align:center;
+                    }
+                    .code {
+                      font-size:56px;
+                      font-weight:800;
+                      letter-spacing:2px;
+                      margin:6px 0 2px;
+                    }
+                    h1 { font-size:22px; margin:0 0 8px; }
+                    p { margin:0; color:var(--muted); }
+                  </style>
+                </head>
+                <body>
+                  <main class="wrap" role="main" aria-labelledby="t">
+                    <div class="code" aria-hidden="true">403</div>
+                    <h1 id="t">Access forbidden</h1>
+                    <p>You are signed in but your account does not have permission to view this resource.</p>
+                  </main>
+                </body>
+                </html>
+
+                """,
+                contentType: "text/html",
+                statusCode: (int?)HttpStatusCode.Forbidden);
         }
 
         return Results.Unauthorized();
