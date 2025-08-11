@@ -429,7 +429,7 @@ public class AuthTests
             {
                 "",
                 new List<Claim>(),
-                HttpStatusCode.Unauthorized,
+                HttpStatusCode.Forbidden,
                 new Dictionary<string, string>()
                 {
                     {CustomHeaderNames.XOriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}=BAD" }
