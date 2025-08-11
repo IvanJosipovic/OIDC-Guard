@@ -21,7 +21,7 @@ ENV ASPNETCORE_HTTPS_PORTS=8443
 LABEL org.opencontainers.image.description="OpenID Connect (OIDC) & OAuth 2 API Server used to secure Kubernetes Ingress"
 
 # renovate: datasource=repology depName=alpine_3_21/ca-certificates-bundle versioning=loose
-ENV CA_CERTIFICATES_BUNDLES_VERSION="20241121-r1"
+ENV CA_CERTIFICATES_BUNDLES_VERSION="20250619-r0"
 
 # renovate: datasource=repology depName=alpine_3_21/busybox versioning=loose
 ENV BUSYBOX_VERSION="1.37.0-r13"
