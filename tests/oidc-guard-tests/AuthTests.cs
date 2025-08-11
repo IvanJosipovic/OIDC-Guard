@@ -87,7 +87,7 @@ public class AuthTests
             {
                 "?tid=11111111-1111-1111-1111-111111111111",
                 new List<Claim>(),
-                HttpStatusCode.Unauthorized,
+                HttpStatusCode.Forbidden,
                 new List<KeyValuePair<string, string>>()
                 {
                     new(HeaderNames.WWWAuthenticate, "Bearer error=\"invalid_token\", error_description=\"Missing Claim [tid, 11111111-1111-1111-1111-111111111111]\"")
@@ -100,7 +100,7 @@ public class AuthTests
                 {
                     new Claim("tid", "22222222-2222-2222-2222-222222222222")
                 },
-                HttpStatusCode.Unauthorized,
+                HttpStatusCode.Forbidden,
                 new List<KeyValuePair<string, string>>()
                 {
                     new(HeaderNames.WWWAuthenticate, "Bearer error=\"invalid_token\", error_description=\"Missing Claim [tid, 11111111-1111-1111-1111-111111111111]\"")
@@ -110,7 +110,7 @@ public class AuthTests
             {
                 "?tid=11111111-1111-1111-1111-111111111111&aud=22222222-2222-2222-2222-222222222222&aud=33333333-3333-3333-3333-333333333333",
                 new List<Claim>(),
-                HttpStatusCode.Unauthorized,
+                HttpStatusCode.Forbidden,
                 new List<KeyValuePair<string, string>>()
                 {
                     new(HeaderNames.WWWAuthenticate, "Bearer error=\"invalid_token\", error_description=\"Missing Claim [tid, 11111111-1111-1111-1111-111111111111]\"")
@@ -123,7 +123,7 @@ public class AuthTests
                 {
                     new Claim("tid", "")
                 },
-                HttpStatusCode.Unauthorized,
+                HttpStatusCode.Forbidden,
                 new List<KeyValuePair<string, string>>()
                 {
                     new(HeaderNames.WWWAuthenticate, "Bearer error=\"invalid_token\", error_description=\"Missing Claim [tid, 11111111-1111-1111-1111-111111111111]\"")
@@ -180,7 +180,7 @@ public class AuthTests
                     new("groups", "foo"),
                     new("groups", "bar"),
                 },
-                HttpStatusCode.Unauthorized
+                HttpStatusCode.Forbidden
             },
         ];
     }
@@ -471,7 +471,7 @@ public class AuthTests
             {
                 "?tid=11111111-1111-1111-1111-111111111111",
                 new List<Claim>(),
-                HttpStatusCode.Unauthorized,
+                HttpStatusCode.Forbidden,
                 new Dictionary<string, string>()
                 {
                     {CustomHeaderNames.XOriginalUrl, $"https://www.example.com?{QueryParameters.AccessToken}={FakeJwtIssuer.GenerateJwtToken([new("tid", "22222222-2222-2222-2222-222222222222")])}" }
@@ -701,7 +701,7 @@ public class AuthTests
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken());
 
         var response = await _client.GetAsync($"/auth?test=2");
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     [Fact]

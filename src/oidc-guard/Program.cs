@@ -420,7 +420,7 @@ public class Program
                     }
                 }
 
-                return UnauthorizedResults(httpContext, options);
+                return CustomResults(httpContext, options);
             }
 
             // Validate based on rules
@@ -527,7 +527,7 @@ public class Program
                             }
                         }
 
-                        return UnauthorizedResults(httpContext, options, "Missing Claim " + item.ToString());
+                        return CustomResults(httpContext, options, "Missing Claim " + item.ToString(), true);
                     }
                 }
             }
@@ -550,7 +550,7 @@ public class Program
             {
                 // If we're here its because a user has failed a auth constraint
                 // Return Unauthorized in order to prevent a signin loop
-                return UnauthorizedResults(httpContext, options, "User missing expected Claims");
+                return CustomResults(httpContext, options, "User missing expected Claims", true);
             }
 
             return Results.Challenge(new AuthenticationProperties { RedirectUri = rd.ToString() });
@@ -572,7 +572,7 @@ public class Program
         app.Run();
     }
 
-    private static IResult UnauthorizedResults(HttpContext context, IOptionsMonitor<JwtBearerOptions> options, string? errorDescription = null)
+    private static IResult CustomResults(HttpContext context, IOptionsMonitor<JwtBearerOptions> options, string? errorDescription = null, bool forbidden = false)
     {
         // https://tools.ietf.org/html/rfc6750#section-3.1
         // WWW-Authenticate: Bearer error="invalid_token", error_description="The access token expired"
@@ -603,6 +603,52 @@ public class Program
         if (context.Request.Headers.TryGetValue(CustomHeaderNames.XOriginalUrl, out var value2))
         {
             context.Response.Headers[CustomHeaderNames.XOriginalUrl] = value2;
+        }
+
+        if (forbidden)
+        {
+            return Results.Text(content: $$"""
+                <!doctype html>
+                <html lang="en">
+                <head>
+                  <meta charset="utf-8" />
+                  <title>403 Forbidden</title>
+                  <meta name="viewport" content="width=device-width, initial-scale=1" />
+                  <style>
+                    html, body {
+                      height: 100%;
+                      margin: 0;
+                      font-family: system-ui, sans-serif;
+                      background: #f8f9fa;
+                      color: #333;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      text-align: center;
+                    }
+                    main {
+                      max-width: 400px;
+                    }
+                    h1 {
+                      font-size: 3em;
+                      margin: 0 0 10px;
+                    }
+                    p {
+                      font-size: 1.1em;
+                      margin: 0;
+                    }
+                  </style>
+                </head>
+                <body>
+                  <main>
+                    <h1>403 Forbidden</h1>
+                    <p>You are signed in but your account does not have permission to access this resource.</p>
+                  </main>
+                </body>
+                </html>
+                """,
+                contentType: "text/html",
+                statusCode: (int?)HttpStatusCode.Forbidden);
         }
 
         return Results.Unauthorized();
