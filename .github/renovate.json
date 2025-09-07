@@ -68,8 +68,8 @@
     },
     {
       "automerge": true,
-      "groupName": "Dockerfile Dependecies",
-      "groupSlug": "dockerfile-dependecies",
+      "groupName": "Dockerfile Dependencies",
+      "groupSlug": "dockerfile-dependencies",
       "semanticCommitType": "fix",
       "matchPackageNames": [
         "alpine_*"
