@@ -94,6 +94,15 @@
       ],
       "depNameTemplate": "kindest/node",
       "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["Helm\\.cs$"],
+      "matchStrings": [
+        "private const string HelmVersion = \"(?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)\";"
+      ],
+      "depNameTemplate": "helm/helm",
+      "datasourceTemplate": "github-releases"
     }
   ]
 }
