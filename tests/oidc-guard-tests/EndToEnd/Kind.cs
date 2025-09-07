@@ -11,7 +11,9 @@ namespace KubeUI.Core.Tests;
 /// </summary>
 public static class Kind
 {
-    private const string Version = "latest";
+    public static string KindVersion = "v0.30.0";
+
+    public static string KubernetesVersion = "kindest/node:v1.33.4";
 
     public static string FileName { get; } = "kind" + (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : "");
 
@@ -38,7 +40,7 @@ public static class Kind
             os = "windows";
         }
 
-        var url = $"https://kind.sigs.k8s.io/dl/{Version}/kind-{os}-{arch}";
+        var url = $"https://kind.sigs.k8s.io/dl/{KindVersion}/kind-{os}-{arch}";
 
         var bytes = await client.GetByteArrayAsync(url);
 
@@ -56,8 +58,10 @@ public static class Kind
     {
         var stdErrBuffer = new StringBuilder();
 
+        image ??= KubernetesVersion;
+
         await Cli.Wrap(FileName)
-            .WithArguments($"create cluster --name {name}" + (string.IsNullOrEmpty(image) ? "" : $" --image {image}") + (string.IsNullOrEmpty(config) ? "" : $" --config={config}"))
+            .WithArguments($"create cluster --name {name}" + $" --image {image}" + (string.IsNullOrEmpty(config) ? "" : $" --config={config}"))
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer))
             .ExecuteAsync();
 
