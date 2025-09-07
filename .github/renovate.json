@@ -20,8 +20,13 @@
   ],
   "packageRules": [
     {
-      "matchManagers": ["nuget"],
-      "matchPackageNames": ["OpenTelemetry.Exporter.Prometheus.AspNetCore", "OpenTelemetry.Instrumentation.EventCounters"],
+      "matchManagers": [
+        "nuget"
+      ],
+      "matchPackageNames": [
+        "OpenTelemetry.Exporter.Prometheus.AspNetCore",
+        "OpenTelemetry.Instrumentation.EventCounters"
+      ],
       "ignoreUnstable": false,
       "respectLatest": false
     },
@@ -70,16 +75,6 @@
       ]
     }
   ],
-  "regexManagers": [
-    {
-      "fileMatch": ["Kind\\.cs$"],
-      "matchStrings": [
-        "public const string KubernetesVersion = \"kindest/node:v(?<currentValue>[0-9\\.]+)\";"
-      ],
-      "depNameTemplate": "kindest/node",
-      "datasourceTemplate": "docker"
-    }
-  ],
   "customManagers": [
     {
       "customType": "regex",
@@ -90,6 +85,24 @@
         "#\\s*renovate:\\s*datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sENV .*?_VERSION=\"(?<currentValue>.*)\"\\s"
       ],
       "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["Kind\\.cs$"],
+      "matchStrings": [
+        "public const string KubernetesVersion = \"kindest/node:v(?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)\";"
+      ],
+      "depNameTemplate": "kindest/node",
+      "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["Helm\\.cs$"],
+      "matchStrings": [
+        "private const string HelmVersion = \"(?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)\";"
+      ],
+      "depNameTemplate": "helm/helm",
+      "datasourceTemplate": "github-releases"
     }
   ]
 }

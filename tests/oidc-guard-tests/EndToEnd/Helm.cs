@@ -8,7 +8,7 @@ namespace oidc_guard_tests.EndToEnd;
 
 public class Helm
 {
-    private const string Version = "3.17.3";
+    private const string HelmVersion = "3.17.3";
 
     public static string FileName { get; } = "helm" + (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : "");
 
@@ -35,7 +35,7 @@ public class Helm
             os = "windows";
         }
 
-        var url = $"https://get.helm.sh/helm-v{Version}-{os}-{arch}.{(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "zip" : "tar.gz")}";
+        var url = $"https://get.helm.sh/helm-v{HelmVersion}-{os}-{arch}.{(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "zip" : "tar.gz")}";
 
         using var stream = await client.GetStreamAsync(url);
         using var reader = ReaderFactory.Open(stream);
