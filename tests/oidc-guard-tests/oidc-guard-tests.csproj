@@ -18,7 +18,7 @@
     </PackageReference>
     <PackageReference Include="Ductus.FluentDocker" Version="2.85.0" />
     <PackageReference Include="Duende.IdentityModel.OidcClient" Version="6.0.1" />
-    <PackageReference Include="KubernetesClient" Version="17.0.4" />
+    <PackageReference Include="KubernetesClient" Version="17.0.14" />
     <PackageReference Include="FluentAssertions" Version="7.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.8" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
