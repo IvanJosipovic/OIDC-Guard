@@ -88,7 +88,9 @@
     },
     {
       "customType": "regex",
-      "fileMatch": ["Kind\\.cs$"],
+      "managerFilePatterns": [
+        "/Kind\\.cs$"
+      ],
       "matchStrings": [
         "public static string KindVersion = \"v(?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)\";"
       ],
@@ -97,7 +99,9 @@
     },
     {
       "customType": "regex",
-      "managerFilePatterns": ["Kind\\.cs$"],
+      "managerFilePatterns": [
+        "/Kind\\.cs$"
+      ],
       "matchStrings": [
         "public static string KubernetesVersion = \"kindest/node:v(?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)\";"
       ],
@@ -106,7 +110,9 @@
     },
     {
       "customType": "regex",
-      "fileMatch": ["Helm\\.cs$"],
+      "managerFilePatterns": [
+        "/Helm\\.cs$/"
+      ],
       "matchStrings": [
         "public static string HelmVersion = \"(?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)\";"
       ],
