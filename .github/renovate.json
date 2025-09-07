@@ -70,6 +70,16 @@
       ]
     }
   ],
+  "regexManagers": [
+    {
+      "fileMatch": ["Kind\\.cs$"],
+      "matchStrings": [
+        "public const string KubernetesVersion = \"kindest/node:v(?<currentValue>[0-9\\.]+)\";"
+      ],
+      "depNameTemplate": "kindest/node",
+      "datasourceTemplate": "docker"
+    }
+  ],
   "customManagers": [
     {
       "customType": "regex",
