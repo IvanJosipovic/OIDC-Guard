@@ -49,7 +49,7 @@ public class EndToEndFixture : IDisposable
 
         // Start Kind
         Kind.DownloadClient().Wait();
-        Kind.CreateCluster(Name, null, Path.Combine("EndToEnd", "kind-config.yaml")).Wait();
+        Kind.CreateCluster(Name, "kindest/node:v1.33.4", Path.Combine("EndToEnd", "kind-config.yaml")).Wait();
         Kubernetes = Kind.GetKubernetesClient(Name).Result;
 
         DeployOIDCServer().Wait();
