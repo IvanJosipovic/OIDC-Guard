@@ -11,6 +11,7 @@
     "config:recommended"
   ],
   "platformAutomerge": true,
+  "prConcurrentLimit": 0,
   "ignorePaths": [
     "**/docs/**",
     "**/charts/**"
@@ -67,8 +68,8 @@
     },
     {
       "automerge": true,
-      "groupName": "Dockerfile Dependecies",
-      "groupSlug": "dockerfile-dependecies",
+      "groupName": "Dockerfile Dependencies",
+      "groupSlug": "dockerfile-dependencies",
       "semanticCommitType": "fix",
       "matchPackageNames": [
         "alpine_*"
@@ -89,7 +90,7 @@
     {
       "customType": "regex",
       "managerFilePatterns": [
-        "/Kind\\.cs$"
+        "/Kind\\.cs$/"
       ],
       "matchStrings": [
         "public static string KindVersion = \"v(?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)\";"
@@ -100,7 +101,7 @@
     {
       "customType": "regex",
       "managerFilePatterns": [
-        "/Kind\\.cs$"
+        "/Kind\\.cs$/"
       ],
       "matchStrings": [
         "public static string KubernetesVersion = \"kindest/node:v(?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)\";"
