@@ -18,10 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v5
-
-    - uses: azure/setup-helm@v4
-      with:
-        version: 3.16.0
     
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v4
