@@ -89,10 +89,21 @@
     {
       "customType": "regex",
       "managerFilePatterns": [
-        "Kind\\.cs$"
+        "/Kind\\.cs$"
       ],
       "matchStrings": [
-        "public const string KubernetesVersion = \"kindest/node:v(?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)\";"
+        "public static string KindVersion = \"v(?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)\";"
+      ],
+      "depNameTemplate": "kubernetes-sigs/kind",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/Kind\\.cs$"
+      ],
+      "matchStrings": [
+        "public static string KubernetesVersion = \"kindest/node:v(?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)\";"
       ],
       "depNameTemplate": "kindest/node",
       "datasourceTemplate": "docker"
@@ -103,7 +114,7 @@
         "/Helm\\.cs$/"
       ],
       "matchStrings": [
-        "private const string HelmVersion = \"(?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)\";"
+        "public static string HelmVersion = \"(?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)\";"
       ],
       "depNameTemplate": "helm/helm",
       "datasourceTemplate": "github-releases"

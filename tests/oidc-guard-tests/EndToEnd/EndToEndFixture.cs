@@ -17,8 +17,6 @@ public class EndToEndFixture : IDisposable
 {
     public const string FixtureName = "EndToEndFixture";
 
-    public const string KubernetesVersion = "kindest/node:v1.33.4";
-
     public string CurrentChart { get; set; }
 
     public string Name { get; set; } = Guid.NewGuid().ToString();
@@ -51,7 +49,7 @@ public class EndToEndFixture : IDisposable
 
         // Start Kind
         Kind.DownloadClient().Wait();
-        Kind.CreateCluster(Name, KubernetesVersion, Path.Combine("EndToEnd", "kind-config.yaml")).Wait();
+        Kind.CreateCluster(Name, null, Path.Combine("EndToEnd", "kind-config.yaml")).Wait();
         Kubernetes = Kind.GetKubernetesClient(Name).Result;
 
         DeployOIDCServer().Wait();
