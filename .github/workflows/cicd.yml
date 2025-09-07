@@ -13,26 +13,6 @@ on:
   merge_group:
 
 jobs:
-  validate-renovate-config:
-    name: Validate Reonovate Config
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - run: |
-          echo "$script" > renovate-config-validator.sh
-          chmod +x renovate-config-validator.sh
-        env:
-          script: |
-            #!/bin/bash
-            set -eux -o pipefail
-            exec renovate-config-validator /workspace/.github/renovate.*
-    
-      - uses: renovatebot/github-action@v43.0.10
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          docker-cmd-file: renovate-config-validator.sh
-          docker-volumes: ${{ github.workspace }}:/workspace
-
   build-test:
     name: Build & Test
     runs-on: ubuntu-latest
@@ -84,7 +64,7 @@ jobs:
       uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        file: coverage.cobertura.xml
+        files: coverage.cobertura.xml
         fail_ci_if_error: true
 
     - name: Run Benchmark

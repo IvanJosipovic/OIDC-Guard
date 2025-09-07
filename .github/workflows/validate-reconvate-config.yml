@@ -1,0 +1,33 @@
+name: Validate Renovate Config
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+      - 'alpha'
+      - 'beta'
+  pull_request:
+    types: [opened, reopened, synchronize]
+  merge_group:
+
+jobs:
+  validate-renovate-config:
+    name: Validate Renovate Config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: |
+          echo "$script" > renovate-config-validator.sh
+          chmod +x renovate-config-validator.sh
+        env:
+          script: |
+            #!/bin/bash
+            set -eux -o pipefail
+            exec renovate-config-validator /workspace/.github/renovate.*
+
+      - uses: renovatebot/github-action@v43.0.10
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker-cmd-file: renovate-config-validator.sh
+          docker-volumes: ${{ github.workspace }}:/workspace
