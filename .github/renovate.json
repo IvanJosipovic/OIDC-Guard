@@ -20,8 +20,13 @@
   ],
   "packageRules": [
     {
-      "matchManagers": ["nuget"],
-      "matchPackageNames": ["OpenTelemetry.Exporter.Prometheus.AspNetCore", "OpenTelemetry.Instrumentation.EventCounters"],
+      "matchManagers": [
+        "nuget"
+      ],
+      "matchPackageNames": [
+        "OpenTelemetry.Exporter.Prometheus.AspNetCore",
+        "OpenTelemetry.Instrumentation.EventCounters"
+      ],
       "ignoreUnstable": false,
       "respectLatest": false
     },
@@ -68,16 +73,6 @@
       "matchPackageNames": [
         "alpine_*"
       ]
-    }
-  ],
-  "regexManagers": [
-    {
-      "fileMatch": ["Kind\\.cs$"],
-      "matchStrings": [
-        "public const string KubernetesVersion = \"kindest/node:v(?<currentValue>[0-9\\.]+)\";"
-      ],
-      "depNameTemplate": "kindest/node",
-      "datasourceTemplate": "docker"
     }
   ],
   "customManagers": [
