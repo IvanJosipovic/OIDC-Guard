@@ -20,7 +20,7 @@
     <PackageReference Include="Duende.IdentityModel.OidcClient" Version="6.0.1" />
     <PackageReference Include="KubernetesClient" Version="17.0.14" />
     <PackageReference Include="FluentAssertions" Version="7.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.9" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="Microsoft.Playwright" Version="1.55.0" />
     <PackageReference Include="Moq" Version="4.20.72" />
@@ -30,7 +30,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="9.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="9.0.9" />
   </ItemGroup>
 
   <ItemGroup>
