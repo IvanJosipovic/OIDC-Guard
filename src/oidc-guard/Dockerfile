@@ -18,13 +18,13 @@ COPY ["oidc-guard.csproj", "."]
 RUN dotnet restore "./oidc-guard.csproj"
 COPY . .
 WORKDIR "/src/."
-RUN dotnet build "./oidc-guard.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./oidc-guard.csproj" -c $BUILD_CONFIGURATION -o /app/build /p:Version=${VERSION}
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 ARG VERSION=0.0.1
-RUN dotnet publish "./oidc-guard.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./oidc-guard.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false /p:Version=${VERSION}
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
