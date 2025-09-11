@@ -6,7 +6,7 @@
     <RootNamespace>oidc_guard_benchmarks</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <SelfContained>true</SelfContained>
+    <SelfContained>false</SelfContained>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
