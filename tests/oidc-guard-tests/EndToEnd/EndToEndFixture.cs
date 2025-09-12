@@ -1,10 +1,10 @@
-﻿using Ductus.FluentDocker.Model.Common;
-using Ductus.FluentDocker.Builders;
+﻿using Ductus.FluentDocker.Builders;
+using Ductus.FluentDocker.Model.Common;
+using Duende.IdentityModel.Client;
 using k8s;
 using k8s.Models;
 using KubeUI.Core.Tests;
 using Xunit;
-using Duende.IdentityModel.Client;
 
 namespace oidc_guard_tests.EndToEnd;
 
