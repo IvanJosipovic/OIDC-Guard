@@ -1,8 +1,8 @@
 ﻿using CliWrap;
+using CliWrap.Buffered;
 using SharpCompress.Readers;
 using System.Runtime.InteropServices;
 using System.Text;
-using CliWrap.Buffered;
 
 namespace oidc_guard_tests.EndToEnd;
 

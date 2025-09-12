@@ -8,10 +8,18 @@ public class StaticXmlRepository : IXmlRepository
 {
     public StaticXmlRepository(string secret)
     {
-        KeyGenerator = new Rfc2898DeriveBytes(secret, 0, 1, HashAlgorithmName.SHA256);
+        var derivedKey = Rfc2898DeriveBytes.Pbkdf2(
+            password: secret,
+            salt: Array.Empty<byte>(),
+            iterations: 1,
+            hashAlgorithm: HashAlgorithmName.SHA256,
+            outputLength: 64
+        );
+
+        KeyBytes = derivedKey;
     }
 
-    private Rfc2898DeriveBytes KeyGenerator { get; set; }
+    private byte[] KeyBytes { get; set; }
 
     private readonly List<XElement> Keys = [];
 
@@ -28,7 +36,7 @@ public class StaticXmlRepository : IXmlRepository
                .Element("descriptor")!
                .Element("masterKey")!
                .Element("value")!
-               .Value = Convert.ToBase64String(KeyGenerator.GetBytes(64));
+               .Value = Convert.ToBase64String(KeyBytes);
 
         Keys.Add(element);
     }

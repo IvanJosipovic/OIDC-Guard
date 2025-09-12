@@ -17,6 +17,7 @@ using Microsoft.Net.Http.Headers;
 using oidc_guard.Services;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -30,7 +31,6 @@ namespace oidc_guard;
 public class Program
 {
     public const string AuthenticationScheme = "JWT_OR_COOKIE";
-
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateSlimBuilder(args);
@@ -252,11 +252,7 @@ public class Program
 
         builder.Services.AddHostedService<HostedService>();
 
-        builder.Services.AddSingleton<IdentityLogger>();
-
         var app = builder.Build();
-
-        LogHelper.Logger = app.Services.GetRequiredService<IdentityLogger>();
 
         app.UseForwardedHeaders();
 
