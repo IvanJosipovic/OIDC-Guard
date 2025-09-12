@@ -252,11 +252,7 @@ public class Program
 
         builder.Services.AddHostedService<HostedService>();
 
-        builder.Services.AddSingleton<IdentityLogger>();
-
         var app = builder.Build();
-
-        LogHelper.Logger = app.Services.GetRequiredService<IdentityLogger>();
 
         app.UseForwardedHeaders();
 
