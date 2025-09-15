@@ -1,7 +1,6 @@
 ARG BUILDPLATFORM=linux/amd64
 
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/aspnet:10.0-alpine3.22@sha256:2a325357e7315a0ea014931e3b89d6feeba56d692c586746059901158fae339d AS base
-USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8443
@@ -46,6 +45,8 @@ RUN apk add --upgrade --no-cache \
         libstdc++>$LIBSTDC_VERSION \
         ssl_client>$SSL_VERSION \
         zlib>$ZLIB_VERSION
+
+USER $APP_UID
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine3.22@sha256:033283403fc5b8789467bb6a0f9670ebe0bc8f2276710cc99f1820f01789bafe AS build
