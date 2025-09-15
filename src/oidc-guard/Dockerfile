@@ -37,7 +37,7 @@ ENV SSL_VERSION="1.37.0-r18"
 ENV ZLIB_VERSION="1.3.1-r2"
 
 RUN apk add --upgrade --no-cache \
-        busybox>BUSYBOX_VERSION \
+        busybox>$BUSYBOX_VERSION \
         busybox-binsh>$BUSYBOX_BINSH_VERSION \
         ca-certificates-bundle>$CA_CERTIFICATES_BUNDLES_VERSION \
         libcrypto3>$LIBCRYPTO3_VERSION \
