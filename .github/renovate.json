@@ -65,6 +65,15 @@
         "tests/**",
         "benchmarks/**"
       ]
+    },
+    {
+      "automerge": true,
+      "groupName": "Dockerfile Dependencies",
+      "groupSlug": "dockerfile-dependencies",
+      "semanticCommitType": "fix",
+      "matchPackageNames": [
+        "alpine_*"
+      ]
     }
   ],
   "customManagers": [
