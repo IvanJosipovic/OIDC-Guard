@@ -34,7 +34,7 @@ public class MultiJwksRetriever : IConfigurationRetriever<OpenIdConnectConfigura
 
                 var doc = await retriever.GetDocumentAsync(url, cancel).ConfigureAwait(false);
 
-                LogHelper.LogVerbose("Recieved json document", doc);
+                LogHelper.LogVerbose("Received json document", doc);
 
                 var JsonWebKeySet = new JsonWebKeySet(doc);
 
