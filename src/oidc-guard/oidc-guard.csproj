@@ -12,7 +12,7 @@
     <OptimizationPreference>Speed</OptimizationPreference>
     <PublishAot>false</PublishAot>
     <PublishIISAssets>false</PublishIISAssets>
-    <PublishReadyToRun>true</PublishReadyToRun>
+    <PublishReadyToRun>false</PublishReadyToRun>
     <RootNamespace>oidc_guard</RootNamespace>
     <SelfContained>false</SelfContained>
     <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
