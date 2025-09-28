@@ -4,20 +4,17 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
-using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Net.Http.Headers;
 using oidc_guard.Services;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -59,23 +56,17 @@ public class Program
             {
                 metrics
                     .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName: "oidc-guard"))
-                    .AddRuntimeInstrumentation()
                     .AddAspNetCoreInstrumentation()
-                    .AddEventCountersInstrumentation(c =>
-                    {
-                        c.AddEventSources(
-                            "Microsoft.AspNetCore.Hosting",
-                            "Microsoft-AspNetCore-Server-Kestrel",
-                            "System.Net.Http",
-                            "System.Net.Sockets");
-                    })
+                    .AddProcessInstrumentation()
+                    .AddRuntimeInstrumentation()
                     .AddView("request-duration", new ExplicitBucketHistogramConfiguration
                     {
-                        Boundaries = new double[] { 0, 0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1, 2.5, 5, 7.5, 10 }
+                        Boundaries = [0, 0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1, 2.5, 5, 7.5, 10]
                     })
                     .AddMeter(
-                        "Microsoft.AspNetCore.Hosting",
-                        "Microsoft.AspNetCore.Server.Kestrel",
+                        "Microsoft.AspNetCore.Authentication",
+                        "Microsoft.AspNetCore.Authorization",
+                        "Microsoft.AspNetCore.Diagnostics",
                         "oidc_guard"
                     )
                     .AddPrometheusExporter();
