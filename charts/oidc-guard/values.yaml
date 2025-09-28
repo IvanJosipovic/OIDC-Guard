@@ -179,8 +179,18 @@ ingress:
   hosts:
     - host: chart-example.local
       paths:
-        - path: /
-          pathType: ImplementationSpecific
+        - path: /auth
+          pathType: Exact
+        - path: /signin
+          pathType: Exact
+        - path: /signin-oidc
+          pathType: Exact
+        - path: /signout
+          pathType: Exact
+        - path: /userinfo
+          pathType: Exact
+        - path: /robots.txt
+          pathType: Exact
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
