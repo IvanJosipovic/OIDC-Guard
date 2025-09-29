@@ -62,7 +62,7 @@
       ],
       "automerge": true,
       "matchFileNames": [
-        ".github/workflows",
+        ".github/workflows/**",
         "tests/**",
         "benchmarks/**"
       ]
