@@ -47,13 +47,9 @@ spec:
                 key: {{ .Values.settings.cookie.clientSecretKey }}
           {{- end }}
           - name: settings__name
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
+            value: {{ include "oidc-guard.fullname" . }}
           - name: settings__namespace
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.namespace
+            value: {{ .Release.Namespace }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
