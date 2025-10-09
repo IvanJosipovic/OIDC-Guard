@@ -127,7 +127,7 @@ public class Program
                     {
                         var kube = KubernetesClientConfiguration.InClusterConfig();
                         var client = new k8s.Kubernetes(kube);
-                        x.XmlRepository = new KubernetesSecretXmlRepository(client, settings.Name, settings.Namespace);
+                        x.XmlRepository = new KubernetesSecretXmlRepository(client, settings.Namespace, settings.Name);
                     }
                 });
 
