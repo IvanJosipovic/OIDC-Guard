@@ -55,4 +55,5 @@ public enum LogFormat
 {
     Simple,
     JSON,
+
 }
