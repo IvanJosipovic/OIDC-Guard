@@ -2,8 +2,8 @@
 
 public class Settings
 {
-    public string? Name { get; set; } = "oidc-guard";
-    public string? Namespace { get; set; } = "default";
+    public string Name { get; set; } = "oidc-guard";
+    public string Namespace { get; set; } = "default";
     public bool SkipAuthPreflight { get; set; }
     public LogLevel LogLevel { get; set; }
     public LogFormat LogFormat { get; set; }

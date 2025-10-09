@@ -1,4 +1,6 @@
 using Json.Path;
+using k8s;
+using Kubernetes.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -90,7 +92,6 @@ public class Program
         builder.Logging.AddFilter("Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware", settings.LogLevel);
         builder.Logging.AddFilter("Microsoft.Extensions.Diagnostics.HealthChecks", LogLevel.Warning);
         builder.Logging.AddFilter("Microsoft.Hosting.Lifetime", LogLevel.Warning);
-        builder.Logging.AddFilter("Microsoft.AspNetCore.DataProtection", LogLevel.Error);
 
         var auth = builder.Services.AddAuthentication(o =>
         {
@@ -122,8 +123,12 @@ public class Program
                 .AddDataProtection()
                 .AddKeyManagementOptions(x =>
                 {
-                    x.XmlRepository = new StaticXmlRepository(settings.Cookie.ClientSecret);
-                    x.NewKeyLifetime = TimeSpan.FromDays(365);
+                    if (KubernetesClientConfiguration.IsInCluster())
+                    {
+                        var kube = KubernetesClientConfiguration.InClusterConfig();
+                        var client = new k8s.Kubernetes(kube);
+                        x.XmlRepository = new KubernetesSecretXmlRepository(client, settings.Name, settings.Namespace);
+                    }
                 });
 
             auth.AddCookie(o =>
