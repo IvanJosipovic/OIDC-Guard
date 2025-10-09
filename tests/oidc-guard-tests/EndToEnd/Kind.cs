@@ -160,7 +160,9 @@ public static class Kind
 
     public static async Task<K8SConfiguration> GetK8SConfiguration(string name)
     {
-        var deserializer = new DeserializerBuilder().Build();
+        var deserializer = new DeserializerBuilder()
+            .IgnoreUnmatchedProperties()
+            .Build();
 
         return deserializer.Deserialize<K8SConfiguration>(await GetKubeConfig(name));
     }
