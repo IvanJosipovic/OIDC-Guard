@@ -21,7 +21,7 @@ public class EndToEndFixture : IDisposable
 
     public string Name { get; set; } = Guid.NewGuid().ToString();
 
-    public Kubernetes Kubernetes { get; set; }
+    public k8s.Kubernetes Kubernetes { get; set; }
 
     public HttpClient HttpClient { get; set; }
 

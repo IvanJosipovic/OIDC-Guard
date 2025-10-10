@@ -3,6 +3,8 @@ using k8s;
 using k8s.KubeConfigModels;
 using System.Runtime.InteropServices;
 using System.Text;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace KubeUI.Core.Tests;
 
@@ -158,12 +160,16 @@ public static class Kind
 
     public static async Task<K8SConfiguration> GetK8SConfiguration(string name)
     {
-        return KubernetesYaml.Deserialize<K8SConfiguration>(await GetKubeConfig(name));
+        var deserializer = new DeserializerBuilder()
+            .IgnoreUnmatchedProperties()
+            .Build();
+
+        return deserializer.Deserialize<K8SConfiguration>(await GetKubeConfig(name));
     }
 
-    public static async Task<Kubernetes> GetKubernetesClient(string name)
+    public static async Task<k8s.Kubernetes> GetKubernetesClient(string name)
     {
-        return new Kubernetes(KubernetesClientConfiguration.BuildConfigFromConfigObject(await GetK8SConfiguration(name)));
+        return new k8s.Kubernetes(KubernetesClientConfiguration.BuildConfigFromConfigObject(await GetK8SConfiguration(name)));
     }
 
     public static async Task DeleteAllClusters()
