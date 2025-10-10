@@ -6,8 +6,8 @@
     <EnableRequestDelegateGenerator>true</EnableRequestDelegateGenerator>
     <ImplicitUsings>enable</ImplicitUsings>
     <InvariantGlobalization>true</InvariantGlobalization>
-    <IsAotCompatible>true</IsAotCompatible>
-    <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
+    <IsAotCompatible>false</IsAotCompatible>
+    <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
     <Nullable>enable</Nullable>
     <OptimizationPreference>Speed</OptimizationPreference>
     <PublishAot>false</PublishAot>
@@ -40,3 +40,4 @@
   </ItemGroup>
 
 </Project>
+
