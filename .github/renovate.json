@@ -73,8 +73,14 @@
       "groupSlug": "dockerfile-dependencies",
       "semanticCommitType": "fix",
       "matchPackageNames": [
-        "alpine_*"
-      ]
+        "/alpine_.*/"
+      ],
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "patch",
+        "digest"
+      ]      
     }
   ],
   "customManagers": [
