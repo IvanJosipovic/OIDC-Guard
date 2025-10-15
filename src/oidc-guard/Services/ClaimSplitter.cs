@@ -3,7 +3,7 @@ using System.Security.Claims;
 
 namespace oidc_guard.Services;
 
-public class ScopeSplitter : IClaimsTransformation
+public class ClaimSplitter : IClaimsTransformation
 {
     public Task<ClaimsPrincipal> TransformAsync(ClaimsPrincipal principal)
     {
@@ -11,20 +11,16 @@ public class ScopeSplitter : IClaimsTransformation
 
         foreach (var claim in principal.Claims)
         {
-            if (claim.Type == "scope")
+            if (claim.Type == "scope" || claim.Type == "groups" || claim.Type == "role")
             {
                 if (claim.Value.Contains(' '))
                 {
-                    var scopes = claim.Value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    var values = claim.Value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-                    foreach (var scope in scopes)
+                    foreach (var value in values)
                     {
-                        identity.AddClaim(new Claim("scope", scope, claim.ValueType, claim.Issuer));
+                        identity.AddClaim(new Claim(claim.Type, value, claim.ValueType, claim.Issuer));
                     }
-                }
-                else
-                {
-                    identity.AddClaim(claim);
                 }
             }
         }

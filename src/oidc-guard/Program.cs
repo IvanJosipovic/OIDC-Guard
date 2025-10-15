@@ -249,7 +249,7 @@ public class Program
 
         builder.Services.Configure<ForwardedHeadersOptions>(options => options.ForwardedHeaders = ForwardedHeaders.All);
 
-        builder.Services.AddTransient<IClaimsTransformation, ScopeSplitter>();
+        builder.Services.AddTransient<IClaimsTransformation, ClaimSplitter>();
 
         builder.Services.AddHostedService<HostedService>();
 
@@ -463,7 +463,7 @@ public class Program
                             }
                             else
                             {
-                                httpContext.Response.Headers.Append(headerName, claims.Select(x => x.Value).Aggregate((x, y) => x + ", " + y));
+                                httpContext.Response.Headers.Append(headerName, claims.Select(x => x.Value).Where(x => !x.Contains(' ')).Aggregate((x, y) => x + ", " + y));
                             }
                         }
                     }
