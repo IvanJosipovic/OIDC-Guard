@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
-using System.Security.Principal;
 
 namespace oidc_guard.Services;
 
