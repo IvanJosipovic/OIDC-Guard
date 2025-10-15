@@ -463,7 +463,7 @@ public class Program
                             }
                             else
                             {
-                                httpContext.Response.Headers.Append(headerName, claims.Select(x => x.Value).Where(x => !x.Contains(' ')).Aggregate((x, y) => x + ", " + y));
+                                httpContext.Response.Headers.Append(headerName, claims.Select(x => x.Value).Aggregate((x, y) => x + ", " + y));
                             }
                         }
                     }
