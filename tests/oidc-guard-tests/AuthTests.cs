@@ -182,6 +182,90 @@ public class AuthTests
                 },
                 HttpStatusCode.Forbidden
             },
+
+            new object[]
+            {
+                "?scope=admin",
+                new List<Claim>
+                {
+                    new Claim("scope", "admin editor viewer")
+                },
+                HttpStatusCode.OK
+            },
+            new object[]
+            {
+                "?scope=admin&scope=editor",
+                new List<Claim>
+                {
+                    new Claim("scope", "admin editor viewer")
+                },
+                HttpStatusCode.OK
+            },
+            new object[]
+            {
+                "?scope=admin&scope=editor&scope=viewer",
+                new List<Claim>
+                {
+                    new Claim("scope", "admin editor viewer")
+                },
+                HttpStatusCode.OK
+            },
+
+            new object[]
+            {
+                "?groups=admin",
+                new List<Claim>
+                {
+                    new Claim("groups", "admin editor viewer")
+                },
+                HttpStatusCode.OK
+            },
+            new object[]
+            {
+                "?groups=admin&groups=editor",
+                new List<Claim>
+                {
+                    new Claim("groups", "admin editor viewer")
+                },
+                HttpStatusCode.OK
+            },
+            new object[]
+            {
+                "?groups=admin&groups=editor&groups=viewer",
+                new List<Claim>
+                {
+                    new Claim("groups", "admin editor viewer")
+                },
+                HttpStatusCode.OK
+            },
+
+            new object[]
+            {
+                "?role=admin",
+                new List<Claim>
+                {
+                    new Claim("role", "admin editor viewer")
+                },
+                HttpStatusCode.OK
+            },
+            new object[]
+            {
+                "?role=admin&role=editor",
+                new List<Claim>
+                {
+                    new Claim("role", "admin editor viewer")
+                },
+                HttpStatusCode.OK
+            },
+            new object[]
+            {
+                "?role=admin&role=editor&role=viewer",
+                new List<Claim>
+                {
+                    new Claim("role", "admin editor viewer")
+                },
+                HttpStatusCode.OK
+            },
         ];
     }
 
@@ -264,6 +348,22 @@ public class AuthTests
                 new List<KeyValuePair<string,string>>
                 {
                     new("groups", "admin, viewer"),
+                }
+            },
+
+            new object[]
+            {
+                "?tid=11111111-1111-1111-1111-111111111111&inject-claim=groups",
+                new List<Claim>
+                {
+                    new("tid", "11111111-1111-1111-1111-111111111111"),
+                    new("aud", "22222222-2222-2222-2222-222222222222"),
+                    new("groups", "admin editor viewer"),
+                },
+                HttpStatusCode.OK,
+                new List<KeyValuePair<string,string>>
+                {
+                    new("groups", "admin, editor, viewer"),
                 }
             },
 

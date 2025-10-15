@@ -249,6 +249,8 @@ public class Program
 
         builder.Services.Configure<ForwardedHeadersOptions>(options => options.ForwardedHeaders = ForwardedHeaders.All);
 
+        builder.Services.AddTransient<IClaimsTransformation, ClaimSplitter>();
+
         builder.Services.AddHostedService<HostedService>();
 
         var app = builder.Build();
