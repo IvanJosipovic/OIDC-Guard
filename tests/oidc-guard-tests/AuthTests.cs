@@ -94,6 +94,24 @@ public class AuthTests
             },
             new object[]
             {
+                "?scope=admin&scope=editor",
+                new List<Claim>
+                {
+                    new Claim("scope", "admin editor viewer")
+                },
+                HttpStatusCode.OK
+            },
+            new object[]
+            {
+                "?scope=admin&scope=editor&scope=viewer",
+                new List<Claim>
+                {
+                    new Claim("scope", "admin editor viewer")
+                },
+                HttpStatusCode.OK
+            },
+            new object[]
+            {
                 "?tid=11111111-1111-1111-1111-111111111111",
                 new List<Claim>(),
                 HttpStatusCode.Forbidden,
