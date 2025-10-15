@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -119,6 +120,8 @@ public class Program
 
         if (settings.Cookie.Enable)
         {
+            builder.Services.AddSingleton<IKeyManager, XmlDeletableKeyManager>();
+
             builder.Services
                 .AddDataProtection()
                 .AddKeyManagementOptions(x =>
