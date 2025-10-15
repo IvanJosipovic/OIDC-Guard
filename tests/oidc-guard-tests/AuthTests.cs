@@ -250,7 +250,7 @@ public class AuthTests
             },
             new object[]
             {
-                "?role=admin&groups=editor",
+                "?role=admin&role=editor",
                 new List<Claim>
                 {
                     new Claim("role", "admin editor viewer")
@@ -259,7 +259,7 @@ public class AuthTests
             },
             new object[]
             {
-                "?role=admin&groups=editor&groups=viewer",
+                "?role=admin&role=editor&role=viewer",
                 new List<Claim>
                 {
                     new Claim("role", "admin editor viewer")
