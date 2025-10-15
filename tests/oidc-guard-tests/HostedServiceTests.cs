@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Kubernetes.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -16,6 +18,8 @@ public class HostedServiceTests
 
         services.AddLogging();
         services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
+        services.AddSingleton<IKeyManager, XmlDeletableKeyManager>();
+        services.AddDataProtection();
         services.AddHostedService<HostedService>();
 
         var serviceProvider = services.BuildServiceProvider();

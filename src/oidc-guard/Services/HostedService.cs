@@ -24,14 +24,7 @@ public class HostedService : IHostedService
         {
             var sixMonthsAgo = DateTimeOffset.UtcNow.AddMonths(-6);
 
-            if (!deletableKeyManager.DeleteKeys(key => key.ExpirationDate < sixMonthsAgo))
-            {
-                _logger.LogError("Failed to delete old keys.");
-            }
-            else
-            {
-                _logger.LogInformation("Old keys deleted successfully.");
-            }
+            deletableKeyManager.DeleteKeys(key => key.ExpirationDate < sixMonthsAgo);
         }
 
         return Task.CompletedTask;
