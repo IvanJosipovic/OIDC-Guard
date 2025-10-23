@@ -130,5 +130,6 @@ jobs:
       uses: helm/chart-releaser-action@v1
       with:
         config: cr.yaml
+        mark_as_latest: false
       env:
         CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
