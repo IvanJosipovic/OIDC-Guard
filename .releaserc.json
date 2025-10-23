@@ -23,6 +23,12 @@
         "preset": "conventionalcommits"
       }
     ],
+    [
+      "@semantic-release/changelog",
+      {
+        "changelogFile": "dist/CHANGELOG.md"
+      }
+    ],
     "@semantic-release/github"
   ]
 }
