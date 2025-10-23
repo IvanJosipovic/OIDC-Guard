@@ -26,7 +26,7 @@
     [
       "@semantic-release/changelog",
       {
-        "changelogFile": "dist/CHANGELOG.md"
+        "changelogFile": "charts/oidc-guard/CHANGELOG.md"
       }
     ],
     "@semantic-release/github"
