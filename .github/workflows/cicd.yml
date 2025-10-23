@@ -128,5 +128,7 @@ jobs:
     - name: Run chart-releaser
       if: steps.semantic.outputs.new_release_published == 'true'
       uses: helm/chart-releaser-action@v1
+      with:
+        config: cr.yaml
       env:
         CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
