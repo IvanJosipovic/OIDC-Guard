@@ -1,7 +1,7 @@
-﻿using FluentAssertions;
-using Microsoft.Net.Http.Headers;
+﻿using Microsoft.Net.Http.Headers;
 using oidc_guard;
 using oidc_guard_tests.Infra;
+using Shouldly;
 using System.Net;
 using Xunit;
 
@@ -20,7 +20,7 @@ public class SkipAuthPreflightTests
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestMethod, "DELETE");
 
         var response = await _client.GetAsync("/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -34,7 +34,7 @@ public class SkipAuthPreflightTests
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestMethod, "DELETE");
 
         var response = await _client.GetAsync("/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public class SkipAuthPreflightTests
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestMethod, "DELETE");
 
         var response = await _client.GetAsync("/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -60,7 +60,7 @@ public class SkipAuthPreflightTests
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestMethod, "DELETE");
 
         var response = await _client.GetAsync("/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -73,7 +73,7 @@ public class SkipAuthPreflightTests
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestMethod, "DELETE");
 
         var response = await _client.GetAsync("/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -86,6 +86,6 @@ public class SkipAuthPreflightTests
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.AccessControlRequestMethod, "DELETE");
 
         var response = await _client.GetAsync("/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 }

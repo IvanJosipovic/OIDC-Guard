@@ -1,8 +1,8 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
-using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using oidc_guard_tests.Infra;
+using Shouldly;
 using System.Net;
 
 namespace oidc_guard_benchmarks;
@@ -24,7 +24,7 @@ public class BenchmarkCookie
         });
 
         var response = client.GetAsync("/signin?rd=/auth").Result;
-        response.StatusCode.Should().Be(HttpStatusCode.Found);
+        response.StatusCode.ShouldBe(HttpStatusCode.Found);
         client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response.Headers.GetValues("Set-Cookie"));
     }
 

@@ -1,7 +1,7 @@
-﻿using FluentAssertions;
-using Microsoft.AspNetCore.WebUtilities;
+﻿using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
 using oidc_guard_tests.Infra;
+using Shouldly;
 using System.Net;
 using System.Security.Claims;
 using System.Web;
@@ -17,7 +17,7 @@ public class SingInOutTests
         var _client = AuthTestsHelpers.GetClient(x => x.Cookie.Enable = false, allowAutoRedirect: true);
 
         var response = await _client.GetAsync("/signin?rd=/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        response.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
     }
 
     [Fact]
@@ -26,25 +26,25 @@ public class SingInOutTests
         var _client = AuthTestsHelpers.GetClient(allowAutoRedirect: true);
 
         var response = await _client.GetAsync("/signin?rd=/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.Found);
+        response.StatusCode.ShouldBe(HttpStatusCode.Found);
 
         _client.DefaultRequestHeaders.Clear();
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Cookie, response.Headers.GetValues("Set-Cookie"));
 
         var response2 = await _client.GetAsync(response.Headers.Location);
-        response2.StatusCode.Should().Be(HttpStatusCode.Found);
-        response2.Headers.Location.Should().Be("/auth");
+        response2.StatusCode.ShouldBe(HttpStatusCode.Found);
+        response2.Headers.Location.ShouldBe(new Uri("/auth"));
 
         _client.DefaultRequestHeaders.Clear();
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Cookie, response2.Headers.GetValues("Set-Cookie"));
 
         var response3 = await _client.GetAsync(response2.Headers.Location);
-        response3.StatusCode.Should().Be(HttpStatusCode.OK);
+        response3.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         _client.DefaultRequestHeaders.Clear();
 
         var response4 = await _client.GetAsync(response2.Headers.Location);
-        response4.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response4.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -53,27 +53,27 @@ public class SingInOutTests
         var _client = AuthTestsHelpers.GetClient(allowAutoRedirect: true);
 
         var response = await _client.GetAsync("/signin?rd=/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.Found);
+        response.StatusCode.ShouldBe(HttpStatusCode.Found);
 
         _client.DefaultRequestHeaders.Clear();
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Cookie, response.Headers.GetValues("Set-Cookie"));
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, "Bearer fake");
 
         var response2 = await _client.GetAsync(response.Headers.Location);
-        response2.StatusCode.Should().Be(HttpStatusCode.Found);
-        response2.Headers.Location.Should().Be("/auth");
+        response2.StatusCode.ShouldBe(HttpStatusCode.Found);
+        response2.Headers.Location.ShouldBe(new Uri("/auth"));
 
         _client.DefaultRequestHeaders.Clear();
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Cookie, response2.Headers.GetValues("Set-Cookie"));
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, "Bearer fake");
 
         var response3 = await _client.GetAsync(response2.Headers.Location);
-        response3.StatusCode.Should().Be(HttpStatusCode.OK);
+        response3.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         _client.DefaultRequestHeaders.Clear();
 
         var response4 = await _client.GetAsync(response2.Headers.Location);
-        response4.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response4.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -82,29 +82,29 @@ public class SingInOutTests
         var _client = AuthTestsHelpers.GetClient(allowAutoRedirect: true);
 
         var response = await _client.GetAsync("/signin?rd=/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.Found);
+        response.StatusCode.ShouldBe(HttpStatusCode.Found);
 
         _client.DefaultRequestHeaders.Clear();
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Cookie, response.Headers.GetValues("Set-Cookie"));
 
         var response2 = await _client.GetAsync(response.Headers.Location);
-        response2.StatusCode.Should().Be(HttpStatusCode.Found);
-        response2.Headers.Location.Should().Be("/auth");
+        response2.StatusCode.ShouldBe(HttpStatusCode.Found);
+        response2.Headers.Location.ShouldBe(new Uri("/auth"));
 
         _client.DefaultRequestHeaders.Clear();
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Cookie, response2.Headers.GetValues("Set-Cookie"));
 
         var response3 = await _client.GetAsync(response2.Headers.Location);
-        response3.StatusCode.Should().Be(HttpStatusCode.OK);
+        response3.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var response4 = await _client.GetAsync("/signout?rd=/auth");
-        response4.StatusCode.Should().Be(HttpStatusCode.Found);
+        response4.StatusCode.ShouldBe(HttpStatusCode.Found);
 
         _client.DefaultRequestHeaders.Clear();
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Cookie, response4.Headers.GetValues("Set-Cookie"));
 
         var response5 = await _client.GetAsync(response4.Headers.Location);
-        response5.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response5.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     public static IEnumerable<object[]> GetAllowedRedirectDomains()
@@ -191,7 +191,7 @@ public class SingInOutTests
 
         var response = await client.GetAsync($"/signin?rd={HttpUtility.UrlEncode(query)}");
 
-        response.StatusCode.Should().Be(status);
+        response.StatusCode.ShouldBe(status);
 
         if (status == HttpStatusCode.Found)
         {
@@ -199,8 +199,8 @@ public class SingInOutTests
             client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Cookie, response.Headers.GetValues("Set-Cookie"));
 
             var response2 = await client.GetAsync(response.Headers.Location);
-            response2.StatusCode.Should().Be(HttpStatusCode.Found);
-            response2.Headers.Location.Should().Be(query);
+            response2.StatusCode.ShouldBe(HttpStatusCode.Found);
+            response2.Headers.Location.ShouldBe(new Uri(query));
         }
     }
 
@@ -216,16 +216,16 @@ public class SingInOutTests
         client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Cookie, response.Headers.GetValues("Set-Cookie"));
 
         var response2 = await client.GetAsync(response.Headers.Location);
-        response2.StatusCode.Should().Be(HttpStatusCode.Found);
+        response2.StatusCode.ShouldBe(HttpStatusCode.Found);
 
         client.DefaultRequestHeaders.Clear();
         client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Cookie, response2.Headers.GetValues("Set-Cookie"));
 
         var response3 = await client.GetAsync($"/signout?rd={HttpUtility.UrlEncode(query)}");
-        response3.StatusCode.Should().Be(status);
+        response3.StatusCode.ShouldBe(status);
         if (status == HttpStatusCode.Redirect)
         {
-            response3.Headers.Location.Should().Be(query);
+            response3.Headers.Location.ShouldBe(new Uri(query));
         }
     }
 
@@ -235,12 +235,12 @@ public class SingInOutTests
         var _client = AuthTestsHelpers.GetClient(x => { x.Cookie.Host = "fakedomain.com"; x.Cookie.Scheme = "https"; });
 
         var response = await _client.GetAsync("/signin?rd=/health");
-        response.StatusCode.Should().Be(HttpStatusCode.Found);
+        response.StatusCode.ShouldBe(HttpStatusCode.Found);
 
         var query = QueryHelpers.ParseQuery(response.Headers.Location.Query);
         var replyUri = new Uri(query["redirect_uri"]);
-        replyUri.Host.Should().Be("fakedomain.com");
-        replyUri.Scheme.Should().Be("https");
+        replyUri.Host.ShouldBe("fakedomain.com");
+        replyUri.Scheme.ShouldBe("https");
     }
 
     [Fact]
@@ -256,6 +256,6 @@ public class SingInOutTests
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(claims));
 
         var response = await _client.GetAsync("/signin?rd=/");
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 }

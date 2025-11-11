@@ -12,24 +12,18 @@
 
   <ItemGroup>
     <PackageReference Include="CliWrap" Version="3.9.0" />
-    <PackageReference Include="coverlet.collector" Version="6.0.4">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Ductus.FluentDocker" Version="2.85.0" />
     <PackageReference Include="Duende.IdentityModel.OidcClient" Version="6.0.1" />
-    <PackageReference Include="FluentAssertions" Version="7.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="10.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
     <PackageReference Include="Microsoft.Playwright" Version="1.56.0" />
+    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.1.0" />
     <PackageReference Include="Moq" Version="4.20.72" />
-    <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="SharpCompress" Version="0.41.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="10.0.0" />
+    <PackageReference Include="Shouldly" Version="4.3.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" />
+    <PackageReference Include="xunit.v3.mtp-v2" Version="3.2.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,19 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="EndToEnd\oidc-guard-values-traefik.yaml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="EndToEnd\traefik-values.yaml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="EndToEnd\oidc-guard-values.yaml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="EndToEnd\ingress-nginx-values.yaml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="EndToEnd\kind-config.yaml">
+    <None Update="EndToEnd\*.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

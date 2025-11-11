@@ -49,15 +49,7 @@ jobs:
       shell: pwsh
 
     - name: .NET Test
-      run: dotnet test -c Release --collect:"XPlat Code Coverage" /p:DebugSymbols=true /p:DebugType=full --logger "trx;LogFileName=test-results.trx"
-
-    - name: Test Report
-      uses: dorny/test-reporter@v2
-      if: success() || failure()
-      with:
-        name: OIDC-Guard Tests
-        path: tests/oidc-guard-tests/TestResults/test-results.trx
-        reporter: dotnet-trx
+      run: dotnet test -c Release --report-xunit-trx --report-xunit-trx-filename test-results.trx --coverage --coverage-output-format cobertura --coverage-output coverage.cobertura.xml
 
     - name: Coverage
       uses: codecov/codecov-action@v5
@@ -65,6 +57,14 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
         files: coverage.cobertura.xml
         fail_ci_if_error: true
+
+    - name: Test Report
+      uses: dorny/test-reporter@v2
+      if: success() || failure()
+      with:
+        name: Tests
+        path: '**/TestResults/test-results.trx'
+        reporter: dotnet-trx
 
     - name: Run Benchmark
       working-directory: benchmarks/oidc-guard-benchmarks

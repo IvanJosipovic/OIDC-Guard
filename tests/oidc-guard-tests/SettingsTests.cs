@@ -1,6 +1,6 @@
-﻿using FluentAssertions;
-using oidc_guard;
+﻿using oidc_guard;
 using oidc_guard_tests.Infra;
+using Shouldly;
 using System.Net;
 using Xunit;
 
@@ -14,6 +14,6 @@ public class SettingsTests
         var _client = AuthTestsHelpers.GetClient(x => x.LogFormat = LogFormat.JSON, allowAutoRedirect: true);
 
         var response = await _client.GetAsync("/signin?rd=/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
     }
 }
