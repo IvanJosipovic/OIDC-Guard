@@ -1,5 +1,4 @@
 ﻿using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Jobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using oidc_guard_tests.Infra;

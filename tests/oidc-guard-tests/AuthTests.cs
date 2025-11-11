@@ -1,9 +1,9 @@
-using FluentAssertions;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.Net.Http.Headers;
 using oidc_guard;
 using oidc_guard.Services;
 using oidc_guard_tests.Infra;
+using Shouldly;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -21,7 +21,7 @@ public class AuthTests
         var _client = AuthTestsHelpers.GetClient();
 
         var response = await _client.GetAsync("/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     public static IEnumerable<object[]> GetTests()
@@ -474,17 +474,21 @@ public class AuthTests
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(claims));
 
         var response = await _client.GetAsync($"/auth{query}");
-        response.StatusCode.Should().Be(status);
+        response.StatusCode.ShouldBe(status);
 
         if (expectedHeaders != null)
         {
             foreach (var expectedHeader in expectedHeaders)
             {
-                var found = response.Headers.FirstOrDefault(x => x.Key == expectedHeader.Key);
-                found.Should().NotBeNull("Header is missing: " + expectedHeader.Key);
-
-                found.Value.Count().Should().Be(1);
-                found.Value.First().Should().Be(expectedHeader.Value);
+                if (response.Headers.TryGetValues(expectedHeader.Key, out var values))
+                {
+                    values.Count().ShouldBe(1);
+                    values.First().ShouldBe(expectedHeader.Value);
+                }
+                else
+                {
+                    Assert.Fail("Header is missing: " + expectedHeader.Key);
+                }
             }
         }
     }
@@ -497,7 +501,7 @@ public class AuthTests
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken());
 
         var response = await _client.GetAsync($"/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -508,7 +512,7 @@ public class AuthTests
         _client.DefaultRequestHeaders.TryAddWithoutValidation("TestHeader", FakeJwtIssuer.GenerateBearerJwtToken());
 
         var response = await _client.GetAsync($"/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     public static IEnumerable<object[]> GetTokenAsQueryParameterTests()
@@ -620,7 +624,7 @@ public class AuthTests
         }
 
         var response = await _client.GetAsync($"/auth{query}");
-        response.StatusCode.Should().Be(status);
+        response.StatusCode.ShouldBe(status);
     }
 
     [Fact]
@@ -629,8 +633,8 @@ public class AuthTests
         var _client = AuthTestsHelpers.GetClient();
 
         var response = await _client.GetAsync("/robots.txt");
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        (await response.Content.ReadAsStringAsync()).Should().Be("User-agent: *\r\nDisallow: /");
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        (await response.Content.ReadAsStringAsync()).ShouldBe("User-agent: *\r\nDisallow: /");
     }
 
     [Fact]
@@ -646,10 +650,10 @@ public class AuthTests
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(claims));
 
         var response = await _client.GetAsync("/userinfo");
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var json = await response.Content.ReadFromJsonAsync<JsonDocument>();
 
-        json.RootElement.GetProperty("username").GetString().Should().Be("test");
+        json.RootElement.GetProperty("username").GetString().ShouldBe("test");
     }
 
     [Fact]
@@ -667,14 +671,14 @@ public class AuthTests
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken(claims));
 
         var response = await _client.GetAsync("/userinfo");
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var json = await response.Content.ReadFromJsonAsync<JsonDocument>();
 
-        json.RootElement.GetProperty("username").GetString().Should().Be("test");
+        json.RootElement.GetProperty("username").GetString().ShouldBe("test");
 
-        json.RootElement.GetProperty("multi").GetArrayLength().Should().Be(2);
-        json.RootElement.GetProperty("multi").EnumerateArray().ElementAt(0).GetString().Should().Be("one");
-        json.RootElement.GetProperty("multi").EnumerateArray().ElementAt(1).GetString().Should().Be("two");
+        json.RootElement.GetProperty("multi").GetArrayLength().ShouldBe(2);
+        json.RootElement.GetProperty("multi").EnumerateArray().ElementAt(0).GetString().ShouldBe("one");
+        json.RootElement.GetProperty("multi").EnumerateArray().ElementAt(1).GetString().ShouldBe("two");
     }
 
     [Theory]
@@ -703,7 +707,7 @@ public class AuthTests
         _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XOriginalMethod, httpMethod);
 
         var response = await _client.GetAsync($"/auth{query}");
-        response.StatusCode.Should().Be(status);
+        response.StatusCode.ShouldBe(status);
     }
 
     private async Task SkipAuthTraefik(string query, string Url, string httpMethod, HttpStatusCode status)
@@ -716,7 +720,7 @@ public class AuthTests
         _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XForwardedUri, "/");
 
         var response = await _client.GetAsync($"/auth{query}");
-        response.StatusCode.Should().Be(status);
+        response.StatusCode.ShouldBe(status);
     }
 
     [Fact]
@@ -725,7 +729,7 @@ public class AuthTests
         var _client = AuthTestsHelpers.GetClient();
 
         var response = await _client.GetAsync("/auth?skip-auth=GET,test");
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -741,7 +745,7 @@ public class AuthTests
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer2.GenerateBearerJwtToken());
 
         var response = await _client.GetAsync($"/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -757,12 +761,12 @@ public class AuthTests
         _client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(FakeJwtIssuer.GenerateBearerJwtToken());
 
         var response = await _client.GetAsync($"/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         _client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(FakeJwtIssuer2.GenerateBearerJwtToken());
 
         var response2 = await _client.GetAsync($"/auth");
-        response2.StatusCode.Should().Be(HttpStatusCode.OK);
+        response2.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -770,7 +774,7 @@ public class AuthTests
     {
         var jwk = new MultiJwksRetriever(["http://tttt"]);
         var results = await jwk.GetConfigurationAsync("http://tttt", new TestServerDocumentRetriever(), CancellationToken.None);
-        results.SigningKeys.Count.Should().Be(0);
+        results.SigningKeys.Count.ShouldBe(0);
     }
 
     [Fact]
@@ -781,7 +785,7 @@ public class AuthTests
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateJwtToken([]));
 
         var response = await _client.GetAsync($"/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -790,7 +794,7 @@ public class AuthTests
         var _client = AuthTestsHelpers.GetClient(x => x.Cookie.RedirectUnauthenticatedSignin = true);
 
         var response = await _client.GetAsync($"/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -801,7 +805,7 @@ public class AuthTests
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken());
 
         var response = await _client.GetAsync($"/auth?test=2");
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -813,7 +817,7 @@ public class AuthTests
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Authorization, FakeJwtIssuer.GenerateBearerJwtToken());
 
         var response = await _client.GetAsync($"/auth?test=2");
-        response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
     }
 
     [Fact]
@@ -824,14 +828,14 @@ public class AuthTests
         _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XOriginalUrl, "https://redirect/test123");
 
         var response = await _client.GetAsync("/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
 
         _client.DefaultRequestHeaders.Clear();
         _client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response.Headers.GetValues("Set-Cookie"));
 
         var response2 = await _client.GetAsync(response.Headers.Location);
-        response2.StatusCode.Should().Be(HttpStatusCode.Found);
-        response2.Headers.Location.Should().Be("https://redirect/test123");
+        response2.StatusCode.ShouldBe(HttpStatusCode.Found);
+        response2.Headers.Location.ShouldBe(new Uri("https://redirect/test123"));
     }
 
     [Fact]
@@ -844,14 +848,14 @@ public class AuthTests
         _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XForwardedUri, "/test123");
 
         var response = await _client.GetAsync("/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
 
         _client.DefaultRequestHeaders.Clear();
         _client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", response.Headers.GetValues("Set-Cookie"));
 
         var response2 = await _client.GetAsync(response.Headers.Location);
-        response2.StatusCode.Should().Be(HttpStatusCode.Found);
-        response2.Headers.Location.Should().Be("https://redirect/test123");
+        response2.StatusCode.ShouldBe(HttpStatusCode.Found);
+        response2.Headers.Location.ShouldBe(new Uri("https://redirect/test123"));
     }
 
     [Fact]
@@ -863,11 +867,11 @@ public class AuthTests
         });
 
         var response = await _client.GetAsync("/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
 
         response.Headers.TryGetValues(HeaderNames.WWWAuthenticate, out var values);
 
-        values.First().Should().Be("Bearer test=true, error=\"invalid_token\"");
+        values.First().ShouldBe("Bearer test=true, error=\"invalid_token\"");
     }
 
     [Fact]
@@ -879,12 +883,12 @@ public class AuthTests
         _client.DefaultRequestHeaders.TryAddWithoutValidation(CustomHeaderNames.XOriginalUrl, "https://my-request-url");
 
         var response = await _client.GetAsync("/auth");
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
 
         response.Headers.TryGetValues(CustomHeaderNames.XRequestID, out var values);
-        values.First().Should().Be("my-request-id");
+        values.First().ShouldBe("my-request-id");
 
         response.Headers.TryGetValues(CustomHeaderNames.XOriginalUrl, out var values2);
-        values2.First().Should().Be("https://my-request-url");
+        values2.First().ShouldBe("https://my-request-url");
     }
 }

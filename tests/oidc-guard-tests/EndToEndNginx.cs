@@ -1,7 +1,7 @@
-﻿using FluentAssertions;
-using Microsoft.Net.Http.Headers;
+﻿using Microsoft.Net.Http.Headers;
 using Microsoft.Playwright;
 using oidc_guard_tests.EndToEnd;
+using Shouldly;
 using System.Net;
 using System.Text.RegularExpressions;
 using Xunit;
@@ -31,8 +31,8 @@ public class EndToEndNginx
     public async Task NoAuth()
     {
         var response = await fixture.HttpClient.GetAsync("https://demo-app.test.loc:32443/");
-        response.StatusCode.Should().Be(HttpStatusCode.Found);
-        response.Headers.Location.OriginalString.Should().StartWith("http://oidc-server.oidc-server:32443/connect/authorize?");
+        response.StatusCode.ShouldBe(HttpStatusCode.Found);
+        response.Headers.Location.OriginalString.ShouldStartWith("http://oidc-server.oidc-server:32443/connect/authorize?");
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class EndToEndNginx
         request.Headers.Add(HeaderNames.AccessControlRequestHeaders, "Content-Type");
 
         var response = await fixture.HttpClient.SendAsync(request);
-        response.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
+        response.StatusCode.ShouldBe(HttpStatusCode.MethodNotAllowed);
     }
 
     [Fact]
@@ -56,9 +56,9 @@ public class EndToEndNginx
         request.Headers.Add(HeaderNames.Authorization, "Bearer " + token);
 
         var response = await fixture.HttpClient.SendAsync(request);
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
-        content.Contains("Welcome to nginx!").Should().BeTrue();
+        content.Contains("Welcome to nginx!").ShouldBeTrue();
     }
 
     [Fact]
@@ -69,9 +69,9 @@ public class EndToEndNginx
         var request = new HttpRequestMessage(HttpMethod.Get, $"https://demo-app.test.loc:32443/?access_token={token}");
 
         var response = await fixture.HttpClient.SendAsync(request);
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
-        content.Contains("Welcome to nginx!").Should().BeTrue();
+        content.Contains("Welcome to nginx!").ShouldBeTrue();
     }
 
     [Fact]
@@ -100,12 +100,12 @@ public class EndToEndNginx
 
         var title = await page.TitleAsync();
 
-        title.Should().Be("Welcome to nginx!");
+        title.ShouldBe("Welcome to nginx!");
 
         await page.GotoAsync("https://demo-app.test.loc:32443/");
 
         var title2 = await page.TitleAsync();
 
-        title2.Should().Be("Welcome to nginx!");
+        title2.ShouldBe("Welcome to nginx!");
     }
 }
