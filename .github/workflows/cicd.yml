@@ -55,7 +55,6 @@ jobs:
       uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        files: coverage.cobertura.xml
         fail_ci_if_error: true
 
     - name: Test Report
@@ -63,7 +62,6 @@ jobs:
       if: success() || failure()
       with:
         name: Tests
-        path: '**/TestResults/test-results.trx'
         reporter: dotnet-trx
 
     - name: Run Benchmark
