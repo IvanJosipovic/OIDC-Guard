@@ -1,7 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Jobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
+using Microsoft.VSDiagnostics;
 using oidc_guard_tests.Infra;
 using System.Security.Claims;
 
@@ -9,6 +9,7 @@ namespace oidc_guard_benchmarks;
 
 [JsonExporterAttribute.FullCompressed]
 [MemoryDiagnoser]
+[CPUUsageDiagnoser]
 public class BenchmarkJWT
 {
     private HttpClient client = default!;

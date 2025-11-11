@@ -1,6 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Jobs;
 using Microsoft.Extensions.Logging;
+using Microsoft.VSDiagnostics;
 using oidc_guard_tests.Infra;
 using Shouldly;
 using System.Net;
@@ -9,6 +9,7 @@ namespace oidc_guard_benchmarks;
 
 [JsonExporterAttribute.FullCompressed]
 [MemoryDiagnoser]
+[CPUUsageDiagnoser]
 public class BenchmarkCookie
 {
     private HttpClient client = default!;
