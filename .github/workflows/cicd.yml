@@ -49,7 +49,7 @@ jobs:
       shell: pwsh
 
     - name: .NET Test
-      run: dotnet test -c Release 
+      run: dotnet test -c Release /p:DebugSymbols=true /p:DebugType=full 
 
     - name: Test Report
       uses: dorny/test-reporter@v2
