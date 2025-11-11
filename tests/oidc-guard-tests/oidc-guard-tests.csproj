@@ -8,6 +8,7 @@
 
     <IsPackable>false</IsPackable>
     <LangVersion>latest</LangVersion>
+    <TestingPlatformCommandLineArguments>$(TestingPlatformCommandLineArguments) --report-xunit-trx --report-xunit-trx-filename test-results.trx --coverage --coverage-output-format cobertura --coverage-output coverage.cobertura.xml</TestingPlatformCommandLineArguments>
   </PropertyGroup>
 
   <ItemGroup>

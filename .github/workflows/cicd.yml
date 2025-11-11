@@ -49,7 +49,7 @@ jobs:
       shell: pwsh
 
     - name: .NET Test
-      run: dotnet test -c Release --report-xunit-trx --report-xunit-trx-filename test-results.trx --coverage --coverage-output-format cobertura --coverage-output coverage.cobertura.xml
+      run: dotnet test -c Release 
 
     - name: Coverage
       uses: codecov/codecov-action@v5

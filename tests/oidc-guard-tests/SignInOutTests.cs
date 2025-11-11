@@ -33,7 +33,7 @@ public class SingInOutTests
 
         var response2 = await _client.GetAsync(response.Headers.Location);
         response2.StatusCode.ShouldBe(HttpStatusCode.Found);
-        response2.Headers.Location.ShouldBe(new Uri("/auth"));
+        response2.Headers.Location.ToString().ShouldBe("/auth");
 
         _client.DefaultRequestHeaders.Clear();
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Cookie, response2.Headers.GetValues("Set-Cookie"));
@@ -61,7 +61,7 @@ public class SingInOutTests
 
         var response2 = await _client.GetAsync(response.Headers.Location);
         response2.StatusCode.ShouldBe(HttpStatusCode.Found);
-        response2.Headers.Location.ShouldBe(new Uri("/auth"));
+        response2.Headers.Location.ToString().ShouldBe("/auth");
 
         _client.DefaultRequestHeaders.Clear();
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Cookie, response2.Headers.GetValues("Set-Cookie"));
@@ -89,7 +89,7 @@ public class SingInOutTests
 
         var response2 = await _client.GetAsync(response.Headers.Location);
         response2.StatusCode.ShouldBe(HttpStatusCode.Found);
-        response2.Headers.Location.ShouldBe(new Uri("/auth"));
+        response2.Headers.Location.ToString().ShouldBe("/auth");
 
         _client.DefaultRequestHeaders.Clear();
         _client.DefaultRequestHeaders.TryAddWithoutValidation(HeaderNames.Cookie, response2.Headers.GetValues("Set-Cookie"));
@@ -200,7 +200,7 @@ public class SingInOutTests
 
             var response2 = await client.GetAsync(response.Headers.Location);
             response2.StatusCode.ShouldBe(HttpStatusCode.Found);
-            response2.Headers.Location.ShouldBe(new Uri(query));
+            response2.Headers.Location.ToString().TrimEnd('/').ShouldBe(query);
         }
     }
 
@@ -225,7 +225,7 @@ public class SingInOutTests
         response3.StatusCode.ShouldBe(status);
         if (status == HttpStatusCode.Redirect)
         {
-            response3.Headers.Location.ShouldBe(new Uri(query));
+            response3.Headers.Location.ToString().TrimEnd('/').ShouldBe(query);
         }
     }
 
