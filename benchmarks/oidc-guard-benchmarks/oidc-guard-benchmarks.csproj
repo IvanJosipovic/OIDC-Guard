@@ -9,7 +9,7 @@
     <SelfContained>false</SelfContained>
     <IsPackable>false</IsPackable>
     <NoWarn>$(NoWarn);CS7022</NoWarn>
-    <IsTestProject>false</IsTestProject>
+    <IsTestingPlatformApplication>false</IsTestingPlatformApplication>
   </PropertyGroup>
 
   <ItemGroup>
