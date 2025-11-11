@@ -51,13 +51,6 @@ jobs:
     - name: .NET Test
       run: dotnet test -c Release 
 
-    - name: Coverage
-      uses: codecov/codecov-action@v5
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        paths: tests/**/*.cobertura.xml
-        fail_ci_if_error: true
-
     - name: Test Report
       uses: dorny/test-reporter@v2
       if: success() || failure()
@@ -65,6 +58,13 @@ jobs:
         name: Tests
         path: tests/**/*.trx
         reporter: dotnet-trx
+
+    - name: Coverage
+      uses: codecov/codecov-action@v5
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: tests/**/*.cobertura.xml
+        fail_ci_if_error: true
 
     - name: Run Benchmark
       working-directory: benchmarks/oidc-guard-benchmarks
