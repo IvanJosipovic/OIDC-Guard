@@ -24,7 +24,7 @@
     <PackageReference Include="SharpCompress" Version="0.41.0" />
     <PackageReference Include="Shouldly" Version="4.3.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" />
-    <PackageReference Include="xunit.v3.mtp-v2" Version="3.2.0" />
+    <PackageReference Include="xunit.v3.mtp-v2" Version="3.2.1" />
   </ItemGroup>
 
   <ItemGroup>
