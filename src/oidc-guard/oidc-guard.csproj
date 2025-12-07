@@ -28,7 +28,7 @@
 
   <ItemGroup>
     <PackageReference Include="JsonPath.Net" Version="2.1.1" />
-    <PackageReference Include="Kubernetes.AspNetCore.DataProtection" Version="1.1.2" />
+    <PackageReference Include="Kubernetes.AspNetCore.DataProtection" Version="1.1.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.0" />
     <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.15.0" />
