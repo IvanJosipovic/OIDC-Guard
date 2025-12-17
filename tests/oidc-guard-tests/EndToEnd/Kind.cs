@@ -15,7 +15,7 @@ public static class Kind
 {
     public static string KindVersion = "v0.30.0";
 
-    public static string KubernetesVersion = "kindest/node:v1.34.2";
+    public static string KubernetesVersion = "kindest/node:v1.34.3";
 
     public static string FileName { get; } = "kind" + (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : "");
 
