@@ -19,7 +19,7 @@
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="10.0.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageReference Include="Microsoft.Playwright" Version="1.57.0" />
-    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.1.0" />
+    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.3.1" />
     <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="SharpCompress" Version="0.43.0" />
     <PackageReference Include="Shouldly" Version="4.3.0" />
