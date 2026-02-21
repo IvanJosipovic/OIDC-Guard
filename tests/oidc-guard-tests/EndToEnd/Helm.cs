@@ -38,7 +38,7 @@ public class Helm
         var url = $"https://get.helm.sh/helm-v{HelmVersion}-{os}-{arch}.{(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "zip" : "tar.gz")}";
 
         using var stream = await client.GetStreamAsync(url);
-        using var reader = ReaderFactory.Open(stream);
+        using var reader = ReaderFactory.OpenReader(stream);
         while (reader.MoveToNextEntry())
         {
             if (!reader.Entry.IsDirectory && reader.Entry.Key.EndsWith(FileName))
