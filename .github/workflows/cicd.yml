@@ -56,14 +56,14 @@ jobs:
       if: success() || failure()
       with:
         name: Tests
-        path: tests/**/*.trx
+        path: TestResults/*.trx
         reporter: dotnet-trx
 
     - name: Coverage
       uses: codecov/codecov-action@v7
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        files: tests/**/*.cobertura.xml
+        files: TestResults/*.cobertura.xml
         fail_ci_if_error: true
 
     - name: Run Benchmark
