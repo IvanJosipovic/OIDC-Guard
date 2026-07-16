@@ -32,6 +32,15 @@
       "respectLatest": false
     },
     {
+      "groupName": "OpenTelemetry",
+      "separateMajorMinor": true,
+      "groupSlug": "opentelemetry",
+      "matchPackageNames": [
+        "OpenTelemetry",
+        "OpenTelemetry.*"
+      ]
+    },
+    {
       "matchUpdateTypes": [
         "minor",
         "patch",
