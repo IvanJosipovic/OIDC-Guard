@@ -100,7 +100,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         extra_plugins: |
-          conventional-changelog-conventionalcommits
+          conventional-changelog-conventionalcommits@9
 
     - name: Set up Docker Buildx
       if: steps.semantic.outputs.new_release_published == 'true'
