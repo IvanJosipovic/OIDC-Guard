@@ -5,7 +5,7 @@
     <RootNamespace>oidc_guard_tests</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-
+    <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
     <LangVersion>latest</LangVersion>
     <TestingPlatformCommandLineArguments>$(TestingPlatformCommandLineArguments) --report-xunit-trx --coverage --coverage-output-format cobertura</TestingPlatformCommandLineArguments>
