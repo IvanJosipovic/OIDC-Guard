@@ -31,7 +31,7 @@
     <PackageReference Include="Kubernetes.AspNetCore.DataProtection" Version="1.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.12" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.12" />
-    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.22.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.23.0" />
     <PackageReference Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.19.0-beta.1" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.19.0" />
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.19.0" />
